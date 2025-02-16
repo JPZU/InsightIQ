@@ -1,5 +1,5 @@
 from fastapi import Depends
-from app.database.session import SessionLocal
+from backend.database.session import SessionLocal
 
 def get_db():
     db = SessionLocal()

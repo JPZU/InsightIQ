@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from backend.database.session import SessionLocal  # Import your SessionLocal
 from .api.endpoints import auth, users
 
 app = FastAPI()
@@ -12,6 +13,14 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+
+# Dependency to get the database session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 # include the other routes
 app.include_router(auth.router, prefix="/api/v1")

@@ -1,11 +1,13 @@
-from sqlalchemy import create_engine
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-
-# Define the database URL (SQLite in this case)
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-
-# Create the SQLAlchemy engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 # Base class for models
 Base = declarative_base()
+
+# Example model: User
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
