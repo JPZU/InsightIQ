@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from backend.database.models.base import engine  # Import engine from base.py
+# from backend.database.models.base import engine  # Import engine from base.py
 
 # Database URL (replace with your actual database URL)
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")  # SQLite example
