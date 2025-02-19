@@ -1,4 +1,4 @@
-# SoftServeAnalytics
+# InsightIQ
 
 This project consists of a **backend** built with FastAPI and a **frontend** built with React (using Vite). Below are the steps to install dependencies and run the project.
 
