@@ -1,6 +1,8 @@
-from utils.langchain_manager import LangChainManager
+from utils.agent_manager import AgentManager
 
 class ChatService:
+    sql_agent = AgentManager()
+
     @staticmethod
     def get_response(question: str) -> str:
-        return LangChainManager.get_instance().get_response(question)
+        return ChatService.sql_agent.query_nlp(question)
