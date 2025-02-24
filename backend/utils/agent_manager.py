@@ -18,7 +18,7 @@ class AgentManager:
             llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 openai_api_key=api_key,
-                temperature=0.0
+                temperature=0.2
             )
 
             cls._instance._initialize(db, llm)

@@ -14,6 +14,6 @@ app.add_middleware(
 
 app.include_router(router)
 
-@app.get("/")
+@app.get("/api")
 def read_root():
     return {"message": "Welcome to SoftServeAnalytics API"}
