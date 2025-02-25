@@ -18,7 +18,7 @@ class AgentManager:
             llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 openai_api_key=api_key,
-                temperature=0.2
+                temperature=0.5
             )
 
             cls._instance._initialize(db, llm)
@@ -36,10 +36,23 @@ class AgentManager:
 
     def query_nlp(self, query):
         response = self.agent_executor.invoke({"input": query})
+        intermediate_steps = response.get('intermediate_steps', [])
+        print(intermediate_steps[1][1])
+
+
+        if len(intermediate_steps) > 3:
+            query = intermediate_steps[3][0].tool_input['query']
+            query_output = intermediate_steps[3][1]
+        else:
+            intermediate_query = intermediate_steps[1][1].split('/*')
+
+            query = intermediate_query[0]
+            query_output = intermediate_query[1][28:-3].replace('\t', ';').split('\n')
 
         return {
             'input': response.get('input', ''),
             'output': response.get('output', ''),
-            'query': response.get('intermediate_steps')[3][0].tool_input['query'],
-            'query_output': response.get('intermediate_steps')[3][1]
+            'query': query,
+            'query_output': query_output
         }
+
