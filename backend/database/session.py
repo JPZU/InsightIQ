@@ -1,18 +1,20 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-# from backend.database.models.base import engine  # Import engine from base.py
+from sqlalchemy.ext.declarative import declarative_base
+from backend.core.config import settings  # Importar configuración desde el archivo de configuración
 
-# Database URL (replace with your actual database URL)
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")  # SQLite example
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost/dbname"  # PostgreSQL example
-# SQLALCHEMY_DATABASE_URL = "mysql+pymysql://user:password@localhost/dbname"  # MySQL example
+# Crear la URL de la base de datos
+SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
-# Create the SQLAlchemy engine
+# Crear el motor de SQLAlchemy
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}  # Only for SQLite
+    pool_pre_ping=True,  # Verifica la conexión antes de usarla
+    pool_recycle=3600,  # Recicla las conexiones después de 1 hora
 )
 
-# Create a configured SessionLocal class
+# Crear una sesión local
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base para los modelos
+Base = declarative_base()
