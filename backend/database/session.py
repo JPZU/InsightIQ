@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from backend.core.config import settings  # Importar configuración desde el archivo de configuración
+from .models.base import Base
+from backend.core.config import settings
 
 # Crear la URL de la base de datos
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
@@ -17,4 +17,4 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Base para los modelos
-Base = declarative_base()
+Base = Base
