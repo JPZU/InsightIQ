@@ -87,6 +87,7 @@ To manage database migrations, we use Alembic. Follow these steps to create and 
    ```bash
    alembic revision --autogenerate -m "Models configured"
    ```
+   
 This command will create a new migration file in the alembic/versions/ directory.
 ### 2. Apply the migration
 1. Apply the migration to update the database schema:
