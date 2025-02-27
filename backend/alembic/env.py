@@ -1,3 +1,5 @@
+import os
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -5,11 +7,28 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from database.models.base import Base  # Importa tu Base de SQLAlchemy
+from database.models.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+ENV_PATH = os.path.join(os.path.dirname(__file__), '..', '.env')
+
+# Cargar las variables del .env manualmente
+if os.path.exists(ENV_PATH):
+    with open(ENV_PATH) as env_file:
+        for line in env_file:
+            if line.strip() and not line.startswith("#"):
+                key, value = line.strip().split("=", 1)
+                os.environ[key] = value
+
+database_url = os.getenv("DATABASE_URL")
+
+if not database_url:
+    raise ValueError("The DATABASE_URL environment variable is not set")
+
+config.set_main_option("sqlalchemy.url", database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
