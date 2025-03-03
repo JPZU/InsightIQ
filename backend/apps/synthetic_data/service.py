@@ -7,7 +7,7 @@ class SyntheticDataService:
     def generate_synthetic_data(details: str, table_name: str, num_records: int = 10):
         manager = SyntheticDataManager()  
         
-        limit=2
+        limit=4
         
         db_manager = DBManager()
         sample_data = db_manager.get_sample_data(table_name, limit) 
