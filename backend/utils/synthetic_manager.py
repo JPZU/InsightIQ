@@ -13,20 +13,22 @@ class SyntheticDataManager:
             cls._instance.llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 openai_api_key=api_key,
-                temperature=0.7
+                temperature=0.6
             )
             cls._instance.db_manager = DBManager()
         return cls._instance
 
 
-    def generate_synthetic_data(self,  table_name: str, table_schema: str, num_records: int = 10, sample_data: list=None):
+    def generate_synthetic_data(self,  details: str, table_name: str, table_schema: str, num_records: int = 10, sample_data: list=None):
         
-        prompt = f"Generate {num_records} rows of synthetic data based on this table schema: {table_schema}."
+        prompt = f"For a table called '{table_name}', generate {num_records} rows of synthetic data based on this schema: {table_schema}."
         
+        if details:
+            prompt += f" Here are some details specified to generate the data: {details}."
         if sample_data:
             prompt += f" Take as a guide these real rows from the table: {sample_data}."
 
-        prompt += " Return only the data in CSV format."
+        prompt += " Return ONLY the data, in CSV format."
 
         response = self.llm.invoke(prompt)  
         csv_data = response.content 

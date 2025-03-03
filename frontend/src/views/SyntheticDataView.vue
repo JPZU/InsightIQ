@@ -14,9 +14,15 @@
       <label class="block text-sm font-medium">Number of Records</label>
       <input v-model.number="numRecords" type="number" class="w-full p-2 border rounded" min="1" />
     </div>
-    
-    <button @click="generateData" class="px-4 py-2 bg-blue-500 text-black rounded hover:bg-blue-600">
-      Generate Data
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium">Details</label>
+      <p class="text-sm text-gray-600">If you'd like, give us more details about the style the synthetic data should have.</p>
+      <textarea v-model="details" class=" border rounded" rows="3" cols="70" ></textarea>
+      </div>
+
+    <button type="submit" @click="generateData" class="btn btn-primary " :disabled="loading">
+                {{ loading ? "Generating..." : "Generate Data" }}
     </button>
     
     <div v-if="response" class="mt-4 p-4 border rounded">
@@ -32,10 +38,12 @@ import axios from "axios";
 export default {
   data() {
     return {
+      details: "",
       tableName: "",
       numRecords: 10,
       response: null,
       tables: [],
+      loading: false,
     };
   },
   async mounted() {
@@ -52,12 +60,15 @@ export default {
     },
     async generateData() {
       if (!this.tableName) {
-        alert("Please enter a table name.");
+        alert("Please select a table.");
         return;
       }
+      this.loading = true;  
+      this.response = null;
       try {
         const { data } = await axios.post("http://localhost:8000/api/synthetic_data/generate/", null, {
           params: {
+            details: this.details,
             table_name: this.tableName,
             num_records: this.numRecords,
           },
@@ -66,6 +77,8 @@ export default {
       } catch (error) {
         console.error("Error generating data:", error);
         this.response = { error: "Failed to generate synthetic data." };
+      } finally {
+        this.loading = false;  
       }
     },
   },
