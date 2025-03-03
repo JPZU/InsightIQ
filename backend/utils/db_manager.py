@@ -6,7 +6,8 @@ class DBManager:
     def __init__(self):
         db_path = os.path.abspath("data/db.sqlite")
         engine = create_engine(f"sqlite:///{db_path}")
-        self.db = SQLDatabase(engine=engine)
+        self.engine = engine
+        self.db = SQLDatabase(engine=self.engine)
 
     def get_connection(self):
         return self.db
