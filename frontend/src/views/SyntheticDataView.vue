@@ -31,6 +31,10 @@
       <div v-if="response" class="response-box">
         <h2 class="response-title">Response:</h2>
         <pre class="response-content">{{ response }}</pre>
+        
+        <button class="btn add-btn" @click="addSyntheticDatabase">
+          Add data to "{{ tableName }}"
+        </button>
       </div>
     </div>
   </div>
@@ -68,6 +72,10 @@ export default {
         alert("Please select a table.");
         return;
       }
+      if (!this.numRecords) {
+        alert("Please select an amount of records to generate.");
+        return;
+      }
       this.loading = true;
       this.response = null;
       try {
@@ -85,6 +93,10 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    addSyntheticDatabase() {
+      alert(`Feature not implemented yet, but will add to ${this.tableName}!`);
+      console.log("Adding synthetic database to:", this.tableName);
     },
   },
 };
@@ -184,5 +196,14 @@ body {
 .response-content {
   font-size: 0.9rem;
   white-space: pre-wrap;
+}
+
+.add-btn {
+  background-color: #28a745; 
+  margin-top: 10px;
+}
+
+.add-btn:hover {
+  background-color: #218838; 
 }
 </style>
