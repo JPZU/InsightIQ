@@ -11,12 +11,19 @@ class DashboardSchemaRequest(BaseModel):
 
 @router.get("/")
 def get_schema():
-    """
-    Endpoint para obtener el esquema inferido del CSV.
-    """
     try:
         schema = DashboardService.get_schema()
         return schema
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error al obtener el esquema: {str(e)}")
+
+
+@router.get("/analysis")
+def get_schema():
+    try:
+        analysis = DashboardService.calculate_some_analysis()
+        return analysis
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error al obtener el esquema: {str(e)}")
