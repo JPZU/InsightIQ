@@ -1,7 +1,9 @@
 from sqlalchemy import create_engine
 from langchain_community.utilities import SQLDatabase
+import pandas as pd
 import os
 from sqlalchemy.sql import text
+
 
 class DBManager:
     def __init__(self):
@@ -11,16 +13,14 @@ class DBManager:
         self.engine = engine
 
     def get_connection(self):
-        return self.db
-    
+        return self.db    
     
     def get_table_names(self):
         query = "SELECT name FROM sqlite_master WHERE type='table';"
         with self.engine.connect() as conn:
             result = conn.execute(text(query)).fetchall()
         return [row[0] for row in result]
-    
-    
+
     def get_sample_data(self, table_name: str, limit: int):
         query = text(f"SELECT * FROM {table_name} LIMIT {limit}")
         with self.engine.connect() as conn:
@@ -28,7 +28,6 @@ class DBManager:
 
         return [dict(row._mapping) for row in result] if result else None
 
-    
     def get_table_schema(self, table_name: str):
         query = text(f"PRAGMA table_info({table_name})")
         with self.engine.connect() as conn:
@@ -47,3 +46,8 @@ class DBManager:
             })
 
         return schema
+
+    def get_dataframe(self):
+        csv_path = os.path.abspath("data/titanic.csv")
+        df = pd.read_csv(csv_path)
+        return df
