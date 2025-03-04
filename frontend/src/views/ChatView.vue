@@ -11,18 +11,13 @@ const submitQuestion = async () => {
     if (!question.value.trim()) return
 
     loading.value = true
-    answer.value = null
 
-    try {
-        const response = await ChatService.askQuestion(question.value)
-        answer.value = response || { input: "N/A", output: "N/A", query: "N/A", query_output: "N/A" }
-    } catch (error) {
-        answer.value = { input: "Error", output: "Failed to fetch", query: "-", query_output: "-" }
-        console.error(error)
-    } finally {
-        loading.value = false
-        question.value = ''
-    }
+    const response = await ChatService.askQuestion(question.value)
+    console.log(response)
+    answer.value = response.response
+
+    loading.value = false
+
 }
 </script>
 
@@ -30,11 +25,9 @@ const submitQuestion = async () => {
     <div class="full-page-background">
         <div class="content-container">
             <form class="card" @submit.prevent="submitQuestion">
-                <h2 class="text-center" style="margin-bottom: 1rem;">Ask your question</h2>
-                <div>
-                    <input class="form-control" id="question" v-model="question" placeholder="Type here..." required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100" :disabled="loading">
+                <h2 class="text-center mb-3">Ask your question</h2>
+                <input class="form-control" v-model="question" placeholder="Type here..." required>
+                <button type="submit" class="btn btn-primary w-100 mt-2" :disabled="loading">
                     {{ loading ? "Sending..." : "Send" }}
                 </button>
             </form>
@@ -45,19 +38,19 @@ const submitQuestion = async () => {
                     <tbody>
                         <tr>
                             <th scope="row">Input</th>
-                            <td>{{ answer.input }}</td>
+                            <td>{{ answer.input || "N/A" }}</td>
                         </tr>
                         <tr>
                             <th scope="row">Output</th>
-                            <td>{{ answer.output }}</td>
+                            <td>{{ answer.output || "N/A" }}</td>
                         </tr>
                         <tr>
                             <th scope="row">Query</th>
-                            <td>{{ answer.query }}</td>
+                            <td>{{ answer.query || "N/A" }}</td>
                         </tr>
                         <tr>
                             <th scope="row">Query Output</th>
-                            <td>{{ answer.query_output }}</td>
+                            <td>{{ answer.query_output || "N/A" }}</td>
                         </tr>
                     </tbody>
                 </table>
