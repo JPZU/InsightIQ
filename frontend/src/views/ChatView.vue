@@ -32,8 +32,17 @@
                         <th scope="row">Query Output</th>
                         <td>{{ answer.query_output }}</td>
                     </tr>
+                    <tr>
+                        <th scope="row">X Axis</th>
+                        <td>{{ answer.x_axis }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Y Axis</th>
+                        <td>{{ answer.y_axis }}</td>
+                    </tr>
                 </tbody>
             </table>
+            <BarChart v-if="answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1" :xAxis="answer.x_axis" :yAxis="answer.y_axis" :chartTitle="'Chart'" />
         </div>
     </div>
 </template>
@@ -41,6 +50,7 @@
 <script setup>
 import { ref } from 'vue'
 import ChatService from '@/services/ChatService'
+import BarChart from '@/components/BarChart.vue';
 
 const question = ref('')
 const answer = ref(null)
@@ -54,9 +64,9 @@ const submitQuestion = async () => {
 
     try {
         const response = await ChatService.askQuestion(question.value)
-        answer.value = response || { input: "N/A", output: "N/A", query: "N/A", query_output: "N/A" }
+        answer.value = response || { input: "N/A", output: "N/A", query: "N/A", query_output: "N/A", xAxis: [], yAxis: [] }
     } catch (error) {
-        answer.value = { input: "Error", output: "Failed to fetch", query: "-", query_output: "-" }
+        answer.value = { input: "Error", output: "Failed to fetch", query: "-", query_output: "-", xAxis: [], yAxis: [] }
         console.error(error)
     } finally {
         loading.value = false
