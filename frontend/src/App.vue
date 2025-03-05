@@ -2,7 +2,10 @@
   <div id="content-wrapper" class="d-flex flex-column vh-100">
     <div class="d-flex flex-grow-1">
       <!-- Sidebar -->
-      <aside :class="['sidebar', { 'collapsed': isCollapsed }]" class="bg-dark text-white p-3 d-flex flex-column">
+      <aside
+        :class="['sidebar', { collapsed: isCollapsed }]"
+        class="bg-dark text-white p-3 d-flex flex-column"
+      >
         <!-- Título de la aplicación -->
         <div class="text-center mb-4">
           <span v-if="!isCollapsed" class="fs-3 fw-bold">InsighIQ</span>
@@ -14,13 +17,32 @@
             <i class="fas fa-fw fa-home"></i>
             <span>Home</span>
           </router-link>
-          <router-link to="/chat" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
+          <router-link
+            to="/chat"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
             <i class="fas fa-comments"></i>
             <span>Chat</span>
           </router-link>
-          <router-link to="/synthetic-data" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
+          <router-link
+            to="/synthetic-data"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
             <i class="fas fa-database"></i>
             <span>Synthetic Data</span>
+          </router-link>
+          <router-link
+            to="/dashboard"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Dashboard</span>
           </router-link>
         </ul>
 
@@ -33,7 +55,11 @@
       </aside>
 
       <!-- Main Content -->
-      <div id="content" class="flex-grow-1 p-4" :style="{ marginLeft: isCollapsed ? '70px' : '250px' }">
+      <div
+        id="content"
+        class="flex-grow-1 p-4"
+        :style="{ marginLeft: isCollapsed ? '70px' : '250px' }"
+      >
         <RouterView />
       </div>
     </div>
@@ -41,22 +67,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { RouterLink, RouterView, useRoute } from "vue-router";
+import { ref } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 
 // Estado para controlar si la sidebar está colapsada
-const isCollapsed = ref(false);
+const isCollapsed = ref(false)
 
 // Función para alternar el estado de colapso
 function toggleSidebar() {
-  isCollapsed.value = !isCollapsed.value;
+  isCollapsed.value = !isCollapsed.value
 }
 
 // Función para cerrar el offcanvas (si es necesario)
 function closeOffcanvas() {
-  const offcanvasToggler = document.getElementById("offcanvasToggler");
+  const offcanvasToggler = document.getElementById('offcanvasToggler')
   if (offcanvasToggler) {
-    offcanvasToggler.click();
+    offcanvasToggler.click()
   }
 }
 </script>

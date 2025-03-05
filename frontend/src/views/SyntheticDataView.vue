@@ -1,99 +1,109 @@
 <template>
-<body>
-  <div class="container">
-    <h1 class=" text-xl">Generate Synthetic Data</h1>
+  <body>
+    <div class="container">
+      <h1 class="text-xl">Generate Synthetic Data</h1>
 
-    <div class="form">
-      <div class="form-group">
-        <label class="label">Select Table</label>
-        <select v-model="tableName" class="input" :disabled="tables.length === 0">
-        <option v-if="tables.length === 0" disabled>Loading tables...</option>
-        <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
-      </select>
+      <div class="form">
+        <div class="form-group">
+          <label class="label">Select Table</label>
+          <select v-model="tableName" class="input" :disabled="tables.length === 0">
+            <option v-if="tables.length === 0" disabled>Loading tables...</option>
+            <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
+          </select>
+        </div>
 
-      </div>
+        <div class="form-group">
+          <label class="label">Number of Records</label>
+          <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
+        </div>
 
-      <div class="form-group">
-        <label class="label">Number of Records</label>
-        <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
-      </div>
+        <div class="form-group">
+          <label class="label">Details</label>
+          <p class="helper-text">
+            If you'd like, give us more details about the style the synthetic data should have.
+          </p>
+          <textarea
+            v-model="details"
+            class="input textarea"
+            rows="4"
+            maxlength="600"
+            placeholder="e.g.: Make all people older than 35 years old."
+          ></textarea>
+        </div>
 
-      <div class="form-group">
-        <label class="label">Details</label>
-        <p class="helper-text">If you'd like, give us more details about the style the synthetic data should have.</p>
-        <textarea v-model="details" class="input textarea" rows="4" maxlength="600" placeholder="e.g.: Make all people older than 35 years old."></textarea>
-      </div>
+        <button type="submit" @click="generateData" class="btn" :disabled="loading">
+          {{ loading ? 'Generating...' : 'Generate Data' }}
+        </button>
 
-      <button type="submit" @click="generateData" class="btn" :disabled="loading">
-        {{ loading ? "Generating..." : "Generate Data" }}
-      </button>
-
-      <div v-if="response" class="response-box">
-        <h2 class="response-title">Response:</h2>
-        <pre class="response-content">{{ response }}</pre>
+        <div v-if="response" class="response-box">
+          <h2 class="response-title">Response:</h2>
+          <pre class="response-content">{{ response }}</pre>
+        </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
 
 export default {
   data() {
     return {
-      details: "",
-      tableName: "",
+      details: '',
+      tableName: '',
       numRecords: 10,
       response: null,
       tables: [],
       loading: false,
-    };
+    }
   },
   async mounted() {
-    await this.fetchTables();
+    await this.fetchTables()
   },
   methods: {
     async fetchTables() {
       try {
-        const { data } = await axios.get("http://localhost:8000/api/synthetic_data/tables/");
-        this.tables = data.tables;
+        const { data } = await axios.get('http://localhost:8000/api/synthetic_data/tables/')
+        this.tables = data.tables
       } catch (error) {
-        console.error("Error fetching tables:", error);
+        console.error('Error fetching tables:', error)
       }
     },
     async generateData() {
       if (!this.tableName) {
-        alert("Please select a table.");
-        return;
+        alert('Please select a table.')
+        return
       }
-      this.loading = true;
-      this.response = null;
+      this.loading = true
+      this.response = null
       try {
-        const { data } = await axios.post("http://localhost:8000/api/synthetic_data/generate/", null, {
-          params: {
-            details: this.details,
-            table_name: this.tableName,
-            num_records: this.numRecords,
+        const { data } = await axios.post(
+          'http://localhost:8000/api/synthetic_data/generate/',
+          null,
+          {
+            params: {
+              details: this.details,
+              table_name: this.tableName,
+              num_records: this.numRecords,
+            },
           },
-        });
-        this.response = data;
+        )
+        this.response = data
       } catch (error) {
-        console.error("Error generating data:", error);
-        this.response = { error: "Failed to generate synthetic data." };
+        console.error('Error generating data:', error)
+        this.response = { error: 'Failed to generate synthetic data.' }
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     },
   },
-};
+}
 </script>
 
 <style>
-
 body {
-  font-size: 18px; 
+  font-size: 18px;
 }
 .container {
   display: flex;
@@ -165,7 +175,7 @@ body {
 }
 
 .btn:hover {
-  background-color: #00356d; 
+  background-color: #00356d;
   color: white;
 }
 

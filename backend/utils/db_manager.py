@@ -13,8 +13,8 @@ class DBManager:
         self.engine = engine
 
     def get_connection(self):
-        return self.db    
-    
+        return self.db
+
     def get_table_names(self):
         query = "SELECT name FROM sqlite_master WHERE type='table';"
         with self.engine.connect() as conn:
@@ -34,7 +34,7 @@ class DBManager:
             result = conn.execute(query).fetchall()
 
         if not result:
-            return None 
+            return None
 
         schema = []
         for row in result:
