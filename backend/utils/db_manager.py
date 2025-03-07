@@ -48,6 +48,6 @@ class DBManager:
         return schema
 
     def get_dataframe(self):
-        csv_path = os.path.abspath("data/titanic.csv")
+        csv_path = os.path.abspath("data/SampleSuperStore.csv")
         df = pd.read_csv(csv_path)
         return df

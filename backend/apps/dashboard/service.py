@@ -16,7 +16,7 @@ class DashboardService:
             })
 
         return {
-            "file_name": "titanic.csv",
+            "file_name": "SampleSuperStore.csv",
             "columns": schema
         }
 
@@ -25,18 +25,15 @@ class DashboardService:
         db_manager = DBManager()
         df = db_manager.get_dataframe()
 
-        # Filtrar solo columnas numéricas (int, float)
         numeric_df = df.select_dtypes(include=['number'])
 
-        # Calcular estadísticas descriptivas (describe solo numéricas)
         descriptive_stats = numeric_df.describe().to_dict()
 
-        # Opcional: convertir percentiles a strings para asegurar compatibilidad JSON
         for column, stats in descriptive_stats.items():
             descriptive_stats[column] = {
                 str(key): value for key, value in stats.items()}
 
         return {
-            "file_name": "titanic.csv",
+            "file_name": "SampleSuperStore.csv",
             "descriptive_statistics": descriptive_stats
         }

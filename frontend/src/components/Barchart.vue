@@ -17,7 +17,6 @@ import {
   LinearScale,
 } from 'chart.js'
 
-// Registramos los componentes de Chart.js
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 interface Props {
@@ -27,12 +26,10 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Orden específico de métricas que queremos
 const orderedMetrics = ['min', '25%', '50%', '75%', 'max', 'mean']
 
-// Filtrar y ordenar solo las métricas que queremos mostrar en el orden correcto
 const filteredStats = computed(() => {
-  const { count, std, ...rest } = props.stats // Excluimos count y std
+  const { count, std, ...rest } = props.stats
   const orderedStats: Record<string, number> = {}
 
   orderedMetrics.forEach((metric) => {
@@ -57,7 +54,7 @@ const chartData = computed(() => ({
 
 const chartOptions = {
   responsive: true,
-  maintainAspectRatio: false, // Control libre de tamaño
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       display: false,
@@ -73,6 +70,6 @@ const chartOptions = {
 <style scoped>
 .bar-chart {
   width: 100%;
-  height: 300px; /* Puedes ajustar según necesites */
+  height: 300px;
 }
 </style>

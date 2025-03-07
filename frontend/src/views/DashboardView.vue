@@ -33,8 +33,6 @@
           <h3>{{ column }}</h3>
           <p>There are {{ stats.count }} values in this column.</p>
           <p><strong>Standard Deviation:</strong> {{ stats.std.toFixed(2) }}</p>
-
-          <!-- Gráfico sin 'std', pasamos solo las métricas necesarias -->
           <BarChart :columnName="column" :stats="filterStats(stats)" />
         </div>
       </div>
@@ -47,7 +45,6 @@ import { ref, onMounted } from 'vue'
 import DashboardService from '../services/DashboardService'
 import BarChart from '../components/BarChart.vue'
 
-// Tipos para la estructura de los datos
 interface Column {
   name: string
   type: string
@@ -62,11 +59,9 @@ interface AnalysisResponse {
   descriptive_statistics: Record<string, Record<string, number>>
 }
 
-// Estado reactivo para el esquema y análisis
 const schema = ref<SchemaResponse>({ file_name: '', columns: [] })
 const analysis = ref<AnalysisResponse>({ descriptive_statistics: {} })
 
-// Función para traer datos del backend
 const fetchDashboardData = async () => {
   try {
     const schemaResponse = await DashboardService.getSchema()
@@ -79,7 +74,6 @@ const fetchDashboardData = async () => {
   }
 }
 
-// Esta función quita 'std' y 'count' para no graficarlos
 const filterStats = (stats: Record<string, number>) => {
   const { std, count, ...filteredStats } = stats
   return filteredStats
@@ -185,7 +179,6 @@ th {
   transition: background-color 0.3s ease;
 }
 
-/* Para que en pantallas pequeñas pase a 1 por fila */
 @media (max-width: 768px) {
   .charts-grid {
     grid-template-columns: 1fr;

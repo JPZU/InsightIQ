@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 class DashboardSchemaRequest(BaseModel):
-    pass  # No tienes parámetros para inferir el schema, pero se puede extender en el futuro
+    pass
 
 
 @router.get("/")
@@ -16,7 +16,7 @@ def get_schema():
         return schema
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error al obtener el esquema: {str(e)}")
+            status_code=500, detail=f"Error getting the schematic: {str(e)}")
 
 
 @router.get("/analysis")
@@ -26,4 +26,4 @@ def get_schema():
         return analysis
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error al obtener el esquema: {str(e)}")
+            status_code=500, detail=f"Error getting the schematic: {str(e)}")
