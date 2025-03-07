@@ -2,6 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_community.agent_toolkits.sql.base import create_sql_agent
 from utils.env_manager import EnvManager
 from utils.db_manager import DBManager
+import ast
 
 class AgentManager:
     _instance = None
@@ -45,14 +46,30 @@ class AgentManager:
             query_output = intermediate_steps[3][1]
         else:
             intermediate_query = intermediate_steps[1][1].split('/*')
-
             query = intermediate_query[0]
             query_output = intermediate_query[1][28:-3].replace('\t', ';').split('\n')
+
+        x_axis = []
+        y_axis = []
+
+        if isinstance(query_output, str) and query_output.startswith('[') and query_output.endswith(']'):
+            try:
+                query_output = ast.literal_eval(query_output)
+            except (ValueError, SyntaxError):
+                pass
+
+        if isinstance(query_output, list):
+            for item in query_output:
+                if isinstance(item, (tuple, list)) and len(item) == 2:
+                    x_axis.append(str(item[0]))
+                    y_axis.append(item[1])
 
         return {
             'input': response.get('input', ''),
             'output': response.get('output', ''),
             'query': query,
-            'query_output': query_output
+            'query_output': query_output,
+            'x_axis': x_axis,
+            'y_axis': y_axis
         }
 
