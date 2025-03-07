@@ -52,20 +52,16 @@ class AgentManager:
         x_axis = []
         y_axis = []
 
-        # Si query_output es una cadena que representa una lista de tuplas
         if isinstance(query_output, str) and query_output.startswith('[') and query_output.endswith(']'):
             try:
-                # Convertir la cadena en una lista de tuplas usando ast.literal_eval
                 query_output = ast.literal_eval(query_output)
             except (ValueError, SyntaxError):
-                # Si hay un error en la conversión, dejar query_output como está
                 pass
 
-        # Verificar si query_output es una lista
         if isinstance(query_output, list):
             for item in query_output:
                 if isinstance(item, (tuple, list)) and len(item) == 2:
-                    x_axis.append(str(item[0]))  # Convertir a string para etiquetas
+                    x_axis.append(str(item[0]))
                     y_axis.append(item[1])
 
         return {
