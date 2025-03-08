@@ -43,7 +43,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import DashboardService from '../services/DashboardService'
-import BarChart from '../components/BarChart.vue'
 
 interface Column {
   name: string
