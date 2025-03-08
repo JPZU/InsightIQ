@@ -2,11 +2,14 @@
 import { ref } from 'vue'
 import ChatService from '@/services/ChatService'
 import BarChart from '@/components/BarChart.vue'
+import PieChart from '@/components/PieChart.vue'
+import LineChart from '@/components/LineChart.vue'
 import '@/assets/main.css'
 
 const question = ref('')
 const answer = ref(null)
 const loading = ref(false)
+const chartType = ref('bar')
 
 const submitQuestion = async () => {
   if (!question.value.trim()) return
@@ -53,7 +56,36 @@ const submitQuestion = async () => {
             </tr>
           </tbody>
         </table>
-        <BarChart v-if="answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1" :xAxis="answer.x_axis" :yAxis="answer.y_axis" :chartTitle="'Chart'" />
+
+         <!-- Selector de tipo de gráfico -->
+         <div class="mt-3">
+          <label for="chart-type">Select Chart Type:</label>
+          <select id="chart-type" v-model="chartType" class="form-control">
+            <option value="bar">Bar Chart</option>
+            <option value="pie">Pie Chart</option>
+            <option value="line">Line Chart</option>
+          </select>
+        </div>
+
+        <BarChart
+          v-if="chartType === 'bar' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+          :xAxis="answer.x_axis"
+          :yAxis="answer.y_axis"
+          :chartTitle="'Bar Chart'"
+        />
+        <PieChart
+          v-else-if="chartType === 'pie' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+          :xAxis="answer.x_axis"
+          :yAxis="answer.y_axis"
+          :chartTitle="'Pie Chart'"
+        />
+        <LineChart
+          v-else-if="chartType === 'line' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+          :xAxis="answer.x_axis"
+          :yAxis="answer.y_axis"
+          :chartTitle="'Line Chart'"
+        />
+
       </div>
     </div>
   </div>
