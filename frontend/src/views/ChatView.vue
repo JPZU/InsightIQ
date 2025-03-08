@@ -23,6 +23,12 @@ const submitQuestion = async () => {
 
   loading.value = false
 }
+
+const getButtonClass = (mode) => {
+  return viewMode.value === mode
+    ? 'btn-primary text-white' // Botón seleccionado
+    : 'btn-outline-primary' // Botón no seleccionado
+}
 </script>
 
 <template>
@@ -55,8 +61,8 @@ const submitQuestion = async () => {
           </tbody>
         </table>
 
-        <!-- Toggle group para gráficos/tabla -->
-        <div class="btn-group mt-3" role="group" aria-label="Toggle gráficos/tablas">
+        <!-- Botones para alternar entre gráficos y tabla -->
+        <div class="btn-group mt-3" role="group">
           <input
             type="radio"
             class="btn-check"
@@ -66,11 +72,7 @@ const submitQuestion = async () => {
             v-model="viewMode"
             value="graphs"
           />
-          <label
-            class="btn btn-outline-primary"
-            :class="{ active: viewMode === 'graphs' }"
-            for="viewGraphs"
-          >
+          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs">
             Gráficos
           </label>
 
@@ -83,11 +85,7 @@ const submitQuestion = async () => {
             v-model="viewMode"
             value="table"
           />
-          <label
-            class="btn btn-outline-primary"
-            :class="{ active: viewMode === 'table' }"
-            for="viewTable"
-          >
+          <label :class="`btn ${getButtonClass('table')}`" for="viewTable">
             Tabla
           </label>
         </div>
@@ -104,19 +102,19 @@ const submitQuestion = async () => {
           </div>
 
           <BarChart
-            v-if="chartType === 'bar' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+            v-if="chartType === 'bar' && answer.x_axis?.length && answer.y_axis?.length"
             :xAxis="answer.x_axis"
             :yAxis="answer.y_axis"
             :chartTitle="'Bar Chart'"
           />
           <PieChart
-            v-else-if="chartType === 'pie' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+            v-else-if="chartType === 'pie' && answer.x_axis?.length && answer.y_axis?.length"
             :xAxis="answer.x_axis"
             :yAxis="answer.y_axis"
             :chartTitle="'Pie Chart'"
           />
           <LineChart
-            v-else-if="chartType === 'line' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+            v-else-if="chartType === 'line' && answer.x_axis?.length && answer.y_axis?.length"
             :xAxis="answer.x_axis"
             :yAxis="answer.y_axis"
             :chartTitle="'Line Chart'"
@@ -130,13 +128,31 @@ const submitQuestion = async () => {
 </template>
 
 <style scoped>
+/* Espaciado de los botones */
 .btn-group {
   margin-bottom: 1rem;
 }
 
-.btn-outline-primary.active {
-  background-color: #0d6efd;
-  color: white;
-  border-color: #0d6efd;
+/* Mejor contraste entre los estados de selección */
+.btn-primary {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+}
+
+.btn-outline-primary {
+  border: 2px solid;
+  color: #0d6efd !important;
+  border-color: #0d6efd !important;
+  background-color: white;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0d6efd !important;
+  color: white !important;
+}
+
+.btn-primary.text-white {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
 }
 </style>
