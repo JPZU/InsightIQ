@@ -37,40 +37,39 @@
         </button>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
 
 export default {
   data() {
     return {
-      details: "",
-      tableName: "",
+      details: '',
+      tableName: '',
       numRecords: 10,
       response: null,
       tables: [],
       loading: false,
-    };
+    }
   },
   async mounted() {
-    await this.fetchTables();
+    await this.fetchTables()
   },
   methods: {
     async fetchTables() {
       try {
-        const { data } = await axios.get("http://localhost:8000/api/synthetic_data/tables/");
-        this.tables = data.tables;
+        const { data } = await axios.get('http://localhost:8000/api/synthetic_data/tables/')
+        this.tables = data.tables
       } catch (error) {
-        console.error("Error fetching tables:", error);
+        console.error('Error fetching tables:', error)
       }
     },
     async generateData() {
       if (!this.tableName) {
-        alert("Please select a table.");
-        return;
+        alert('Please select a table.')
+        return
       }
       if (!this.numRecords) {
         alert("Please select an amount of records to generate.");
@@ -79,19 +78,23 @@ export default {
       this.loading = true;
       this.response = null;
       try {
-        const { data } = await axios.post("http://localhost:8000/api/synthetic_data/generate/", null, {
-          params: {
-            details: this.details,
-            table_name: this.tableName,
-            num_records: this.numRecords,
+        const { data } = await axios.post(
+          'http://localhost:8000/api/synthetic_data/generate/',
+          null,
+          {
+            params: {
+              details: this.details,
+              table_name: this.tableName,
+              num_records: this.numRecords,
+            },
           },
-        });
-        this.response = data;
+        )
+        this.response = data
       } catch (error) {
-        console.error("Error generating data:", error);
-        this.response = { error: "Failed to generate synthetic data." };
+        console.error('Error generating data:', error)
+        this.response = { error: 'Failed to generate synthetic data.' }
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     },
     addSyntheticDatabase() {
@@ -99,13 +102,12 @@ export default {
       console.log("Adding synthetic database to:", this.tableName);
     },
   },
-};
+}
 </script>
 
 <style>
-
 body {
-  font-size: 18px; 
+  font-size: 18px;
 }
 .container {
   display: flex;
@@ -177,7 +179,7 @@ body {
 }
 
 .btn:hover {
-  background-color: #00356d; 
+  background-color: #00356d;
   color: white;
 }
 

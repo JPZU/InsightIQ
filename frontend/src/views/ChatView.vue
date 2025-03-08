@@ -1,104 +1,94 @@
-<template>
-    <div class="container">
-        <form class="form-container" @submit.prevent="submitQuestion">
-            <h2 class="text-center" style="margin-bottom: 1rem;">Ask your question</h2>
-            <div class="mb-3">
-                <input class="form-control" id="question" v-model="question" placeholder="Type here..." required
-                    style="padding: 10px;">
-            </div>
-            <button type="submit" class="btn btn-primary w-100" :disabled="loading">
-                {{ loading ? "Sending..." : "Send" }}
-            </button>
-        </form>
-
-        <!-- Mostrar la respuesta en tabla vertical -->
-        <div v-if="answer" class="response-box">
-            <h3>Response:</h3>
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th scope="row">Input</th>
-                        <td>{{ answer.input }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Output</th>
-                        <td>{{ answer.output }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Query</th>
-                        <td>{{ answer.query }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Query Output</th>
-                        <td>{{ answer.query_output }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</template>
-
 <script setup>
 import { ref } from 'vue'
 import ChatService from '@/services/ChatService'
+import BarChart from '@/components/BarChart.vue'
+import PieChart from '@/components/PieChart.vue'
+import LineChart from '@/components/LineChart.vue'
+import '@/assets/main.css'
 
 const question = ref('')
 const answer = ref(null)
 const loading = ref(false)
+const chartType = ref('bar')
 
 const submitQuestion = async () => {
-    if (!question.value.trim()) return
+  if (!question.value.trim()) return
 
-    loading.value = true
-    answer.value = null
+  loading.value = true
 
-    try {
-        const response = await ChatService.askQuestion(question.value)
-        answer.value = response || { input: "N/A", output: "N/A", query: "N/A", query_output: "N/A" }
-    } catch (error) {
-        answer.value = { input: "Error", output: "Failed to fetch", query: "-", query_output: "-" }
-        console.error(error)
-    } finally {
-        loading.value = false
-        question.value = ''
-    }
+  const response = await ChatService.askQuestion(question.value)
+  answer.value = response.response
+
+  loading.value = false
 }
 </script>
 
-<style scoped>
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    max-width: 100%;
-    background-color: #f4f4f4;
-}
+<template>
+  <div class="full-page-background">
+    <div class="content-container">
+      <form class="card" @submit.prevent="submitQuestion">
+        <h2 class="text-center mb-3">Ask your question</h2>
+        <input class="form-control" v-model="question" placeholder="Type here..." required />
+        <button type="submit" class="btn btn-primary w-100 mt-2" :disabled="loading">
+          {{ loading ? 'Sending...' : 'Send' }}
+        </button>
+      </form>
 
-.form-container {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-}
+      <div v-if="answer" class="card mt-3">
+        <h3>Response</h3>
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <th scope="row">Input</th>
+              <td>{{ answer.input || 'N/A' }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Output</th>
+              <td>{{ answer.output || 'N/A' }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Query</th>
+              <td>{{ answer.query || 'N/A' }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Query Output</th>
+              <td>{{ answer.query_output || 'N/A' }}</td>
+            </tr>
+          </tbody>
+        </table>
 
-.response-box {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    width: 90%;
-    text-align: center;
-}
+         <!-- Selector de tipo de gráfico -->
+         <div class="mt-3">
+          <label for="chart-type">Select Chart Type:</label>
+          <select id="chart-type" v-model="chartType" class="form-control">
+            <option value="bar">Bar Chart</option>
+            <option value="pie">Pie Chart</option>
+            <option value="line">Line Chart</option>
+          </select>
+        </div>
 
-.table {
-    margin-top: 1rem;
-    width: 100%;
-}
-</style>
+        <BarChart
+          v-if="chartType === 'bar' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+          :xAxis="answer.x_axis"
+          :yAxis="answer.y_axis"
+          :chartTitle="'Bar Chart'"
+        />
+        <PieChart
+          v-else-if="chartType === 'pie' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+          :xAxis="answer.x_axis"
+          :yAxis="answer.y_axis"
+          :chartTitle="'Pie Chart'"
+        />
+        <LineChart
+          v-else-if="chartType === 'line' && answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1"
+          :xAxis="answer.x_axis"
+          :yAxis="answer.y_axis"
+          :chartTitle="'Line Chart'"
+        />
+
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped></style>
