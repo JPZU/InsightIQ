@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import ChatService from '@/services/ChatService'
+import BarChart from '@/components/BarChart.vue'
 import '@/assets/main.css'
 
 const question = ref('')
@@ -13,7 +14,6 @@ const submitQuestion = async () => {
   loading.value = true
 
   const response = await ChatService.askQuestion(question.value)
-  console.log(response)
   answer.value = response.response
 
   loading.value = false
@@ -53,6 +53,7 @@ const submitQuestion = async () => {
             </tr>
           </tbody>
         </table>
+        <BarChart v-if="answer.x_axis && answer.x_axis.length >= 1 && answer.y_axis && answer.y_axis.length >= 1" :xAxis="answer.x_axis" :yAxis="answer.y_axis" :chartTitle="'Chart'" />
       </div>
     </div>
   </div>
