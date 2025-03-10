@@ -4,6 +4,7 @@ import HomeView from '@/views/HomeView.vue'
 import ChatView from '@/views/ChatView.vue'
 import SyntheticDataView from '@/views/SyntheticDataView.vue'
 import DashboardView from '@/views/DashboardView.vue'
+import FileManagerView from '@/views/FileManagerView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +29,11 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
+    },
+    {
+      path: '/file-manager',
+      name: 'file-manager',
+      component: FileManagerView,
     },
   ],
 })
