@@ -4,49 +4,38 @@
       <!-- Sidebar -->
       <aside
         :class="['sidebar', { collapsed: isCollapsed }]"
-        class="bg-dark text-white p-3 d-flex flex-column"
+        class="text-white p-3 d-flex flex-column"
       >
         <!-- Título de la aplicación -->
         <div class="text-center mb-4">
-          <span v-if="!isCollapsed" class="fs-3 fw-bold">InsighIQ</span>
+          <span v-if="!isCollapsed" class="fs-3 fw-bold">InsightIQ</span>
         </div>
 
         <!-- Menú de la sidebar -->
         <ul class="navbar-nav flex-column">
           <router-link to="/" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
             <i class="fas fa-fw fa-home"></i>
-            <span>Home</span>
+            <span v-if="!isCollapsed">Home</span>
           </router-link>
-          <router-link
-            to="/chat"
-            @click="closeOffcanvas"
-            class="nav-link mt-1"
-            active-class="active"
-          >
+          <router-link to="/chat" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
             <i class="fas fa-comments"></i>
-            <span>Chat</span>
+            <span v-if="!isCollapsed">Chat</span>
           </router-link>
-          <router-link
-            to="/synthetic-data"
-            @click="closeOffcanvas"
-            class="nav-link mt-1"
-            active-class="active"
-          >
+          <router-link to="/synthetic-data" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
             <i class="fas fa-database"></i>
-            <span>Synthetic Data</span>
+            <span v-if="!isCollapsed">Synthetic Data</span>
           </router-link>
-          <router-link
-            to="/dashboard"
-            @click="closeOffcanvas"
-            class="nav-link mt-1"
-            active-class="active"
-          >
+          <router-link to="/dashboard" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
             <i class="fa-solid fa-chart-line"></i>
-            <span>Dashboard</span>
+            <span v-if="!isCollapsed">Dashboard</span>
+          </router-link>
+          <router-link to="/file-manager" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
+            <i class="fa-solid fa-folder"></i>
+            <span v-if="!isCollapsed">File Manager</span>
           </router-link>
         </ul>
 
-        <!-- Botón de colapsar sidebar (justo debajo del menú) -->
+        <!-- Botón de colapsar sidebar -->
         <div class="text-center mt-3">
           <button class="btn btn-dark" @click="toggleSidebar">
             <i :class="isCollapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left'"></i>
@@ -55,30 +44,28 @@
       </aside>
 
       <!-- Main Content -->
-      <div
-        id="content"
-        class="flex-grow-1 p-4"
-        :style="{ marginLeft: isCollapsed ? '70px' : '250px' }"
-      >
+      <div id="content" class="flex-grow-1 p-4">
         <RouterView />
       </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center p-2">
+      <small>&copy; {{ new Date().getFullYear() }} InsightIQ - All Rights Reserved</small>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router'
 
-// Estado para controlar si la sidebar está colapsada
 const isCollapsed = ref(false)
 
-// Función para alternar el estado de colapso
 function toggleSidebar() {
   isCollapsed.value = !isCollapsed.value
 }
 
-// Función para cerrar el offcanvas (si es necesario)
 function closeOffcanvas() {
   const offcanvasToggler = document.getElementById('offcanvasToggler')
   if (offcanvasToggler) {
@@ -88,34 +75,22 @@ function closeOffcanvas() {
 </script>
 
 <style scoped>
-/* Ajuste de sidebar */
+/* Sidebar */
 .sidebar {
   width: 250px;
   transition: width 0.3s ease;
   display: flex;
   flex-direction: column;
-  position: fixed; /* Fijar la sidebar */
-  height: 100vh; /* Altura completa */
+  position: fixed;
+  height: 100vh;
+  background-color: #046E8F; /* 🎨 Color azul-morado */
 }
 
 .sidebar.collapsed {
   width: 70px;
 }
 
-/* Ocultar texto cuando está colapsado */
-.sidebar .nav-link span {
-  display: inline;
-  transition: opacity 0.3s ease;
-  white-space: nowrap; /* Evitar que el texto ocupe más de una línea */
-}
-
-.sidebar.collapsed .nav-link span {
-  opacity: 0;
-  width: 0;
-  overflow: hidden;
-}
-
-/* Iconos bien alineados */
+/* Links */
 .sidebar .nav-link {
   color: white;
   display: flex;
@@ -130,40 +105,32 @@ function closeOffcanvas() {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.sidebar .nav-link i {
-  width: 20px;
-  text-align: center;
-}
-
-/* Estilo para el enlace activo */
 .sidebar .nav-link.active {
   background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Estilo para el botón de colapsar */
+/* Botón de colapsar */
 .sidebar .btn-dark {
   background-color: transparent;
   border: none;
-  white-space: nowrap; /* Evitar que el texto ocupe más de una línea */
-}
-
-.sidebar .btn-dark:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Estilo para el título de la aplicación */
-.sidebar .fs-3 {
-  color: white;
-  font-size: 1.75rem; /* Tamaño más grande */
-}
-
-/* Espacio entre el menú y el botón */
-.sidebar .text-center.mt-3 {
-  margin-top: 1rem; /* Espacio de 1rem (16px) */
 }
 
 /* Ajustar el contenido principal */
 #content {
-  transition: margin-left 0.3s ease; /* Transición suave */
+  transition: margin-left 0.3s ease;
+  padding-bottom: 50px;
+  margin-left: 250px; /* Asegura la posición al expandir */
+}
+
+.sidebar.collapsed + #content {
+  margin-left: 70px; /* Ajusta cuando está colapsada */
+}
+
+/* Footer */
+.footer {
+  width: 100%;
+  background-color: #046E8F; 
+  color: white;
+  text-align: center;
 }
 </style>
