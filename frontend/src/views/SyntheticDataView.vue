@@ -1,40 +1,67 @@
 <template>
-<body>
-  <div class="container">
-    <h1 class=" text-xl">Generate Synthetic Data</h1>
 
-    <div class="form">
-      <div class="form-group">
-        <label class="label">Select Table</label>
-        <select v-model="tableName" class="input" :disabled="tables.length === 0">
-        <option v-if="tables.length === 0" disabled>Loading tables...</option>
-        <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
-      </select>
+  <body>
+    <div class="container">
+      <h1 class="text-xl">Generate Synthetic Data</h1>
 
-      </div>
+      <div class="form">
+        <div class="form-group">
+          <label class="label">Select Table</label>
+          <select v-model="tableName" class="input" :disabled="tables.length === 0">
+            <option v-if="tables.length === 0" disabled>Loading tables...</option>
+            <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label class="label">Number of Records</label>
-        <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
-      </div>
+        <!-- Number of Records -->
+        <div class="form-group">
+          <label class="label">Number of Records</label>
+          <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
+        </div>
 
-      <div class="form-group">
-        <label class="label">Details</label>
-        <p class="helper-text">If you'd like, give us more details about the style the synthetic data should have.</p>
-        <textarea v-model="details" class="input textarea" rows="4" maxlength="600" placeholder="e.g.: Make all people older than 35 years old."></textarea>
-      </div>
+        <!-- Details Input -->
+        <div class="form-group">
+          <label class="label">Details</label>
+          <p class="helper-text">
+            If you'd like, give us more details about the style the synthetic data should have.
+          </p>
+          <p class="helper-text">
+            Please write your request under 500 characters.
+          </p>
+          <textarea v-model="details" class="input textarea" rows="4" maxlength="500"
+            placeholder="e.g.: Make all people older than 35 years old."></textarea>
+        </div>
 
-      <button type="submit" @click="generateData" class="btn" :disabled="loading">
-        {{ loading ? "Generating..." : "Generate Data" }}
-      </button>
-
-      <div v-if="response" class="response-box">
-        <h2 class="response-title">Response:</h2>
-        <pre class="response-content">{{ response }}</pre>
-        
-        <button class="btn add-btn" @click="addSyntheticDatabase">
-          Add data to "{{ tableName }}"
+        <button type="submit" @click="generateData" class="btn" :disabled="loading">
+          {{ loading ? 'Generating...' : 'Generate Data' }}
         </button>
+
+        <div v-if="response && response.synthetic_data && response.synthetic_data.length">
+          <div class="response-box">
+
+            <h2 class="response-title">Generated Data for: {{ response.table }}</h2 <div v-if="parsedSyntheticData.length >
+            <table class=" table">
+            <thead>
+              <tr>
+                <th v-for="column in tableSchema" :key="column.column_name">
+                  {{ column.column_name }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, rowIndex) in response.synthetic_data" :key="rowIndex">
+                <td v-for="column in tableSchema" :key="column.column_name">
+                  {{ row[column.column_name] || '' }}
+                </td>
+              </tr>
+            </tbody>
+            </table>
+          </div>
+
+          <button class="btn add-btn" @click="addSyntheticDatabase">
+            Add data to "{{ tableName }}"
+          </button>
+        </div>
       </div>
     </div>
   </body>
@@ -51,11 +78,29 @@ export default {
       numRecords: 10,
       response: null,
       tables: [],
+      tableSchema: [],
       loading: false,
     }
   },
   async mounted() {
     await this.fetchTables()
+  },
+  computed: {
+    parsedSyntheticData() {
+      if (!this.response || !this.response.synthetic_data) return [];
+
+      const rawData = this.response.synthetic_data;
+      if (rawData.length === 0) return [];
+
+      // Extract headers from the first object's "null" field
+      const headers = rawData[0].null;
+
+      // Extract rows from the remaining objects
+      const rows = rawData.slice(1).map(item => item.null);
+
+      // Return formatted data
+      return [headers, ...rows];
+    }
   },
   methods: {
     async fetchTables() {
@@ -72,11 +117,11 @@ export default {
         return
       }
       if (!this.numRecords) {
-        alert("Please select an amount of records to generate.");
-        return;
+        alert('Please select an amount of records to generate.')
+        return
       }
-      this.loading = true;
-      this.response = null;
+      this.loading = true
+      this.response = null
       try {
         const { data } = await axios.post(
           'http://localhost:8000/api/synthetic_data/generate/',
@@ -90,6 +135,8 @@ export default {
           },
         )
         this.response = data
+        this.tableSchema = this.response.schema;
+
       } catch (error) {
         console.error('Error generating data:', error)
         this.response = { error: 'Failed to generate synthetic data.' }
@@ -98,8 +145,8 @@ export default {
       }
     },
     addSyntheticDatabase() {
-      alert(`Feature not implemented yet, but will add to ${this.tableName}!`);
-      console.log("Adding synthetic database to:", this.tableName);
+      alert(`Feature not implemented yet, but will add to ${this.tableName}!`)
+      console.log('Adding synthetic database to:', this.tableName)
     },
   },
 }
@@ -109,6 +156,7 @@ export default {
 body {
   font-size: 18px;
 }
+
 .container {
   display: flex;
   flex-direction: column;
@@ -131,7 +179,7 @@ body {
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 700px;
+  max-width: 800px;
 }
 
 .label {
@@ -185,6 +233,7 @@ body {
 
 .response-box {
   margin-top: 20px;
+  overflow-x: auto;
   padding: 10px;
   background: #e9ecef;
   border-radius: 4px;
@@ -200,12 +249,35 @@ body {
   white-space: pre-wrap;
 }
 
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  /* Enables horizontal scrolling */
+}
+
+.table {
+  width: max-content;
+  /* Prevents table from shrinking */
+  min-width: 100%;
+  /* Ensures it takes at least full container width */
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+  white-space: nowrap;
+}
+
+
 .add-btn {
-  background-color: #28a745; 
+  background-color: #28a745;
   margin-top: 10px;
 }
 
 .add-btn:hover {
-  background-color: #218838; 
+  background-color: #218838;
 }
 </style>
