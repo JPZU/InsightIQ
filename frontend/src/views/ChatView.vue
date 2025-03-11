@@ -73,7 +73,7 @@ const getButtonClass = (mode) => {
             value="graphs"
           />
           <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs">
-            Gráficos
+            Charts
           </label>
 
           <input
@@ -86,7 +86,7 @@ const getButtonClass = (mode) => {
             value="table"
           />
           <label :class="`btn ${getButtonClass('table')}`" for="viewTable">
-            Tabla
+            Table
           </label>
         </div>
 
@@ -97,13 +97,12 @@ const getButtonClass = (mode) => {
             <select id="chart-type" v-model="chartType" class="form-control">
               <option value="bar">Bar Chart</option>
               <option value="pie">Pie Chart</option>
-              <option value="line">Line Chart</option>
             </select>
           </div>
 
           <!-- Mensaje si no hay datos para gráficos -->
           <div v-if="!answer.x_axis?.length || !answer.y_axis?.length" class="alert alert-info mt-3">
-            Gráfica no disponible o no soportada con los datos proporcionados.
+            Chart not available. No data to display.
           </div>
 
           <BarChart
@@ -117,12 +116,6 @@ const getButtonClass = (mode) => {
             :xAxis="answer.x_axis"
             :yAxis="answer.y_axis"
             :chartTitle="'Pie Chart'"
-          />
-          <LineChart
-            v-else-if="chartType === 'line' && answer.x_axis?.length && answer.y_axis?.length"
-            :xAxis="answer.x_axis"
-            :yAxis="answer.y_axis"
-            :chartTitle="'Line Chart'"
           />
         </div>
 
