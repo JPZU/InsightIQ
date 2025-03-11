@@ -55,9 +55,7 @@ class FileManager:
             df.to_excel(writer, sheet_name=sheet_name, index=False)
 
     @staticmethod
-    def insert_dataframe_to_table(
-        df: pd.DataFrame, table_name: str, db_manager: DBManager
-    ):
+    def insert_dataframe_to_table(df: pd.DataFrame, table_name: str, db_manager: DBManager):
         """
         Inserts a pandas DataFrame into a database table.
         """

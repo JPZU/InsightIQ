@@ -1,9 +1,5 @@
 alembic
-autoflake
-autopep8
 fastapi[standard]
-flake8
-isort
 langchain
 langchain_community==0.3.18
 langchain_core

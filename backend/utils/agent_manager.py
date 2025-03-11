@@ -48,8 +48,7 @@ class AgentManager:
             intermediate_query = intermediate_steps[1][1].split("/*")
 
             query = intermediate_query[0]
-            query_output = intermediate_query[1][28:
-                                                 - 3].replace("\t", ";").split("\n")
+            query_output = intermediate_query[1][28:-3].replace("\t", ";").split("\n")
 
         x_axis = []
         y_axis = []

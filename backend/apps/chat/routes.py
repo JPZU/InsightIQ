@@ -5,6 +5,7 @@ from apps.chat.service import ChatService
 
 router = APIRouter()
 
+
 class ChatRequest(BaseModel):
     question: str
 

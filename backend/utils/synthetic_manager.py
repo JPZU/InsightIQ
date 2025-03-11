@@ -12,7 +12,9 @@ class SyntheticDataManager:
             cls._instance = super(SyntheticDataManager, cls).__new__(cls)
             api_key = EnvManager.get_api_key()
             cls._instance.llm = ChatOpenAI(
-                model="gpt-4o-mini", openai_api_key=api_key, temperature=0.6
+                model="gpt-4o-mini",
+                openai_api_key=api_key,
+                temperature=0.6
             )
             cls._instance.db_manager = DBManager()
         return cls._instance
