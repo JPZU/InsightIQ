@@ -44,7 +44,7 @@ jobs:
           git diff --quiet || echo "changes=true" >> $GITHUB_ENV
 
       - name: Commit and push changes
-        if: ${{ steps.git-check.outputs.changes == 'true' }}
+        if: env.changes == 'true'
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
