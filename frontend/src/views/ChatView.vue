@@ -58,6 +58,10 @@ const getButtonClass = (mode) => {
               <th scope="row">Query</th>
               <td>{{ answer.query || 'N/A' }}</td>
             </tr>
+            <tr>
+              <th scope="row">Query Output</th>
+              <td>{{ answer.query_output || 'N/A' }}</td>
+            </tr>
           </tbody>
         </table>
 
@@ -99,6 +103,11 @@ const getButtonClass = (mode) => {
               <option value="pie">Pie Chart</option>
               <option value="line">Line Chart</option>
             </select>
+          </div>
+
+          <!-- Mensaje si no hay datos para gráficos -->
+          <div v-if="!answer.x_axis?.length || !answer.y_axis?.length" class="alert alert-info mt-3">
+            Gráfica no disponible o no soportada con los datos proporcionados.
           </div>
 
           <BarChart
