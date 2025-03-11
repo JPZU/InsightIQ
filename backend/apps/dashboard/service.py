@@ -16,7 +16,7 @@ class DashboardService:
             })
 
         return {
-            "file_name": "SampleSuperStore.csv",
+            "file_name": "titanic.csv",
             "columns": schema
         }
 
@@ -34,6 +34,6 @@ class DashboardService:
                 str(key): value for key, value in stats.items()}
 
         return {
-            "file_name": "SampleSuperStore.csv",
+            "file_name": "titanic.csv",
             "descriptive_statistics": descriptive_stats
         }

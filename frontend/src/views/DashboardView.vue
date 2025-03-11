@@ -33,7 +33,7 @@
           <h3>{{ column }}</h3>
           <p>There are {{ stats.count }} values in this column.</p>
           <p><strong>Standard Deviation:</strong> {{ stats.std.toFixed(2) }}</p>
-          <BarChart :columnName="column" :stats="filterStats(stats)" />
+          <BarChartDashboard :columnName="column" :stats="filterStats(stats)" />
         </div>
       </div>
     </section>
@@ -43,6 +43,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import DashboardService from '../services/DashboardService'
+import BarChartDashboard from '../components/dashboard/BarChartDashboard.vue'
 
 interface Column {
   name: string
