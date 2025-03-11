@@ -53,10 +53,10 @@ jobs:
           fi
 
       - name: Commit and push changes
-        if: env.changes == 'true'
+        if: steps.git-check.outputs.changes == 'true'
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "github-actions@github.com"
-          git add .
-          git commit -m "chore: apply linter fixes"
-          git push
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "github-actions@github.com"
+            git add .
+            git commit -m "chore: apply linter fixes"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
