@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine
-from langchain_community.utilities import SQLDatabase
-import pandas as pd
 import os
+
+import pandas as pd
+from langchain_community.utilities import SQLDatabase
+from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
 
@@ -11,7 +12,7 @@ class DBManager:
         engine = create_engine(f"sqlite:///{db_path}")
         self.engine = engine
         self.db = SQLDatabase(engine=self.engine)
-        
+
     def get_connection(self):
         return self.db
 
@@ -38,12 +39,14 @@ class DBManager:
 
         schema = []
         for row in result:
-            schema.append({
-                "column_name": row[1],
-                "data_type": row[2],
-                "nullable": row[3] == 1,
-                "primary_key": row[5] == 1
-            })
+            schema.append(
+                {
+                    "column_name": row[1],
+                    "data_type": row[2],
+                    "nullable": row[3] == 1,
+                    "primary_key": row[5] == 1,
+                }
+            )
 
         return schema
 
