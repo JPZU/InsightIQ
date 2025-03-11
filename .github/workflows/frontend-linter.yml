@@ -27,26 +27,26 @@ jobs:
           cd frontend
           npm ci
 
-      - name: Run ESLint
-        run: |
-          cd frontend
-          npx eslint --fix .
-
-      - name: Run Prettier
+      - name: Run Prettier (formatting)
         run: |
           cd frontend
           npx prettier --write "src/**/*.{ts,vue,js,json,css,scss,md}"
 
+      - name: Run ESLint (linting)
+        run: |
+          cd frontend
+          npx eslint src --fix
+
       - name: Check for changes
         id: git-check
         run: |
-          git diff --exit-code || echo "changes"
+          git diff --quiet || echo "changes=true" >> $GITHUB_ENV
 
       - name: Commit and push changes
-        if: steps.git-check.outputs.changes == 'changes'
+        if: steps.git-check.outputs.changes == 'true'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "github-actions@github.com"
           git add .
-          git commit -m "chore: apply linter fixes"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
+          git commit -m "chore: apply linter and formatting fixes"
+          git push
