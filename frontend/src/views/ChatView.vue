@@ -44,7 +44,7 @@ const getButtonClass = (mode) => {
 
       <div v-if="answer" class="card mt-3">
         <h3>Response</h3>
-        <table class="table table-bordered">
+        <table class="table formatted-table table-bordered">
           <tbody>
             <tr>
               <th scope="row">Input</th>
@@ -159,5 +159,25 @@ const getButtonClass = (mode) => {
 .btn-primary.text-white {
   background-color: #0d6efd !important;
   border-color: #0d6efd !important;
+}
+
+.formatted-table {
+  table-layout: fixed;
+  width: 100%;
+  word-wrap: break-word;
+}
+
+.formatted-table th,
+.formatted-table td {
+  max-width: 400px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.formatted-text {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 5px;
 }
 </style>
