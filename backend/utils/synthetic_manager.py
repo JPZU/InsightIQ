@@ -2,7 +2,10 @@ from langchain_openai import ChatOpenAI
 
 from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
-
+from utils.db_manager import DBManager
+import pandas as pd
+import csv
+import io
 
 class SyntheticDataManager:
     _instance = None
@@ -29,22 +32,46 @@ class SyntheticDataManager:
     ):
 
         prompt = f"""
-        Generate {num_records} rows of synthetic data
+        Generate exactly {num_records} rows of synthetic data 
         based on this information: table name: {table_name}. Schema: {table_schema}.
         """
 
         if details:
             prompt += f"""
-            Following are some details the user specified to generate the data. Fulfill their request.
-            If the user makes a request in a language other than the one of the dataset,
-            still adhere to the format of the CSV: '{details}'.
+            Be creative but also adhere to the schema.
+            Following are some details the user specified to generate the data. 
+            Fulfill their request adhering to the format: '{details}'.
             """
         if sample_data:
             prompt += f" Take as a guide these real rows from the table: {sample_data}."
 
-        prompt += " Return ONLY the data, in CSV format."
+        prompt += """ Return ONLY the data in CSV format. Make sure:
+        - The FIRST row contains the column headers.
+        - Do NOT wrap the CSV in Markdown formatting (no triple backticks).
+        - Do NOT include extra text before or after the CSV output."""
 
-        response = self.llm.invoke(prompt)
-        csv_data = response.content
+        response = self.llm.invoke(prompt)  
 
-        return csv_data
+        return response.content
+    
+    
+    def format_data(self, response):
+        csv_data = response.strip()
+
+        if csv_data.startswith("```") and csv_data.endswith("```"):
+            csv_data = csv_data[3:-3].strip()
+
+        reader = csv.reader(io.StringIO(csv_data))
+        rows = list(reader)
+
+        if not rows or len(rows) < 2:
+            print("ERROR: No valid CSV data parsed")
+            return []
+
+        headers = rows[0]
+        structured_data = [
+        {headers[i]: row[i].strip().strip('"') for i in range(len(headers))}
+        for row in rows[1:]
+        ]
+
+        return structured_data

@@ -38,8 +38,7 @@ class AgentManager:
 
     def query_nlp(self, query):
         response = self.agent_executor.invoke({"input": query})
-        intermediate_steps = response.get("intermediate_steps", [])
-        print(intermediate_steps[1][1])
+        intermediate_steps = response.get('intermediate_steps', [])
 
         if len(intermediate_steps) > 3:
             query = intermediate_steps[3][0].tool_input["query"]
