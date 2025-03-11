@@ -2,8 +2,6 @@ name: Backend Linter
 
 on:
   push:
-    # paths:
-    #   - "backend/**"
     branches:
       - "**"
 
@@ -49,13 +47,16 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}.git
-  
-          git stash
+
+          # Guardar cambios temporales si hay modificaciones sin commit
+          git diff --quiet || git stash
+
           git fetch origin ${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
           git pull --rebase origin ${{ github.head_ref }} || echo "No remote changes to rebase"
-          git stash pop
-  
+
+          # Restaurar cambios si se usó `git stash`
+          git stash list | grep -q "stash@{0}" && git stash pop || echo "No stashed changes"
+
           git add .
           git diff --cached --quiet || (git commit -m "style: run linter" && git push origin ${{ github.head_ref }})
-    
