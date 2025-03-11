@@ -72,9 +72,7 @@ const getButtonClass = (mode) => {
             v-model="viewMode"
             value="graphs"
           />
-          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs">
-            Gráficos
-          </label>
+          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs"> Gráficos </label>
 
           <input
             type="radio"
@@ -85,9 +83,7 @@ const getButtonClass = (mode) => {
             v-model="viewMode"
             value="table"
           />
-          <label :class="`btn ${getButtonClass('table')}`" for="viewTable">
-            Tabla
-          </label>
+          <label :class="`btn ${getButtonClass('table')}`" for="viewTable"> Tabla </label>
         </div>
 
         <!-- Mostrar gráficos o tabla según el modo seleccionado -->
@@ -121,7 +117,10 @@ const getButtonClass = (mode) => {
           />
         </div>
 
-        <Table v-else-if="viewMode === 'table' && answer.query_output" :queryOutput="answer.query_output" />
+        <Table
+          v-else-if="viewMode === 'table' && answer.query_output"
+          :queryOutput="answer.query_output"
+        />
       </div>
     </div>
   </div>

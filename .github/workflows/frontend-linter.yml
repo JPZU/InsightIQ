@@ -1,0 +1,52 @@
+name: Frontend Linter
+
+on:
+  push:
+    paths:
+      - 'frontend/**'
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  lint:
+    name: Run Linter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run ESLint
+        run: |
+          cd frontend
+          npx eslint --fix .
+
+      - name: Run Prettier
+        run: |
+          cd frontend
+          npx prettier --write "src/**/*.{ts,vue,js,json,css,scss,md}"
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --exit-code || echo "changes"
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changes == 'changes'
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@github.com"
+          git add .
+          git commit -m "chore: apply linter fixes"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}

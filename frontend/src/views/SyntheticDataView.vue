@@ -1,40 +1,48 @@
 <template>
-<body>
-  <div class="container">
-    <h1 class=" text-xl">Generate Synthetic Data</h1>
+  <body>
+    <div class="container">
+      <h1 class="text-xl">Generate Synthetic Data</h1>
 
-    <div class="form">
-      <div class="form-group">
-        <label class="label">Select Table</label>
-        <select v-model="tableName" class="input" :disabled="tables.length === 0">
-        <option v-if="tables.length === 0" disabled>Loading tables...</option>
-        <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
-      </select>
+      <div class="form">
+        <div class="form-group">
+          <label class="label">Select Table</label>
+          <select v-model="tableName" class="input" :disabled="tables.length === 0">
+            <option v-if="tables.length === 0" disabled>Loading tables...</option>
+            <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
+          </select>
+        </div>
 
-      </div>
+        <div class="form-group">
+          <label class="label">Number of Records</label>
+          <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
+        </div>
 
-      <div class="form-group">
-        <label class="label">Number of Records</label>
-        <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
-      </div>
+        <div class="form-group">
+          <label class="label">Details</label>
+          <p class="helper-text">
+            If you'd like, give us more details about the style the synthetic data should have.
+          </p>
+          <textarea
+            v-model="details"
+            class="input textarea"
+            rows="4"
+            maxlength="600"
+            placeholder="e.g.: Make all people older than 35 years old."
+          ></textarea>
+        </div>
 
-      <div class="form-group">
-        <label class="label">Details</label>
-        <p class="helper-text">If you'd like, give us more details about the style the synthetic data should have.</p>
-        <textarea v-model="details" class="input textarea" rows="4" maxlength="600" placeholder="e.g.: Make all people older than 35 years old."></textarea>
-      </div>
-
-      <button type="submit" @click="generateData" class="btn" :disabled="loading">
-        {{ loading ? "Generating..." : "Generate Data" }}
-      </button>
-
-      <div v-if="response" class="response-box">
-        <h2 class="response-title">Response:</h2>
-        <pre class="response-content">{{ response }}</pre>
-        
-        <button class="btn add-btn" @click="addSyntheticDatabase">
-          Add data to "{{ tableName }}"
+        <button type="submit" @click="generateData" class="btn" :disabled="loading">
+          {{ loading ? 'Generating...' : 'Generate Data' }}
         </button>
+
+        <div v-if="response" class="response-box">
+          <h2 class="response-title">Response:</h2>
+          <pre class="response-content">{{ response }}</pre>
+
+          <button class="btn add-btn" @click="addSyntheticDatabase">
+            Add data to "{{ tableName }}"
+          </button>
+        </div>
       </div>
     </div>
   </body>
@@ -72,11 +80,11 @@ export default {
         return
       }
       if (!this.numRecords) {
-        alert("Please select an amount of records to generate.");
-        return;
+        alert('Please select an amount of records to generate.')
+        return
       }
-      this.loading = true;
-      this.response = null;
+      this.loading = true
+      this.response = null
       try {
         const { data } = await axios.post(
           'http://localhost:8000/api/synthetic_data/generate/',
@@ -98,8 +106,8 @@ export default {
       }
     },
     addSyntheticDatabase() {
-      alert(`Feature not implemented yet, but will add to ${this.tableName}!`);
-      console.log("Adding synthetic database to:", this.tableName);
+      alert(`Feature not implemented yet, but will add to ${this.tableName}!`)
+      console.log('Adding synthetic database to:', this.tableName)
     },
   },
 }
@@ -201,11 +209,11 @@ body {
 }
 
 .add-btn {
-  background-color: #28a745; 
+  background-color: #28a745;
   margin-top: 10px;
 }
 
 .add-btn:hover {
-  background-color: #218838; 
+  background-color: #218838;
 }
 </style>
