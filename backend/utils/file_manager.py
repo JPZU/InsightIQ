@@ -76,18 +76,27 @@ class FileManager:
         Before inserting, it removes any existing tables except 'titanic'.
         """
         db_manager = DBManager()
-        FileManager.clear_db_except_titanic(db_manager)  # Remove tables before inserting
+        FileManager.clear_db_except_titanic(db_manager)  
+
+        try:
+            sheet_name = int(sheet_name)
+        except ValueError:
+            pass 
+
         df = pd.read_excel(excel_file_path, sheet_name=sheet_name)
         FileManager.insert_dataframe_to_table(df, table_name, db_manager)
 
     @staticmethod
-    def save_upload_file(upload_file: UploadFile, destination: str) -> str:
+    def save_upload_file(upload_file: UploadFile, table_name: str) -> str:
         """
         Saves an uploaded file to the 'data' directory while ensuring that only 'titanic.csv' 
         and the latest uploaded file remain in the directory.
         """
         data_folder = "data"
         os.makedirs(data_folder, exist_ok=True)
+
+        file_extension = upload_file.filename.split(".")[-1]  
+        destination = os.path.join(data_folder, f"{table_name}.{file_extension}")
 
         # Get the list of files in 'data' excluding 'titanic.csv'
         existing_files = [f for f in os.listdir(data_folder) if f not in ["titanic.csv", "db.sqlite"]]
