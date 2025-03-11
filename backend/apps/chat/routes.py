@@ -4,14 +4,12 @@ from pydantic import BaseModel
 from apps.chat.service import ChatService
 
 router = APIRouter()
-RoUtEr = APIRouter()
-
 
 class ChatRequest(BaseModel):
     question: str
 
 
-@RoUtEr.post("/")
+@router.post("/")
 def question(request: ChatRequest):
     response = ChatService.get_response(request.question)
 
