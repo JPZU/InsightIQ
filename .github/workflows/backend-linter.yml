@@ -45,10 +45,16 @@ jobs:
       - name: Check for changes
         id: git-check
         run: |
-          git diff --quiet || echo "changes=true" >> $GITHUB_ENV
+          if git diff --quiet; then
+            echo "NO hay cambios."
+            echo "changes=false" >> $GITHUB_ENV
+          else
+            echo "HAY cambios."
+            echo "changes=true" >> $GITHUB_ENV
+          fi
     
       - name: Commit and push changes
-        if: steps.git-check.outputs.changes == 'true'
+        if: env.changes == 'true'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "github-actions@github.com"
