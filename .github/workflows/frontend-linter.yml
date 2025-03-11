@@ -37,23 +37,12 @@ jobs:
           cd frontend
           npx eslint src --fix
 
-      - name: Check for changes
-        id: git-check
-        run: |
-          git diff --quiet || echo "changes=true" >> $GITHUB_ENV
-
       - name: Commit and push changes
-        if: ${{ steps.git-check.outputs.changes == 'true' }}
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git checkout ${{ github.head_ref }}
-          
-          # Guardar cambios antes de hacer pull
-          git stash
+          git fetch origin ${{ github.head_ref }}  # Fetch latest changes
+          git checkout ${{ github.head_ref }}      # Switch to the correct branch
           git pull --rebase origin ${{ github.head_ref }} || echo "No remote changes to rebase"
-          git stash pop || echo "No stashed changes to apply"
-
           git add .
-          git commit -m "style: run linter"
-          git push origin ${{ github.head_ref }}
+          git diff --cached --quiet || (git commit -m "style: run linter" && git push origin HEAD:${{ github.head_ref }})
