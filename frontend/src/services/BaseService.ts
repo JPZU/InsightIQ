@@ -7,7 +7,7 @@ export abstract class BaseService {
     method: Method = 'get',
     body?: unknown,
     headers?: Record<string, string>,
-  ): Promise<any> {
+  ): Promise<unknown> {
     try {
       const response = await axios({ url, method, data: body, headers })
 
