@@ -85,12 +85,12 @@ class FileManager:
         Before inserting, it removes any existing tables except 'titanic'.
         """
         db_manager = DBManager()
-        FileManager.clear_db_except_titanic(db_manager)  
+        FileManager.clear_db_except_titanic(db_manager)
 
         try:
             sheet_name = int(sheet_name)
         except ValueError:
-            pass 
+            pass
 
         df = pd.read_excel(excel_file_path, sheet_name=sheet_name)
         FileManager.insert_dataframe_to_table(df, table_name, db_manager)
@@ -104,7 +104,7 @@ class FileManager:
         data_folder = "data"
         os.makedirs(data_folder, exist_ok=True)
 
-        file_extension = upload_file.filename.split(".")[-1]  
+        file_extension = upload_file.filename.split(".")[-1]
         destination = os.path.join(data_folder, f"{table_name}.{file_extension}")
 
         # Get the list of files in 'data' excluding 'titanic.csv'
