@@ -58,10 +58,6 @@ const getButtonClass = (mode) => {
               <th scope="row">Query</th>
               <td>{{ answer.query || 'N/A' }}</td>
             </tr>
-            <tr>
-              <th scope="row">Query Output</th>
-              <td>{{ answer.query_output || 'N/A' }}</td>
-            </tr>
           </tbody>
         </table>
 
