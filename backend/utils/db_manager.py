@@ -23,9 +23,9 @@ class DBManager:
         return [row[0] for row in result]
 
     def get_sample_data(self, table_name: str, limit: int):
-        query = text(f"SELECT * FROM {table_name} LIMIT {limit}")
+        query = text(f"SELECT * FROM {table_name} ORDER BY RANDOM() LIMIT {limit}")
         with self.engine.connect() as conn:
-            result = conn.execute(query, {"limit": limit}).fetchall()
+            result = conn.execute(query).fetchall()
 
         return [dict(row._mapping) for row in result] if result else None
 

@@ -3,7 +3,8 @@
   <body>
     <div class="container">
       <h1 class="text-xl">Generate Synthetic Data</h1>
-
+      <!-- Add the rest of the content here -->
+      
       <div class="form">
         <div class="form-group">
           <label class="label">Select Table</label>
@@ -12,7 +13,7 @@
             <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
           </select>
         </div>
-
+        
         <!-- Number of Records -->
         <div class="form-group">
           <label class="label">Number of Records</label>
@@ -29,18 +30,19 @@
             Please write your request under 500 characters.
           </p>
           <textarea v-model="details" class="input textarea" rows="4" maxlength="500"
-            placeholder="e.g.: Make all people older than 35 years old."></textarea>
+          placeholder="e.g.: Make all people older than 35 years old."></textarea>
         </div>
-
+        
         <button type="submit" @click="generateData" class="btn" :disabled="loading">
           {{ loading ? 'Generating...' : 'Generate Data' }}
         </button>
 
         <div v-if="response && response.synthetic_data && response.synthetic_data.length">
           <div class="response-box">
-
-            <h2 class="response-title">Generated Data for: {{ response.table }}</h2 <div v-if="parsedSyntheticData.length >
-            <table class=" table">
+            
+            <h2 class="response-title">Generated Data for: {{ response.table }}</h2>
+            <div v-if="parsedSyntheticData.length > 0">
+            <table class="table">
             <thead>
               <tr>
                 <th v-for="column in tableSchema" :key="column.column_name">
@@ -55,15 +57,16 @@
                 </td>
               </tr>
             </tbody>
-            </table>
-          </div>
-
-          <button class="btn add-btn" @click="addSyntheticDatabase">
-            Add data to "{{ tableName }}"
-          </button>
+          </table>
         </div>
+        
+        <button class="btn add-btn" @click="addSyntheticDatabase">
+          Add data to "{{ tableName }}"
+        </button>
       </div>
     </div>
+  </div>
+</div>
 
 
   </body>

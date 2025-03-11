@@ -38,8 +38,8 @@ class SyntheticDataManager:
 
         if details:
             prompt += f"""
-            Be creative but also adhere to the schema.
-            Following are some details the user specified to generate the data.
+            Be creative but adhere to the schema.
+            Following are some user specified requirements, 
             Fulfill their request adhering to the format: '{details}'.
             """
         if sample_data:
@@ -74,3 +74,4 @@ class SyntheticDataManager:
         ]
 
         return structured_data
+
