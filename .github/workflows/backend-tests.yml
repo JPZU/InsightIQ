@@ -1,0 +1,69 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: insightiq
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create .env file
+        run: |
+          cd backend
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
+          echo "DATABASE_URL=mysql+pymysql://root:root@localhost:3306/insightiq" >> .env
+          
+      - name: Run tests
+        id: test
+        run: |
+          cd backend
+          python -m pytest tests/ -v | tee test_results.txt
+          echo "status=${PIPESTATUS[0]}" >> $GITHUB_ENV
+        continue-on-error: true
+
+      - name: Install GitHub CLI
+        if: env.status != '0'
+        run: |
+          sudo apt update && sudo apt install -y gh
+
+      - name: Create Issue on Failure
+        if: env.status != '0'
+        run: |
+          gh issue create --title "Test Run Failed in ${{ github.ref_name }}" \
+            --body "$(cat backend/test_results.txt | head -c 6000)" \
+            --label "test-failure"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
