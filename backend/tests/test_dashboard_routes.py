@@ -1,6 +1,8 @@
-from fastapi.testclient import TestClient
 from unittest.mock import patch
+
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
 from apps.dashboard.routes import router
 
 app = FastAPI()

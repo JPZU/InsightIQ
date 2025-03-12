@@ -2,7 +2,7 @@
   <body>
     <div class="container">
       <h1 class="text-xl">Generate Synthetic Data</h1>
-      
+
       <div class="form">
         <div class="form-group">
           <label class="label">Select Table</label>
@@ -11,7 +11,7 @@
             <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
           </select>
         </div>
-        
+
         <div class="form-group">
           <label class="label">Number of Records</label>
           <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
@@ -93,12 +93,12 @@ export default {
       const rawData = this.response.synthetic_data
       if (rawData.length === 0) return []
 
-      const headers = rawData[0].null;
+      const headers = rawData[0].null
 
-      const rows = rawData.slice(1).map(item => item.null);
+      const rows = rawData.slice(1).map((item) => item.null)
 
-      return [headers, ...rows];
-    }
+      return [headers, ...rows]
+    },
   },
   methods: {
     async fetchTables() {
