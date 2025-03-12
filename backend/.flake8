@@ -1,3 +1,5 @@
 [flake8]
 ignore = E501, E722, W503
 exclude = venv, __pycache__, __init__.py
+[pep8]
+ignore = E501

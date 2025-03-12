@@ -16,9 +16,7 @@ def test_chat_response_includes_output():
         "/api/chat/",
         json={
             "question": "What was the total revenue last quarter?"})
-    assert response.status_code == 200, f"Expected 200, got {
-        response.status_code}. Response: {
-        response.text}"
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}. Response: {response.text}"
 
     data = response.json()
 
