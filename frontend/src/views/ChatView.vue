@@ -98,7 +98,10 @@ const getButtonClass = (mode) => {
           </div>
 
           <!-- Mensaje si no hay datos para gráficos -->
-          <div v-if="!answer.x_axis?.length || !answer.y_axis?.length" class="alert alert-info mt-3">
+          <div
+            v-if="!answer.x_axis?.length || !answer.y_axis?.length"
+            class="alert alert-info mt-3"
+          >
             Gráfica no disponible o no soportada con los datos proporcionados.
           </div>
 

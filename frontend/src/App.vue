@@ -11,37 +11,45 @@
           <span v-if="!isCollapsed" class="fs-3 fw-bold">InsightIQ</span>
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-        
         <!-- Menú de la sidebar -->
         <ul class="navbar-nav flex-column">
           <router-link to="/" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
             <i class="fas fa-fw fa-home"></i>
             <span v-if="!isCollapsed">Home</span>
           </router-link>
-          <router-link to="/chat" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
+          <router-link
+            to="/chat"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
             <i class="fas fa-comments"></i>
             <span v-if="!isCollapsed">Chat</span>
           </router-link>
-          <router-link to="/synthetic-data" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
+          <router-link
+            to="/synthetic-data"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
             <i class="fas fa-database"></i>
             <span v-if="!isCollapsed">Synthetic Data</span>
           </router-link>
-          <router-link to="/dashboard" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
+          <router-link
+            to="/dashboard"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
             <i class="fa-solid fa-chart-line"></i>
             <span v-if="!isCollapsed">Dashboard</span>
           </router-link>
-          <router-link to="/file-manager" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
+          <router-link
+            to="/file-manager"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
             <i class="fa-solid fa-folder"></i>
             <span v-if="!isCollapsed">File Manager</span>
           </router-link>
@@ -95,7 +103,7 @@ function closeOffcanvas() {
   flex-direction: column;
   position: fixed;
   height: 100vh;
-  background-color: #046E8F; /* 🎨 Color azul-morado */
+  background-color: #046e8f; /* 🎨 Color azul-morado */
 }
 
 .sidebar.collapsed {
@@ -141,7 +149,7 @@ function closeOffcanvas() {
 /* Footer */
 .footer {
   width: 100%;
-  background-color: #046E8F; 
+  background-color: #046e8f;
   color: white;
   text-align: center;
 }
