@@ -1,0 +1,63 @@
+name: Backend Linter
+
+on:
+  push:
+    # paths:
+    # - 'backend/**'
+    branches: [ main, develop ]
+  pull_request:
+    # paths:
+    #   - 'backend/**'
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements-linter.txt
+
+      - name: Run isort (organize imports)
+        run: |
+          cd backend
+          isort .
+
+      - name: Run autoflake (remove unused imports/variables)
+        run: |
+          cd backend
+          autoflake --remove-all-unused-imports --recursive --in-place .
+
+      - name: Run autopep8 (auto format)
+        run: |
+          cd backend
+          autopep8 --recursive --in-place .
+
+      - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+        
+          git stash
+          git fetch origin ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          git pull --rebase origin ${{ github.head_ref }} || echo "No remote changes to rebase"
+          git stash pop || echo "No stashed changes"
+        
+          git add .
+          git diff --cached --quiet || (git commit -m "style: run linter" && git push origin ${{ github.head_ref }})

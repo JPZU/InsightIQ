@@ -1,0 +1,57 @@
+name: Frontend Linter
+
+on:
+  push:
+    # paths:
+    # - 'frontend/**'
+    branches: [ main, develop ]
+  pull_request:
+    # paths:
+    #   - 'frontend/**'
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    name: Run Linter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Prettier (formatting)
+        run: |
+          cd frontend
+          npx prettier --write "src/**/*.{ts,vue,js,json,css,scss,md}"
+
+      - name: Run ESLint (linting)
+        run: |
+          cd frontend
+          npx eslint src --fix
+
+      - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+      
+          git stash
+          git fetch origin ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          git pull --rebase origin ${{ github.head_ref }} || echo "No remote changes to rebase"
+          git stash pop || echo "No stashed changes"
+      
+          git add .
+          git diff --cached --quiet || (git commit -m "style: run linter" && git push origin ${{ github.head_ref }})
