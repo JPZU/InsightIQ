@@ -46,7 +46,7 @@ def test_chat_includes_query_results():
         "/api/chat/",
         json={"question": "What is the customer count for 2024?"}
     )
-    
+
     assert response.status_code == 200, f"Expected 200, got {response.status_code}. Response: {response.text}"
 
     data = response.json()
