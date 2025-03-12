@@ -8,10 +8,11 @@ from sqlalchemy.sql import text
 class DBManager:
     def __init__(self):
         db_path = os.path.abspath("data/db.sqlite")
+        self.data_dir = os.path.abspath("data")
         engine = create_engine(f"sqlite:///{db_path}")
         self.engine = engine
         self.db = SQLDatabase(engine=self.engine)
-        
+
     def get_connection(self):
         return self.db
 
@@ -48,6 +49,21 @@ class DBManager:
         return schema
 
     def get_dataframe(self):
-        csv_path = os.path.abspath("data/SampleSuperStore.csv")
-        df = pd.read_csv(csv_path)
-        return df
+        allowed_extensions = (".csv", ".xlsx")
+        files = [f for f in os.listdir(
+            self.data_dir) if f.endswith(allowed_extensions)]
+
+        if not files:
+            raise FileNotFoundError(
+                "No CSV o XLSX files found in 'data/' directory")
+
+        file_name = files[0]
+        file_path = os.path.join(self.data_dir, file_name)
+
+        if file_path.endswith(".csv"):
+            df = pd.read_csv(file_path)
+        elif file_path.endswith(".xlsx"):
+            df = pd.read_excel(file_path)
+        else:
+            raise ValueError("unsupported file")
+        return df, file_name
