@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from database.models import Base
+from database.models.base import Base
 from main import app
 
 # URL de la base de datos en memoria para pruebas

@@ -8,6 +8,7 @@ openai
 openpyxl==3.1.2
 pandas==2.2.3
 pydantic==2.10.6
+pymysql
 pytest==8.3.5
 python-dotenv==1.0.1
 SQLAlchemy==2.0.38
