@@ -15,4 +15,3 @@ class DataSet(Base):
     # Relationships
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="datasets")
-

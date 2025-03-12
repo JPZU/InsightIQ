@@ -1,6 +1,7 @@
+import time
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-import time
 
 from apps.chat.routes import router
 
@@ -66,18 +67,18 @@ def test_chat_includes_query_results():
 
 def test_chat_response_time_less_than_30_seconds():
     start_time = time.time()
-    
+
     response = client.post(
         "/api/chat/",
         json={"question": "Give me a summary of sales for the past year"}
     )
-    
+
     end_time = time.time()
     elapsed_time = end_time - start_time
-    
+
     assert response.status_code == 200, f"Expected 200, got {response.status_code}. Response: {response.text}"
-    
+
     assert elapsed_time < 30, f"Response took {elapsed_time:.2f} seconds, which exceeds the 30 second limit"
-    
+
     data = response.json()
     assert "response" in data, "Response does not contain 'response' key."
