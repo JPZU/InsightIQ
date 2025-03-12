@@ -6,7 +6,6 @@ from langchain_openai import ChatOpenAI
 from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
 
-# test comments
 class AgentManager:
     _instance = None
     print("test")
