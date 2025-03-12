@@ -2,8 +2,13 @@ name: Backend Linter
 
 on:
   push:
-    branches:
-      - "**"
+    paths:
+    - 'backend/**'
+    branches: [ main, develop ]
+  pull_request:
+    paths:
+      - 'backend/**'
+    branches: [ main, develop ]
 
 jobs:
   lint:
