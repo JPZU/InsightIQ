@@ -20,17 +20,17 @@
         :disabled="currentPage === 1"
         @click="currentPage--"
       >
-        Anterior
+        Previous
       </button>
 
-      <span class="page-indicator"> Página {{ currentPage }} de {{ totalPages }} </span>
+      <span class="page-indicator"> Page {{ currentPage }} of {{ totalPages }} </span>
 
       <button 
         class="btn btn-outline-primary"
         :disabled="currentPage === totalPages"
         @click="currentPage++"
       >
-        Siguiente
+        Next
       </button>
     </div>
   </div>
