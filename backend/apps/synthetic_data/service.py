@@ -5,45 +5,60 @@ class SyntheticDataService:
 
     @staticmethod
     def generate_synthetic_data(details: str, table_name: str, num_records: int = 10):
-        manager = SyntheticDataManager()  
-        
-        limit=10
-        
+        manager = SyntheticDataManager()
         db_manager = DBManager()
-        sample_data = db_manager.get_sample_data(table_name, limit) 
+
+        limit = 10  
+        MAX_BATCH_SIZE = 40
+        MAX_ATTEMPTS = 5  
+
         schema = db_manager.get_table_schema(table_name)
-        details_size = 0
-        
-        if details:
-            details_size = len(details)
-        
-        if details_size > 500:
-            return {"error": "Details too long. Please provide a shorter description."}
-        
+        sample_data = db_manager.get_sample_data(table_name, limit)
+
         if not schema:
             return {"error": f"Table '{table_name}' not found."}
         
-        MAX_BATCH_SIZE = 40
-        remainder = num_records
-        
+        if details and len(details) > 500:
+            return {"error": "Details too long. Please provide a shorter description."}
+
+        remainder = num_records  
         all_synthetic_data = []
-        
-        while(remainder > 0):
-            
+        attempts = 0  
+
+        while remainder > 0 and attempts < MAX_ATTEMPTS:
             batch_size = min(MAX_BATCH_SIZE, remainder)
             batch_data = manager.generate_synthetic_data(details, table_name, schema, batch_size, sample_data)
             synthetic_data = manager.format_data(batch_data)
             
-            if synthetic_data:  
-                all_synthetic_data.extend(synthetic_data)  
-                
-            remainder -= batch_size
+            actual_data = synthetic_data[1:] if len(synthetic_data) > 1 else []
+
+            if actual_data:
+                all_synthetic_data.extend(synthetic_data)
+
+            generated_count = len(actual_data)
+
+            if generated_count < batch_size:
+                remainder = num_records - len(all_synthetic_data)
+                if remainder > 0:
+                    print(f"Insufficient rows generated ({generated_count}/{batch_size}). Retrying... ({attempts+1}/{MAX_ATTEMPTS})")
+                    attempts += 1
+                    continue 
+
+            elif generated_count > batch_size:
+                print(f"Too many rows generated ({generated_count}/{batch_size}). Trimming excess...")
+                all_synthetic_data = all_synthetic_data[:num_records]
+
+            remainder = num_records - len(all_synthetic_data)
+            print(f"Batch generated: {generated_count}, Remaining: {remainder}")
             
-            print(f"Generating batch of {batch_size}, Remaining: {remainder}")
-            print(f"Generated: {len(synthetic_data)}")
-            
+            if remainder <= 0:
+                break
+
+        if remainder > 0:
+            print(f"Max attempts reached. Could not generate full {num_records} records.")
+
         return {
             "table": table_name,
             "schema": schema,
-            "synthetic_data": all_synthetic_data
+            "synthetic_data": all_synthetic_data[:num_records] 
         }
