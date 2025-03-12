@@ -56,18 +56,12 @@ jobs:
           cd backend
           python -m pytest tests/ -v | tee test_results.txt
           echo "status=${PIPESTATUS[0]}" >> $GITHUB_ENV
-        continue-on-error: true
-
-      - name: Install GitHub CLI
-        if: env.status != '0'
-        run: |
-          sudo apt update && sudo apt install -y gh
 
       - name: Create Issue on Failure
-        if: env.status != '0'
+        if: failure()
         run: |
-          gh issue create --title "Test Run Failed in ${{ github.ref_name }}" \
-            --body "$(cat backend/test_results.txt | head -c 6000)" \
+          gh issue create --title "Test Run Failed in Pull Request ${{ github.event.number }}: ${{ github.head_ref }}" \
+            --body "$(head -c 6000 backend/test_results.txt)" \
             --label "test-failure"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
