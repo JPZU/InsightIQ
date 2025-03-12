@@ -74,4 +74,3 @@ class SyntheticDataManager:
         ]
 
         return structured_data
-
