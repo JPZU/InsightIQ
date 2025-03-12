@@ -9,3 +9,6 @@ venv/
 
 # Editor directories and files
 .vscode/
+
+# Tests output
+test_results.txt
