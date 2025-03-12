@@ -21,9 +21,9 @@ async def upload_csv(
     file_location = FileManager.save_upload_file(file, table_name)
     # Upload the CSV file to the database
     file_manager_service.upload_csv(file_location, table_name)
-    return {
-        "info": f"file '{
-            file.filename}' saved at '{file_location}' and uploaded to table '{table_name}'"}
+    return {"info": 
+        f"file '{file.filename}' saved at '{file_location}' and uploaded to table '{table_name}'"
+    }
 
 
 @router.post("/upload/excel/")
