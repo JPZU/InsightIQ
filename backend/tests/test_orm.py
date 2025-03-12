@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 from sqlalchemy.orm import Session
 
-from database.models import User
+from database.models.user import User
 from database.session import SessionLocal
 
 

@@ -117,7 +117,7 @@ class FileManager:
             file_path = os.path.join(data_folder, file)
             os.remove(file_path)
 
-        with open(destination, "wb+", encoding="utf-8") as file_object:
+        with open(destination, "wb+") as file_object:
             file_object.write(upload_file.file.read())
 
         return destination

@@ -2,12 +2,12 @@ name: Frontend Linter
 
 on:
   push:
-    paths:
-    - 'frontend/**'
+    # paths:
+    # - 'frontend/**'
     branches: [ main, develop ]
   pull_request:
-    paths:
-      - 'frontend/**'
+    # paths:
+    #   - 'frontend/**'
     branches: [ main, develop ]
 
 jobs:
