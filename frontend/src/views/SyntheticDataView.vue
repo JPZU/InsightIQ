@@ -1,10 +1,9 @@
 <template>
   <body>
     <div class="container">
-      <h1 class="text-xl">Generate Synthetic Data</h1>
-
       <div class="form">
         <div class="form-group">
+          <h1 class="text-xl text-center">Generate Synthetic Data</h1>
           <label class="label">Select Table</label>
           <select v-model="tableName" class="input" :disabled="tables.length === 0">
             <option v-if="tables.length === 0" disabled>Loading tables...</option>
