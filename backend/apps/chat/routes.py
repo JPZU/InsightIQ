@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 import asyncio
 from functools import partial
-import time
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from apps.chat.service import ChatService
 
@@ -21,14 +21,14 @@ async def question(request: ChatRequest):
             loop.run_in_executor(None, partial(ChatService.get_response, request.question)),
             timeout=30.0
         )
-        
+
         if not response:
             raise HTTPException(
                 status_code=500,
                 detail="Failed to process SQL query")
-        
+
         return {"response": response}
-    
+
     except asyncio.TimeoutError:
         raise HTTPException(
             status_code=503,
