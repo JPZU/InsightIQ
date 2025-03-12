@@ -1,19 +1,22 @@
-import pytest
-from apps.synthetic_data.service import SyntheticDataService
 from unittest.mock import patch
+
+import pytest
+
+from apps.synthetic_data.service import SyntheticDataService
 from utils.synthetic_manager import SyntheticDataManager
+
 
 @pytest.fixture(scope="module")
 def service():
     return SyntheticDataService()
 
-    
+
 def test_exact_number_of_rows(service):
     num_records = 49
     response = service.generate_synthetic_data(details="", table_name="titanic", num_records=num_records)
     assert len(response["synthetic_data"]) == num_records
-    
-    
+
+
 def test_schema_consistency(service):
     response = service.generate_synthetic_data(details="", table_name="titanic", num_records=5)
 

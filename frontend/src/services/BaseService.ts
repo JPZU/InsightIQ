@@ -2,8 +2,12 @@ import axios, { AxiosError } from 'axios'
 import type { Method } from 'axios'
 
 export abstract class BaseService {
-  protected async makeRequest(url: string, method: Method = 'get', body?: unknown, headers?: Record<string, string>,
-  ): Promise<any> {
+  protected async makeRequest(
+    url: string,
+    method: Method = 'get',
+    body?: unknown,
+    headers?: Record<string, string>,
+  ): Promise<unknown> {
     try {
       const response = await axios({ url, method, data: body, headers })
 
