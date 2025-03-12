@@ -18,16 +18,26 @@ const submitQuestion = async () => {
 
   loading.value = true
 
-  const response = await ChatService.askQuestion(question.value)
-  answer.value = response.response
-
-  loading.value = false
+  try {
+    const response = await ChatService.askQuestion(question.value)
+    answer.value = response.response
+  } catch (error) {
+    console.error('Error fetching response:', error)
+    answer.value = { error: 'Failed to fetch response. Please try again.' }
+  } finally {
+    loading.value = false
+  }
 }
 
 const getButtonClass = (mode) => {
   return viewMode.value === mode
     ? 'btn-primary text-white' // Botón seleccionado
     : 'btn-outline-primary' // Botón no seleccionado
+}
+
+// Función para verificar si query_output es válido
+const isValidQueryOutput = (queryOutput) => {
+  return queryOutput && !queryOutput.error && Array.isArray(queryOutput) && queryOutput.length > 0
 }
 </script>
 
@@ -72,7 +82,9 @@ const getButtonClass = (mode) => {
             v-model="viewMode"
             value="graphs"
           />
-          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs"> Gráficos </label>
+          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs">
+            Charts
+          </label>
 
           <input
             type="radio"
@@ -83,7 +95,9 @@ const getButtonClass = (mode) => {
             v-model="viewMode"
             value="table"
           />
-          <label :class="`btn ${getButtonClass('table')}`" for="viewTable"> Tabla </label>
+          <label :class="`btn ${getButtonClass('table')}`" for="viewTable">
+            Table
+          </label>
         </div>
 
         <!-- Mostrar gráficos o tabla según el modo seleccionado -->
@@ -93,16 +107,12 @@ const getButtonClass = (mode) => {
             <select id="chart-type" v-model="chartType" class="form-control">
               <option value="bar">Bar Chart</option>
               <option value="pie">Pie Chart</option>
-              <option value="line">Line Chart</option>
             </select>
           </div>
 
           <!-- Mensaje si no hay datos para gráficos -->
-          <div
-            v-if="!answer.x_axis?.length || !answer.y_axis?.length"
-            class="alert alert-info mt-3"
-          >
-            Gráfica no disponible o no soportada con los datos proporcionados.
+          <div v-if="!answer.x_axis?.length || !answer.y_axis?.length" class="alert alert-info mt-3">
+            Chart not available. No data to display.
           </div>
 
           <BarChart
@@ -117,18 +127,17 @@ const getButtonClass = (mode) => {
             :yAxis="answer.y_axis"
             :chartTitle="'Pie Chart'"
           />
-          <LineChart
-            v-else-if="chartType === 'line' && answer.x_axis?.length && answer.y_axis?.length"
-            :xAxis="answer.x_axis"
-            :yAxis="answer.y_axis"
-            :chartTitle="'Line Chart'"
-          />
         </div>
 
-        <Table
-          v-else-if="viewMode === 'table' && answer.query_output"
-          :queryOutput="answer.query_output"
-        />
+        <!-- Mostrar tabla solo si query_output es válido -->
+        <div v-else-if="viewMode === 'table'">
+          <div v-if="isValidQueryOutput(answer.query_output)">
+            <Table :queryOutput="answer.query_output" />
+          </div>
+          <div v-else class="alert alert-info mt-3">
+            Table not available. No valid data to display.
+          </div>
+        </div>
       </div>
     </div>
   </div>

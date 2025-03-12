@@ -1,9 +1,9 @@
 <template>
   <div class="d-flex flex-column min-vh-100">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0090c1">
-      <a class="navbar-brand px-3" href="#">InsightIQ</a>
-    </nav>
+    <!-- <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0090C1;">
+            <a class="navbar-brand px-3" href="#">InsightIQ</a>
+        </nav> -->
 
     <!-- Hero Section -->
     <section

@@ -2,8 +2,7 @@
   <body>
     <div class="container">
       <h1 class="text-xl">Generate Synthetic Data</h1>
-      <!-- Add the rest of the content here -->
-
+      
       <div class="form">
         <div class="form-group">
           <label class="label">Select Table</label>
@@ -12,14 +11,12 @@
             <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
           </select>
         </div>
-
-        <!-- Number of Records -->
+        
         <div class="form-group">
           <label class="label">Number of Records</label>
           <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
         </div>
 
-        <!-- Details Input -->
         <div class="form-group">
           <label class="label">Details</label>
           <p class="helper-text">
@@ -96,15 +93,12 @@ export default {
       const rawData = this.response.synthetic_data
       if (rawData.length === 0) return []
 
-      // Extract headers from the first object's "null" field
-      const headers = rawData[0].null
+      const headers = rawData[0].null;
 
-      // Extract rows from the remaining objects
-      const rows = rawData.slice(1).map((item) => item.null)
+      const rows = rawData.slice(1).map(item => item.null);
 
-      // Return formatted data
-      return [headers, ...rows]
-    },
+      return [headers, ...rows];
+    }
   },
   methods: {
     async fetchTables() {
@@ -255,14 +249,11 @@ body {
 .table-container {
   width: 100%;
   overflow-x: auto;
-  /* Enables horizontal scrolling */
 }
 
 .table {
   width: max-content;
-  /* Prevents table from shrinking */
   min-width: 100%;
-  /* Ensures it takes at least full container width */
   border-collapse: collapse;
 }
 
