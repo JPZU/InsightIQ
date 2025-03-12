@@ -9,6 +9,7 @@ from utils.env_manager import EnvManager
 
 class AgentManager:
     _instance = None
+    print("test")
 
     def __new__(cls):
         if cls._instance is None:
