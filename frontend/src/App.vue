@@ -11,6 +11,18 @@
           <span v-if="!isCollapsed" class="fs-3 fw-bold">InsightIQ</span>
         </div>
 
+
+
+
+
+
+
+
+
+
+
+
+        
         <!-- Menú de la sidebar -->
         <ul class="navbar-nav flex-column">
           <router-link to="/" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
