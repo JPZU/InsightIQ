@@ -1,5 +1,6 @@
-from utils.synthetic_manager import SyntheticDataManager
 from utils.db_manager import DBManager
+from utils.synthetic_manager import SyntheticDataManager
+
 
 class SyntheticDataService:
 
@@ -8,28 +9,28 @@ class SyntheticDataService:
         manager = SyntheticDataManager()
         db_manager = DBManager()
 
-        limit = 10  
+        limit = 10
         MAX_BATCH_SIZE = 40
-        MAX_ATTEMPTS = 5  
+        MAX_ATTEMPTS = 5
 
         schema = db_manager.get_table_schema(table_name)
         sample_data = db_manager.get_sample_data(table_name, limit)
 
         if not schema:
             return {"error": f"Table '{table_name}' not found."}
-        
+
         if details and len(details) > 500:
             return {"error": "Details too long. Please provide a shorter description."}
 
-        remainder = num_records  
+        remainder = num_records
         all_synthetic_data = []
-        attempts = 0  
+        attempts = 0
 
         while remainder > 0 and attempts < MAX_ATTEMPTS:
             batch_size = min(MAX_BATCH_SIZE, remainder)
             batch_data = manager.generate_synthetic_data(details, table_name, schema, batch_size, sample_data)
             synthetic_data = manager.format_data(batch_data)
-            
+
             actual_data = synthetic_data[1:] if len(synthetic_data) > 1 else []
 
             if actual_data:
@@ -42,7 +43,7 @@ class SyntheticDataService:
                 if remainder > 0:
                     print(f"Insufficient rows generated ({generated_count}/{batch_size}). Retrying... ({attempts+1}/{MAX_ATTEMPTS})")
                     attempts += 1
-                    continue 
+                    continue
 
             elif generated_count > batch_size:
                 print(f"Too many rows generated ({generated_count}/{batch_size}). Trimming excess...")
@@ -50,7 +51,7 @@ class SyntheticDataService:
 
             remainder = num_records - len(all_synthetic_data)
             print(f"Batch generated: {generated_count}, Remaining: {remainder}")
-            
+
             if remainder <= 0:
                 break
 
@@ -60,5 +61,5 @@ class SyntheticDataService:
         return {
             "table": table_name,
             "schema": schema,
-            "synthetic_data": all_synthetic_data[:num_records] 
+            "synthetic_data": all_synthetic_data[:num_records]
         }

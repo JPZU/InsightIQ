@@ -15,17 +15,13 @@
 
     <!-- Paginación -->
     <div class="pagination-container">
-      <button 
-        class="btn btn-outline-primary"
-        :disabled="currentPage === 1"
-        @click="currentPage--"
-      >
+      <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="currentPage--">
         Previous
       </button>
 
       <span class="page-indicator"> Page {{ currentPage }} of {{ totalPages }} </span>
 
-      <button 
+      <button
         class="btn btn-outline-primary"
         :disabled="currentPage === totalPages"
         @click="currentPage++"
@@ -37,33 +33,33 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   queryOutput: {
     type: Array,
     required: true,
   },
-});
+})
 
-const currentPage = ref(1);
-const rowsPerPage = 5; // Máximo de registros por página
+const currentPage = ref(1)
+const rowsPerPage = 5 // Máximo de registros por página
 
 // Extraer encabezados de la primera fila si existen
 const headers = computed(() => {
   if (props.queryOutput.length > 0 && Array.isArray(props.queryOutput[0])) {
-    return props.queryOutput[0].map((_, index) => `Column ${index + 1}`);
+    return props.queryOutput[0].map((_, index) => `Column ${index + 1}`)
   }
-  return [];
-});
+  return []
+})
 
 // Cálculo de paginación
-const totalPages = computed(() => Math.ceil(props.queryOutput.length / rowsPerPage));
+const totalPages = computed(() => Math.ceil(props.queryOutput.length / rowsPerPage))
 
 const paginatedRows = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage;
-  return props.queryOutput.slice(start, start + rowsPerPage);
-});
+  const start = (currentPage.value - 1) * rowsPerPage
+  return props.queryOutput.slice(start, start + rowsPerPage)
+})
 </script>
 
 <style scoped>

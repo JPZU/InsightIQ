@@ -82,9 +82,7 @@ const isValidQueryOutput = (queryOutput) => {
             v-model="viewMode"
             value="graphs"
           />
-          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs">
-            Charts
-          </label>
+          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs"> Charts </label>
 
           <input
             type="radio"
@@ -95,9 +93,7 @@ const isValidQueryOutput = (queryOutput) => {
             v-model="viewMode"
             value="table"
           />
-          <label :class="`btn ${getButtonClass('table')}`" for="viewTable">
-            Table
-          </label>
+          <label :class="`btn ${getButtonClass('table')}`" for="viewTable"> Table </label>
         </div>
 
         <!-- Mostrar gráficos o tabla según el modo seleccionado -->
@@ -111,7 +107,10 @@ const isValidQueryOutput = (queryOutput) => {
           </div>
 
           <!-- Mensaje si no hay datos para gráficos -->
-          <div v-if="!answer.x_axis?.length || !answer.y_axis?.length" class="alert alert-info mt-3">
+          <div
+            v-if="!answer.x_axis?.length || !answer.y_axis?.length"
+            class="alert alert-info mt-3"
+          >
             Chart not available. No data to display.
           </div>
 

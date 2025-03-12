@@ -1,8 +1,11 @@
-from langchain_openai import ChatOpenAI
-from utils.env_manager import EnvManager
-from utils.db_manager import DBManager
 import csv
 import io
+
+from langchain_openai import ChatOpenAI
+
+from utils.db_manager import DBManager
+from utils.env_manager import EnvManager
+
 
 class SyntheticDataManager:
     _instance = None
@@ -19,14 +22,20 @@ class SyntheticDataManager:
             cls._instance.db_manager = DBManager()
         return cls._instance
 
+    def generate_synthetic_data(
+        self,
+        details: str,
+        table_name: str,
+        table_schema: str,
+        num_records: int,
+        sample_data: list = None,
+    ):
 
-    def generate_synthetic_data(self,  details: str, table_name: str, table_schema: str, num_records: int, sample_data: list=None):
-        
         prompt = f"""
-        Generate exactly {num_records} rows of synthetic data 
+        Generate exactly {num_records} rows of synthetic data
         based on this information: table name: {table_name}. Schema: {table_schema}.
         """
-        
+
         if details:
             prompt += f"""
             Be creative but adhere to the schema.
@@ -41,11 +50,10 @@ class SyntheticDataManager:
         - Do NOT wrap the CSV in Markdown formatting (no triple backticks).
         - Do NOT include extra text before or after the CSV output."""
 
-        response = self.llm.invoke(prompt)  
+        response = self.llm.invoke(prompt)
 
         return response.content
-    
-    
+
     def format_data(self, response):
         csv_data = response.strip()
 
@@ -61,9 +69,8 @@ class SyntheticDataManager:
 
         headers = rows[0]
         structured_data = [
-        {headers[i]: row[i].strip().strip('"') for i in range(len(headers))}
-        for row in rows[1:]
+            {headers[i]: row[i].strip().strip('"') for i in range(len(headers))}
+            for row in rows[1:]
         ]
 
         return structured_data
-

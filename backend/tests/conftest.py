@@ -1,18 +1,21 @@
-import pytest
 import pandas as pd
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+import pytest
 from fastapi.testclient import TestClient
-from main import app
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from database.models import Base
+from main import app
 
 # URL de la base de datos en memoria para pruebas
 TEST_DATABASE_URL = "sqlite:///:memory:"
+
 
 @pytest.fixture(scope="function")
 def client():
     """Proporciona un cliente de prueba de FastAPI."""
     return TestClient(app)
+
 
 @pytest.fixture(scope="function")
 def test_db():
@@ -36,6 +39,7 @@ def test_db():
     session.close()  # Cerrar sesión
     engine.dispose()  # Liberar recursos
 
+
 @pytest.fixture(scope="function")
 def test_session(test_db):
     """Proporciona una sesión de base de datos para cada prueba."""
@@ -44,6 +48,7 @@ def test_session(test_db):
     yield session
     session.close()
 
+
 @pytest.fixture(scope="function")
 def sample_csv_file(tmp_path):
     """Genera un archivo CSV temporal para pruebas."""
@@ -51,6 +56,7 @@ def sample_csv_file(tmp_path):
     file_path = tmp_path / "test_file.csv"
     file_path.write_text(csv_content)
     return file_path
+
 
 @pytest.fixture(scope="function")
 def sample_excel_file(tmp_path):
