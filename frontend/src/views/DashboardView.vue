@@ -1,8 +1,7 @@
 <template>
   <div class="dashboard">
-    <h1>Dashboard</h1>
-
     <section class="file-schema">
+      <h1 class="text-center">Dashboard</h1>
       <h2>📄 File Schema: {{ schema.file_name }}</h2>
       <div class="table-wrapper">
         <table class="styled-table">

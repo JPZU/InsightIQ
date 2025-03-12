@@ -45,7 +45,7 @@ const isValidQueryOutput = (queryOutput) => {
   <div class="full-page-background">
     <div class="content-container">
       <form class="card" @submit.prevent="submitQuestion">
-        <h2 class="text-center mb-3">Ask your question</h2>
+        <h1 class="text-center mb-3">Ask your question</h1>
         <input class="form-control" v-model="question" placeholder="Type here..." required />
         <button type="submit" class="btn btn-primary w-100 mt-2" :disabled="loading">
           {{ loading ? 'Sending...' : 'Send' }}
