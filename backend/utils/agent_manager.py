@@ -41,6 +41,7 @@ class AgentManager:
         # print(intermediate_steps[1][1])
 
 
+
         if len(intermediate_steps) > 3:
             query = intermediate_steps[3][0].tool_input['query']
             query_output = intermediate_steps[3][1]
