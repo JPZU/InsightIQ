@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
 from .base import Base
+
 
 class DataSet(Base):
     __tablename__ = "datasets"
@@ -12,4 +14,4 @@ class DataSet(Base):
 
     # Relationships
     user_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", back_populates="dataSet")
+    user = relationship("User", back_populates="datasets")

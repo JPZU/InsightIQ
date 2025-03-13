@@ -1,9 +1,12 @@
 # US22:Database connection
-import pytest
 from datetime import datetime
+
+import pytest
 from sqlalchemy.orm import Session
-from database.models import User
+
+from database.models.user import User
 from database.session import SessionLocal
+
 
 @pytest.fixture(scope="module")
 def db_session():
@@ -15,6 +18,8 @@ def db_session():
         session.close()
 
 # Aceptance criteria #1
+
+
 def test_orm_write_and_read(db_session: Session):
     """Test that ORM correctly writes and reads from the database."""
 

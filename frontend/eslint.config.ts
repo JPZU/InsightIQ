@@ -23,14 +23,25 @@ export default defineConfigWithVueTs(
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
-  
+
   {
     ...pluginCypress.configs.recommended,
     files: [
       '**/__tests__/*.{cy,spec}.{js,ts,jsx,tsx}',
       'cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}',
-      'cypress/support/**/*.{js,ts,jsx,tsx}'
+      'cypress/support/**/*.{js,ts,jsx,tsx}',
     ],
   },
   skipFormatting,
+
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      'vue/multi-word-component-names': 'off',
+      "@typescript-eslint/no-unused-vars-experimental": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-unused-vars": "off",
+      'vue/block-lang': 'off',
+    },
+  },
 )

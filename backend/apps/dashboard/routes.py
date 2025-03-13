@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+
 from apps.dashboard.service import DashboardService
 
 router = APIRouter()
@@ -11,19 +12,21 @@ class DashboardSchemaRequest(BaseModel):
 
 @router.get("/")
 def get_schema():
+    """Retrieve the dashboard schema."""
     try:
-        schema = DashboardService.get_schema()
-        return schema
+        return DashboardService.get_schema()
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error getting the schematic: {str(e)}")
+            status_code=500, detail=f"Error getting the schema: {str(e)}"
+        )
 
 
 @router.get("/analysis")
-def get_schema():
+def get_analysis():
+    """Retrieve analysis data for the dashboard."""
     try:
-        analysis = DashboardService.calculate_some_analysis()
-        return analysis
+        return DashboardService.calculate_some_analysis()
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error getting the schematic: {str(e)}")
+            status_code=500, detail=f"Error getting the analysis: {str(e)}"
+        )
