@@ -74,7 +74,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 .card-hover {
   transition:
     transform 0.3s ease-in-out,
