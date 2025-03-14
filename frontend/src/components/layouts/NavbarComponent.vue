@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { getNavbarConfig } from '@/utils/TabsUtils';
+import { getNavbarConfig } from '@/utils/NavbarConfigUtils';
 import type { NavbarConfigInterface } from '@/interfaces/NavbarConfigInterface';
 
 const route = useRoute();

@@ -1,12 +1,9 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <div class="d-flex flex-column min-vh-100">
-    <section class="text-center pb-1 bg-light d-flex flex-column align-items-center justify-content-center">
-      <h1 class="display-6 fw-bold mt-3 mb-3" style="color: #183446">Welcome to InsightIQ</h1>
+    <section class="text-center pb-1 d-flex flex-column align-items-center justify-content-center">
+      <h1 class="display-6 fw-bold mt-4 mb-3" style="color: #183446">Welcome to InsightIQ</h1>
       <p class="text-muted mt-2 mb-4">Empowering businesses with intelligent data insights.</p>
-      <div class="row g-3">
+      <div class="row g-3 justify-content-center">
         <div class="col-md-4" @click="$router.push('/chat')">
           <div class="card shadow-sm p-3 card-hover h-100 text-center">
             <i class="bi bi-chat-left-text h2" style="color: #00a6a6"></i>
@@ -27,14 +24,3 @@
     </section>
   </div>
 </template>
-
-<style scoped>
-.card-hover {
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  cursor: pointer;
-}
-.card-hover:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-</style>
