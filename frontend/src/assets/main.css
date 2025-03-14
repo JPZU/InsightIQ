@@ -18,11 +18,6 @@
 .btn-outline-primary.primary-user {
     color: var(--primary-user) !important;
     border-color: var(--primary-user) !important;
-}
-
-.btn-outline-primary.primary-user {
-    color: var(--primary-user) !important;
-    border-color: var(--primary-user) !important;
     background-color: transparent !important;
 }
 

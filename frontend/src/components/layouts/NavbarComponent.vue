@@ -1,10 +1,21 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { ref, watch, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { getNavbarConfig } from '@/utils/TabsUtils';
+import type { NavbarConfigInterface } from '@/interfaces/NavbarConfigInterface';
 
-const route = useRoute()
-const props = defineProps<{ navbarConfig: { role: string, tabs: { name: string, routeName: string }[] } }>()
+const route = useRoute();
+const navbarConfig = ref<NavbarConfigInterface>({ primaryClass: '', tabs: [] });
 
-const primaryClass = props.navbarConfig.role === 'admin' ? 'primary-admin' : 'primary-user'
+watch(route, (newRoute) => {
+    const role = newRoute.path.startsWith('/admin') ? 'admin' : 'user';
+    navbarConfig.value = getNavbarConfig(role);
+});
+
+onMounted(() => {
+    const role = route.path.startsWith('/admin') ? 'admin' : 'user';
+    navbarConfig.value = getNavbarConfig(role);
+});
 </script>
 
 <template>
@@ -17,21 +28,19 @@ const primaryClass = props.navbarConfig.role === 'admin' ? 'primary-admin' : 'pr
                     <input type="text" class="form-control" placeholder="Search">
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-outline-primary" :class="primaryClass">
-                        Search
-                    </button>
+                    <button type="submit" class="btn btn-outline-primary"
+                        :class="navbarConfig.primaryClass">Search</button>
                 </div>
             </form>
         </div>
     </nav>
 
-    <ul class="nav justify-content-center nav-underline d-flex align-items-center"
-        :class="primaryClass" style="height: 65px;">
-        <li v-for="tab in props.navbarConfig.tabs" :key="tab.name" class="nav-item mx-4">
-            <router-link class="nav-link text-white" 
-                :class="{ 'active fw-bold': route.name === tab.routeName }"
-                :to="{ name: tab.routeName }">
-                {{ tab.name }}
+    <ul class="nav justify-content-center nav-underline d-flex align-items-center" :class="navbarConfig?.primaryClass"
+        style="height: 65px;">
+        <li v-for="tab in navbarConfig?.tabs" :key="tab.name" class="nav-item mx-5">
+            <router-link class="nav-link text-white" :class="{ 'active fw-bold': route.name === tab?.routeName }"
+                :to="{ name: tab?.routeName }">
+                {{ tab?.name }}
             </router-link>
         </li>
     </ul>
