@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { getNavbarConfig } from '@/utils/NavbarConfigUtils';
-import type { NavbarConfigInterface } from '@/interfaces/NavbarConfigInterface';
+import { getNavbarConfig } from '@/utils/NavbarUtils';
+import type { NavbarInterface } from '@/interfaces/NavbarInterface';
 
 const route = useRoute();
-const navbarConfig = ref<NavbarConfigInterface>({ primaryClass: '', tabs: [] });
+const navbarConfig = ref<NavbarInterface>({ primaryClass: '', tabs: [] });
 
 watch(route, (newRoute) => {
     const role = newRoute.path.startsWith('/admin') ? 'admin' : 'user';

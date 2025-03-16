@@ -1,4 +1,4 @@
-import type { NavbarConfigInterface } from '@/interfaces/NavbarConfigInterface';
+import type { NavbarConfigInterface } from '@/interfaces/NavbarInterface'
 
 export const getNavbarConfig = (role: string): NavbarConfigInterface => {
   if (role === 'admin') {
@@ -9,10 +9,8 @@ export const getNavbarConfig = (role: string): NavbarConfigInterface => {
         { name: 'File Manager', routeName: 'file-manager' },
       ],
       primaryClass: 'primary-admin',
-    };
-  }
-
-  else if (role === 'user') {
+    }
+  } else if (role === 'user') {
     return {
       tabs: [
         { name: 'Home', routeName: 'home' },
@@ -20,13 +18,11 @@ export const getNavbarConfig = (role: string): NavbarConfigInterface => {
         { name: 'Dashboard', routeName: 'dashboard' },
       ],
       primaryClass: 'primary-user',
-    };
-  }
-
-  else {
+    }
+  } else {
     return {
       tabs: [],
       primaryClass: '',
-    };
+    }
   }
-};
+}
