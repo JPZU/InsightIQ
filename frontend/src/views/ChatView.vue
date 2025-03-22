@@ -38,9 +38,7 @@ const clearFields = () => {
 }
 
 const getButtonClass = (mode) => {
-  return viewMode.value === mode
-    ? 'btn-primary text-white'
-    : 'btn-outline-primary'
+  return viewMode.value === mode ? 'btn-primary text-white' : 'btn-outline-primary'
 }
 
 const isValidQueryOutput = (queryOutput) => {
@@ -119,10 +117,18 @@ const isValidQueryOutput = (queryOutput) => {
 
           <div class="mt-3">
             <label for="chart-title">Chart Title:</label>
-            <input id="chart-title" v-model="chartTitle" class="form-control" placeholder="Enter chart title..." />
+            <input
+              id="chart-title"
+              v-model="chartTitle"
+              class="form-control"
+              placeholder="Enter chart title..."
+            />
           </div>
 
-          <div v-if="!answer.x_axis?.length || !answer.y_axis?.length" class="alert alert-info mt-3">
+          <div
+            v-if="!answer.x_axis?.length || !answer.y_axis?.length"
+            class="alert alert-info mt-3"
+          >
             Chart not available. No data to display.
           </div>
 

@@ -17,7 +17,7 @@ const router = createRouter({
       component: HomeView,
       meta: {
         title: 'Home',
-      }
+      },
     },
     {
       path: '/chat',
@@ -25,7 +25,7 @@ const router = createRouter({
       component: ChatView,
       meta: {
         title: 'Chat',
-      }
+      },
     },
     {
       path: '/dashboard',
@@ -33,7 +33,7 @@ const router = createRouter({
       component: DashboardView,
       meta: {
         title: 'Dashboard',
-      }
+      },
     },
     {
       path: '/admin',
@@ -44,7 +44,7 @@ const router = createRouter({
           component: AdminHomeView,
           meta: {
             title: 'Admin Home',
-          }
+          },
         },
         {
           path: 'synthetic-data',
@@ -52,7 +52,7 @@ const router = createRouter({
           component: SyntheticDataView,
           meta: {
             title: 'Synthetic Data',
-          }
+          },
         },
         {
           path: 'file-manager',
@@ -60,7 +60,7 @@ const router = createRouter({
           component: FileManagerView,
           meta: {
             title: 'File Manager',
-          }
+          },
         },
       ],
     },

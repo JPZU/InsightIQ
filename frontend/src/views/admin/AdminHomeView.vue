@@ -1,9 +1,10 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="d-flex flex-column min-vh-100">
-    <section class="text-center pb-1 bg-light d-flex flex-column align-items-center justify-content-center">
+    <section
+      class="text-center pb-1 bg-light d-flex flex-column align-items-center justify-content-center"
+    >
       <h1 class="display-6 fw-bold mt-3 mb-3" style="color: #183446">Admin Dashboard</h1>
       <p class="text-muted mt-2 mb-4">Manage system configurations and datasets.</p>
       <div class="row g-3">
@@ -12,7 +13,12 @@
             <i class="bi bi-database h2" style="color: #183446"></i>
             <h5>Generate Synthetic Data</h5>
             <p class="text-muted">Create custom synthetic datasets tailored to your needs.</p>
-            <img src="/synthetic-data.png" alt="Synthetic Data Icon" class="img-fluid" style="max-height: 220px;">
+            <img
+              src="/synthetic-data.png"
+              alt="Synthetic Data Icon"
+              class="img-fluid"
+              style="max-height: 220px"
+            />
           </div>
         </div>
         <div class="col-md-4" @click="$router.push('/admin/file-manager')">
@@ -20,7 +26,12 @@
             <i class="bi bi-folder h2" style="color: #183446"></i>
             <h5>File Manager</h5>
             <p class="text-muted">Manage and organize your project files.</p>
-            <img src="/file-manager.png" alt="File Manager Icon" class="img-fluid" style="max-height: 220px;">
+            <img
+              src="/file-manager.png"
+              alt="File Manager Icon"
+              class="img-fluid"
+              style="max-height: 220px"
+            />
           </div>
         </div>
       </div>
@@ -30,7 +41,9 @@
 
 <style scoped>
 .card-hover {
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition:
+    transform 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
   cursor: pointer;
 }
 .card-hover:hover {

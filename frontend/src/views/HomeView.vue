@@ -9,7 +9,7 @@
             <i class="bi bi-chat-left-text h2" style="color: #00a6a6"></i>
             <h5>Natural Language Queries</h5>
             <p class="text-muted">Interact with data using simple language, no SQL required.</p>
-            <img src="/nlp.jpg" alt="Chat Icon" class="img-fluid" style="max-height: 220px;">
+            <img src="/nlp.jpg" alt="Chat Icon" class="img-fluid" style="max-height: 220px" />
           </div>
         </div>
         <div class="col-md-4" @click="$router.push('/dashboard')">
@@ -17,7 +17,12 @@
             <i class="bi bi-bar-chart h2" style="color: #00a6a6"></i>
             <h5>Automated Reports</h5>
             <p class="text-muted">Generate insights instantly with AI-powered reporting.</p>
-            <img src="/reports.png" alt="Dashboard Icon" class="img-fluid" style="max-height: 220px;">
+            <img
+              src="/reports.png"
+              alt="Dashboard Icon"
+              class="img-fluid"
+              style="max-height: 220px"
+            />
           </div>
         </div>
       </div>

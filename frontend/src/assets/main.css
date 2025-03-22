@@ -1,46 +1,46 @@
 :root {
-    --primary-user: #0395ff;
-    --primary-admin: #C73659;
+  --primary-user: #0395ff;
+  --primary-admin: #c73659;
 }
 
 .primary-user {
-    background-color: var(--primary-user) !important;
-    border-color: var(--primary-user) !important;
-    color: white !important;
+  background-color: var(--primary-user) !important;
+  border-color: var(--primary-user) !important;
+  color: white !important;
 }
 
 .primary-admin {
-    background-color: var(--primary-admin) !important;
-    border-color: var(--primary-admin) !important;
-    color: white !important;
+  background-color: var(--primary-admin) !important;
+  border-color: var(--primary-admin) !important;
+  color: white !important;
 }
 
 .btn-outline-primary.primary-user {
-    color: var(--primary-user) !important;
-    border-color: var(--primary-user) !important;
-    background-color: transparent !important;
+  color: var(--primary-user) !important;
+  border-color: var(--primary-user) !important;
+  background-color: transparent !important;
 }
 
 .btn-outline-primary.primary-admin {
-    color: var(--primary-admin) !important;
-    border-color: var(--primary-admin) !important;
-    background-color: transparent !important;
+  color: var(--primary-admin) !important;
+  border-color: var(--primary-admin) !important;
+  background-color: transparent !important;
 }
 
 .btn-outline-primary.primary-user:hover {
-    background-color: var(--primary-user) !important;
-    color: white !important;
+  background-color: var(--primary-user) !important;
+  color: white !important;
 }
 
 .btn-outline-primary.primary-admin:hover {
-    background-color: var(--primary-admin) !important;
-    color: white !important;
+  background-color: var(--primary-admin) !important;
+  color: white !important;
 }
 
 .text-primary-user {
-    color: var(--primary-user) !important;
+  color: var(--primary-user) !important;
 }
 
 .text-primary-admin {
-    color: var(--primary-admin) !important;
+  color: var(--primary-admin) !important;
 }
