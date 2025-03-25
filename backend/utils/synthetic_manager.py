@@ -39,7 +39,7 @@ class SyntheticDataManager:
         if details:
             prompt += f"""
             Be creative but adhere to the schema.
-            Following are some user specified requirements, 
+            Following are some user specified requirements,
             Fulfill their request adhering to the format: '{details}'.
             """
         if sample_data:

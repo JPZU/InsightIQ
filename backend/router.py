@@ -6,7 +6,7 @@ from apps.file_manager.routes import router as file_manager_router
 from apps.synthetic_data.routes import router as synthetic_data_router
 
 router = APIRouter()
-router.include_router(chat_router, prefix="/chat", tags=["chat"])
+router.include_router(chat_router, prefix="/chats", tags=["chat"])
 router.include_router(
     dashboard_router,
     prefix="/dashboard",
