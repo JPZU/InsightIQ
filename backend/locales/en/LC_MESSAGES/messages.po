@@ -2,12 +2,11 @@
 # Copyright (C) 2025 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-30 19:32-0500\n"
+"POT-Creation-Date: 2025-03-31 15:51-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -21,3 +20,61 @@ msgstr ""
 #: main.py:40
 msgid "welcome_message"
 msgstr "Welcome to our page!"
+
+#: alembic/env.py:27
+msgid "error_database_url_missing"
+msgstr "The DATABASE_URL environment variable is not set."
+
+#: apps/chat/routes.py:27
+msgid "error_sql_processing_failed"
+msgstr "Failed to process SQL query."
+
+#: apps/chat/routes.py:34
+msgid "error_server_busy"
+msgstr "Server is busy or not connected. Please try again later."
+
+#: apps/dashboard/routes.py:21
+msgid "error_schema"
+msgstr "Error getting the schema:"
+
+#: apps/dashboard/routes.py:33
+msgid "error_analysis"
+msgstr "Error getting the analysis:"
+
+#: apps/file_manager/routes.py:24 apps/file_manager/routes.py:40
+msgid "file_saved_message"
+msgstr "File '{filename}' saved at '{location}' and uploaded to table '{table}'."
+
+#: apps/synthetic_data/routes.py:13
+msgid "table_name_description"
+msgstr "The name of the table to generate synthetic data for."
+
+#: apps/synthetic_data/routes.py:16
+msgid "num_records_description"
+msgstr "Number of synthetic records to generate."
+
+#: apps/synthetic_data/routes.py:19
+msgid "details_description"
+msgstr "Details of the synthetic data you wish to generate."
+
+#: apps/synthetic_data/service.py:20
+#, fuzzy
+msgid "table_not_found"
+msgstr "Table '{table_name}' not found."
+
+#: apps/synthetic_data/service.py:24
+msgid "error_details_too_long"
+msgstr "Details too long. Please provide a shorter description."
+
+#: utils/db_manager.py:61
+msgid "error_no_csv_xlsx_found"
+msgstr "No CSV or XLSX files found in the 'data/' directory."
+
+#: utils/db_manager.py:71
+msgid "error_unsupported_file_format"
+msgstr "Unsupported file format."
+
+#: utils/env_manager.py:14
+msgid "error_openai_api_key_missing"
+msgstr "OPENAI_API_KEY not found in .env."
+

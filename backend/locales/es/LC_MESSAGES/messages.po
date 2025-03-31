@@ -2,12 +2,11 @@
 # Copyright (C) 2025 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-30 19:32-0500\n"
+"POT-Creation-Date: 2025-03-31 15:51-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -20,4 +19,66 @@ msgstr ""
 
 #: main.py:40
 msgid "welcome_message"
-msgstr "Bienvenido!"
+msgstr "¡Bienvenido a nuestra página!"
+
+#: alembic/env.py:27
+msgid "error_database_url_missing"
+msgstr "La variable de entorno DATABASE_URL no está configurada."
+
+#: apps/chat/routes.py:27
+msgid "error_sql_processing_failed"
+msgstr "Error al procesar la consulta SQL."
+
+#: apps/chat/routes.py:34
+msgid "error_server_busy"
+msgstr ""
+"El servidor está ocupado o no está conectado. Por favor, inténtelo de "
+"nuevo más tarde."
+
+#: apps/dashboard/routes.py:21
+msgid "error_schema"
+msgstr "Error obteniendo el esquema:"
+
+#: apps/dashboard/routes.py:33
+msgid "error_analysis"
+msgstr "Error obteniendo el análisis"
+
+#: apps/file_manager/routes.py:24 apps/file_manager/routes.py:40
+msgid "file_saved_message"
+msgstr ""
+"Archivo '{filename}' guardado en '{location}' y subido a la tabla "
+"'{table}'."
+
+#: apps/synthetic_data/routes.py:13
+msgid "table_name_description"
+msgstr "El nombre de la tabla para generar datos sintéticos."
+
+#: apps/synthetic_data/routes.py:16
+msgid "num_records_description"
+msgstr "Número de registros sintéticos a generar."
+
+#: apps/synthetic_data/routes.py:19
+msgid "details_description"
+msgstr "Detalles de los datos sintéticos que desea generar."
+
+#: apps/synthetic_data/service.py:20
+#, fuzzy
+msgid "table_not_found"
+msgstr "Tabla con nombre '{table_name}' no encontrada."
+
+#: apps/synthetic_data/service.py:24
+msgid "error_details_too_long"
+msgstr "Los detalles son demasiado largos. Proporcione una descripción más corta."
+
+#: utils/db_manager.py:61
+msgid "error_no_csv_xlsx_found"
+msgstr "No se encontraron archivos CSV o XLSX en el directorio 'data/'."
+
+#: utils/db_manager.py:71
+msgid "error_unsupported_file_format"
+msgstr "Formato de archivo no compatible."
+
+#: utils/env_manager.py:14
+msgid "error_openai_api_key_missing"
+msgstr "OPENAI_API_KEY no encontrado en .env."
+

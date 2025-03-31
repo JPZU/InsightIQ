@@ -65,10 +65,14 @@
 
       <!-- Main Content -->
       <div id="content" class="flex-grow-1 p-4">
-        <select v-model="$i18n.locale">
-          <option value="en">English</option>
-          <option value="es">Español</option>
-        </select>
+        <select
+  v-model="locale"
+  class="px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-white focus:ring focus:ring-blue-300 shadow-md transition"
+>
+<option value="en">English (US)</option>
+<option value="es">Español (CO)</option>
+</select>
+
         <RouterView />
       </div>
     </div>
@@ -168,4 +172,5 @@ watch(locale, (newLang) => {
   color: white;
   text-align: center;
 }
+
 </style>

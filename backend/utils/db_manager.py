@@ -4,6 +4,7 @@ import pandas as pd
 from langchain_community.utilities import SQLDatabase
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
+from flask_babel import gettext as _
 
 
 class DBManager:
@@ -57,8 +58,7 @@ class DBManager:
             self.data_dir) if f.endswith(allowed_extensions)]
 
         if not files:
-            raise FileNotFoundError(
-                "No CSV o XLSX files found in 'data/' directory")
+            raise FileNotFoundError(_("error_no_csv_xlsx_found"))
 
         file_name = files[0]
         file_path = os.path.join(self.data_dir, file_name)
@@ -68,5 +68,5 @@ class DBManager:
         elif file_path.endswith(".xlsx"):
             df = pd.read_excel(file_path)
         else:
-            raise ValueError("unsupported file")
+            raise ValueError(_("error_unsupported_file_format"))
         return df, file_name

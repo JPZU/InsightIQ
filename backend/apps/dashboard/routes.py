@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from flask_babel import gettext as _
 
 from apps.dashboard.service import DashboardService
 
@@ -17,8 +18,9 @@ def get_schema():
         return DashboardService.get_schema()
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error getting the schema: {str(e)}"
-        )
+        status_code=500, detail=_("error_schema") + f" {str(e)}"
+)
+
 
 
 @router.get("/analysis")
@@ -28,5 +30,6 @@ def get_analysis():
         return DashboardService.calculate_some_analysis()
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error getting the analysis: {str(e)}"
-        )
+    status_code=500, detail=_("error_analysis") + f" {str(e)}"
+    )
+
