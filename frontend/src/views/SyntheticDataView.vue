@@ -3,41 +3,41 @@
     <div class="container">
       <div class="form">
         <div class="form-group">
-          <h1 class="text-xl text-center">Generate Synthetic Data</h1>
-          <label class="label">Select Table</label>
+          <h1 class="text-xl text-center">{{ $t('synthetic_data.title') }}</h1>
+          <label class="label">{{ $t('synthetic_data.select_table') }}</label>
           <select v-model="tableName" class="input" :disabled="tables.length === 0">
-            <option v-if="tables.length === 0" disabled>Loading tables...</option>
+            <option v-if="tables.length === 0" disabled>{{ $t('synthetic_data.loading_tables') }}</option>
             <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label class="label">Number of Records</label>
+          <label class="label">{{ $t('synthetic_data.records') }}</label>
           <input v-model.number="numRecords" type="number" class="input small-input" min="1" />
         </div>
 
         <div class="form-group">
-          <label class="label">Details</label>
+          <label class="label">{{ $t('synthetic_data.details') }}</label>
           <p class="helper-text">
-            If you'd like, give us more details about the style the synthetic data should have.
+            {{ $t('synthetic_data.details_desc') }}
           </p>
-          <p class="helper-text">Please write your request under 500 characters.</p>
+          <p class="helper-text">{{ $t('synthetic_data.request_limit') }}</p>
           <textarea
             v-model="details"
             class="input textarea"
             rows="4"
             maxlength="500"
-            placeholder="e.g.: Make all people older than 35 years old."
+            :placeholder="$t('synthetic_data.request_example')"
           ></textarea>
         </div>
 
         <button type="submit" @click="generateData" class="btn" :disabled="loading">
-          {{ loading ? 'Generating...' : 'Generate Data' }}
+          {{ loading ? $t('synthetic_data.generating') : $t('synthetic_data.generate') }}
         </button>
 
         <div v-if="response && response.synthetic_data && response.synthetic_data.length">
           <div class="response-box">
-            <h2 class="response-title">Generated Data for: {{ response.table }}</h2>
+            <h2 class="response-title">{{ $t('synthetic_data.generated') }} {{ response.table }}</h2>
             <div v-if="parsedSyntheticData.length > 0">
               <table class="table">
                 <thead>
@@ -58,7 +58,7 @@
             </div>
 
             <button class="btn add-btn" @click="addSyntheticDatabase">
-              Add data to "{{ tableName }}"
+              {{ $t('synthetic_data.add_to') }}"{{ tableName }}"
             </button>
           </div>
         </div>
@@ -105,16 +105,16 @@ export default {
         const { data } = await axios.get('http://localhost:8000/api/synthetic_data/tables/')
         this.tables = data.tables
       } catch (error) {
-        console.error('Error fetching tables:', error)
+        console.error( $t('synthetic_data.error_tables'), error)
       }
     },
     async generateData() {
       if (!this.tableName) {
-        alert('Please select a table.')
+        alert($t('synthetic_data.select_table_desc'))
         return
       }
       if (!this.numRecords) {
-        alert('Please select an amount of records to generate.')
+        alert($t('synthetic_data.select_records'))
         return
       }
       this.loading = true
@@ -134,15 +134,15 @@ export default {
         this.response = data
         this.tableSchema = this.response.schema
       } catch (error) {
-        console.error('Error generating data:', error)
-        this.response = { error: 'Failed to generate synthetic data.' }
+        console.error($t('synthetic_data.error_data'), error)
+        this.response = { error: $t('synthetic_data.error_data_desc') }
       } finally {
         this.loading = false
       }
     },
     addSyntheticDatabase() {
       alert(`Feature not implemented yet, but will add to ${this.tableName}!`)
-      console.log('Adding synthetic database to:', this.tableName)
+      console.log($t('synthetic_data.add_to_database'), this.tableName)
     },
   },
 }

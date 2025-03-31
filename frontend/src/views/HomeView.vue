@@ -9,8 +9,8 @@
     <section
       class="text-center pb-1 bg-light d-flex flex-column align-items-center justify-content-center"
     >
-      <h1 class="display-6 fw-bold mt-3 mb-3" style="color: #183446">Welcome to InsightIQ</h1>
-      <p class="text-muted mt-2 mb-4">Empowering businesses with intelligent data insights.</p>
+      <h1 class="display-6 fw-bold mt-3 mb-3" style="color: #183446">{{ $t('app.welcome') }}</h1>
+      <p class="text-muted mt-2 mb-4">{{ $t('app.description') }}</p>
       <div class="row g-3">
         <div class="col-md-4">
           <div
@@ -19,8 +19,8 @@
             @click="$router.push('/chat')"
           >
             <i class="bi bi-chat-left-text h2" style="color: #00a6a6"></i>
-            <h5 class="mt-2">Natural Language Queries</h5>
-            <p class="text-muted">Interact with data using simple language, no SQL required.</p>
+            <h5 class="mt-2">{{ $t('app.natural_language') }}</h5>
+            <p class="text-muted">{{ $t('app.natural_language_desc') }}</p>
             <img
               src="/nlp.jpg"
               alt="Chat Icon"
@@ -36,8 +36,8 @@
             @click="$router.push('/dashboard')"
           >
             <i class="bi bi-bar-chart h2" style="color: #00a6a6"></i>
-            <h5 class="mt-2">Automated Reports</h5>
-            <p class="text-muted">Generate insights instantly with AI-powered reporting.</p>
+            <h5 class="mt-2">{{ $t('app.reports') }}</h5>
+            <p class="text-muted">{{ $t('app.reports_desc') }}</p>
             <img
               src="/reports.png"
               alt="Dashboard Icon"
@@ -53,8 +53,8 @@
             @click="$router.push('/synthetic-data')"
           >
             <i class="bi bi-database h2" style="color: #183446"></i>
-            <h5 class="mt-2">Generate Synthetic Data</h5>
-            <p class="text-muted">Create custom synthetic datasets tailored to your needs.</p>
+            <h5 class="mt-2">{{ $t('app.synthetic_data_generate') }}</h5>
+            <p class="text-muted">{{ $t('app.synthetic_data_desc') }}</p>
             <img
               src="/synthetic-data.png"
               alt="Synthetic Data Icon"
@@ -68,8 +68,8 @@
 
     <!-- Call to Action -->
     <section class="text-center py-4 bg-light mb-4 mt-3">
-      <h2 style="color: #183446">Start Managing Your Data Smarter</h2>
-      <p class="text-muted">Experience the power of AI-driven data insights today.</p>
+      <h2 style="color: #183446">{{ $t('app.smart_manage') }}</h2>
+      <p class="text-muted">{{ $t('app.smart_manage_desc') }}</p>
     </section>
   </div>
 </template>

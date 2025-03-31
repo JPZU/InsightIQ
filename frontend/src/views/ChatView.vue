@@ -22,8 +22,8 @@ const submitQuestion = async () => {
     const response = await ChatService.askQuestion(question.value)
     answer.value = response.response
   } catch (error) {
-    console.error('Error fetching response:', error)
-    answer.value = { error: 'Failed to fetch response. Please try again.' }
+    console.error($t('chat.error_fetch'), error)
+    answer.value = { error: $t('chat.error_fetch_desc') }
   } finally {
     loading.value = false
   }
@@ -45,28 +45,28 @@ const isValidQueryOutput = (queryOutput) => {
   <div class="full-page-background">
     <div class="content-container">
       <form class="card" @submit.prevent="submitQuestion">
-        <h1 class="text-center mb-3">Ask your question</h1>
-        <input class="form-control" v-model="question" placeholder="Type here..." required />
+        <h1 class="text-center mb-3">{{ $t('chat.ask') }}</h1>
+        <input class="form-control" v-model="question" :placeholder="$t('chat.type_here')" required />
         <button type="submit" class="btn btn-primary w-100 mt-2" :disabled="loading">
-          {{ loading ? 'Sending...' : 'Send' }}
+          {{ loading ? $t('chat.sending') : $t('chat.send') }}
         </button>
       </form>
 
       <div v-if="answer" class="card mt-3">
-        <h3>Response</h3>
+        <h3>{{ $t('chat.response') }}</h3>
         <table class="table formatted-table table-bordered">
           <tbody>
             <tr>
-              <th scope="row">Input</th>
-              <td>{{ answer.input || 'N/A' }}</td>
+              <th scope="row">{{$t('chat.input')}}</th>
+              <td>{{ answer.input || $t('chat.na') }}</td>
             </tr>
             <tr>
-              <th scope="row">Output</th>
-              <td>{{ answer.output || 'N/A' }}</td>
+              <th scope="row">{{$t('chat.output')}}</th>
+              <td>{{ answer.output || $t('chat.na') }}</td>
             </tr>
             <tr>
-              <th scope="row">Query</th>
-              <td>{{ answer.query || 'N/A' }}</td>
+              <th scope="row">{{$t('chat.query')}}</th>
+              <td>{{ answer.query || $t('chat.na') }}</td>
             </tr>
           </tbody>
         </table>
@@ -82,7 +82,7 @@ const isValidQueryOutput = (queryOutput) => {
             v-model="viewMode"
             value="graphs"
           />
-          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs"> Charts </label>
+          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs">{{$t('chat.charts')}}</label>
 
           <input
             type="radio"
@@ -93,16 +93,16 @@ const isValidQueryOutput = (queryOutput) => {
             v-model="viewMode"
             value="table"
           />
-          <label :class="`btn ${getButtonClass('table')}`" for="viewTable"> Table </label>
+          <label :class="`btn ${getButtonClass('table')}`" for="viewTable">{{$t('chat.table')}}</label>
         </div>
 
         <!-- Mostrar gráficos o tabla según el modo seleccionado -->
         <div v-if="viewMode === 'graphs'">
           <div class="mt-3">
-            <label for="chart-type">Select Chart Type:</label>
+            <label for="chart-type">{{$t('chat.select_chart')}}</label>
             <select id="chart-type" v-model="chartType" class="form-control">
-              <option value="bar">Bar Chart</option>
-              <option value="pie">Pie Chart</option>
+              <option value="bar">{{$t('chat.bar_chart')}}</option>
+              <option value="pie">{{$t('chat.pie_chart')}}</option>
             </select>
           </div>
 
@@ -111,7 +111,7 @@ const isValidQueryOutput = (queryOutput) => {
             v-if="!answer.x_axis?.length || !answer.y_axis?.length"
             class="alert alert-info mt-3"
           >
-            Chart not available. No data to display.
+            {{ $t('chat.no_chart') }}
           </div>
 
           <BarChart
@@ -134,7 +134,7 @@ const isValidQueryOutput = (queryOutput) => {
             <Table :queryOutput="answer.query_output" />
           </div>
           <div v-else class="alert alert-info mt-3">
-            Table not available. No valid data to display.
+            {{ $t('chat.no_table') }}
           </div>
         </div>
       </div>

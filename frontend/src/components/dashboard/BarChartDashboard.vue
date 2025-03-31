@@ -44,7 +44,7 @@ const chartData = computed(() => ({
   labels: Object.keys(filteredStats.value),
   datasets: [
     {
-      label: `Statistics for ${props.columnName}`,
+      label: `{{$t('dashboard.statistics_for')}} ${props.columnName}`,
       data: Object.values(filteredStats.value),
       backgroundColor: ['#3498db', '#1abc9c', '#f39c12', '#e74c3c', '#9b59b6', '#2ecc71'],
     },
@@ -56,7 +56,7 @@ const chartOptions = {
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },
-    title: { display: true, text: `Statistics for ${props.columnName}` },
+    title: { display: true, text: `{{$t('dashboard.statistics_for')}} ${props.columnName}` },
   },
 }
 </script>

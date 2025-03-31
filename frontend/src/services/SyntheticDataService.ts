@@ -9,14 +9,14 @@ export default {
   uploadDatabase(file: File) {
     const formData = new FormData()
     formData.append('file', file)
-    return axios.post(`${BASE_URL}/upload/`, formData)
+    return axios.post(`${SyntheticDataService.BASE_URL}/upload/`, formData)
   },
 
   getSchema(tableName: string) {
-    return axios.get(`${BASE_URL}/schema/${tableName}`)
+    return axios.get(`${SyntheticDataService.BASE_URL}/schema/${tableName}`)
   },
 
   generateSyntheticData(tableName: string, numRecords: number) {
-    return axios.post(`${BASE_URL}/generate/`, { tableName, numRecords })
+    return axios.post(`${SyntheticDataService.BASE_URL}/generate/`, { tableName, numRecords })
   },
 }

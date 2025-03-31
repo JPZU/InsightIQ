@@ -8,14 +8,14 @@
       >
         <!-- Título de la aplicación -->
         <div class="text-center mb-4">
-          <span v-if="!isCollapsed" class="fs-3 fw-bold">InsightIQ</span>
+          <span v-if="!isCollapsed" class="fs-3 fw-bold">{{$t('app.title')}}</span>
         </div>
 
         <!-- Menú de la sidebar -->
         <ul class="navbar-nav flex-column">
           <router-link to="/" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
             <i class="fas fa-fw fa-home"></i>
-            <span v-if="!isCollapsed">Home</span>
+            <span v-if="!isCollapsed">{{$t('app.home')}}</span>
           </router-link>
           <router-link
             to="/chat"
@@ -24,7 +24,7 @@
             active-class="active"
           >
             <i class="fas fa-comments"></i>
-            <span v-if="!isCollapsed">Chat</span>
+            <span v-if="!isCollapsed">{{ $t('app.chat') }}</span>
           </router-link>
           <router-link
             to="/synthetic-data"
@@ -33,7 +33,7 @@
             active-class="active"
           >
             <i class="fas fa-database"></i>
-            <span v-if="!isCollapsed">Synthetic Data</span>
+            <span v-if="!isCollapsed">{{ $t('app.synthetic_data') }}</span>
           </router-link>
           <router-link
             to="/dashboard"
@@ -42,7 +42,7 @@
             active-class="active"
           >
             <i class="fa-solid fa-chart-line"></i>
-            <span v-if="!isCollapsed">Dashboard</span>
+            <span v-if="!isCollapsed">{{ $t('app.dashboard') }}</span>
           </router-link>
           <router-link
             to="/file-manager"
@@ -51,7 +51,7 @@
             active-class="active"
           >
             <i class="fa-solid fa-folder"></i>
-            <span v-if="!isCollapsed">File Manager</span>
+            <span v-if="!isCollapsed">{{ $t('app.file_manager') }}</span>
           </router-link>
         </ul>
 
@@ -65,20 +65,25 @@
 
       <!-- Main Content -->
       <div id="content" class="flex-grow-1 p-4">
+        <select v-model="$i18n.locale">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+        </select>
         <RouterView />
       </div>
     </div>
 
     <!-- Footer -->
     <footer class="footer text-center p-2">
-      <small>&copy; {{ new Date().getFullYear() }} InsightIQ - All Rights Reserved</small>
+      <small>&copy; {{ new Date().getFullYear() }}{{ $t('app.rights') }}</small>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import { useI18n } from 'vue-i18n';
 
 const isCollapsed = ref(false)
 
@@ -92,6 +97,16 @@ function closeOffcanvas() {
     offcanvasToggler.click()
   }
 }
+
+const { locale } = useI18n();
+
+const savedLang = localStorage.getItem('userLang') || 'en';
+locale.value = savedLang;
+
+watch(locale, (newLang) => {
+  localStorage.setItem('userLang', newLang);
+});
+
 </script>
 
 <style scoped>

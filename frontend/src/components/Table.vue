@@ -16,17 +16,17 @@
     <!-- Paginación -->
     <div class="pagination-container">
       <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="currentPage--">
-        Previous
+        {{$t('dashboard.previous')}}
       </button>
 
-      <span class="page-indicator"> Page {{ currentPage }} of {{ totalPages }} </span>
+      <span class="page-indicator"> {{$t('dashboard.page')}} {{ currentPage }} {{$t('dashboard.of')}} {{ totalPages }} </span>
 
       <button
         class="btn btn-outline-primary"
         :disabled="currentPage === totalPages"
         @click="currentPage++"
       >
-        Next
+      {{$t('dashboard.next')}}
       </button>
     </div>
   </div>
