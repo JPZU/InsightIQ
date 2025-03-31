@@ -1,6 +1,11 @@
 <template>
   <div>
     <canvas ref="chartCanvas"></canvas>
+    
+    <div class="text-center">
+      <button @click="downloadChart" class="btn btn-primary mt-2">Download Chart</button>
+    </div>
+    
   </div>
 </template>
 
@@ -57,6 +62,15 @@ const renderChart = () => {
       },
     },
   })
+}
+
+const downloadChart = () => {
+  if (!chartInstance) return
+  
+  const link = document.createElement('a')
+  link.download = `${props.chartTitle || 'chart'}.png`
+  link.href = chartCanvas.value.toDataURL('image/png')
+  link.click()
 }
 
 onMounted(renderChart)
