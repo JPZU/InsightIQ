@@ -75,22 +75,26 @@ Before proceeding, ensure you have the following installed on your system:
    ```
    http://localhost:5173
    ```
+
 ## Database Migrations
 To manage database migrations, we use Alembic. Follow these steps to create and apply migrations:
 
 ### 1. Generate a Migration
 1. Navigate to the backend directory (if not already there):
-  ```bash
+
+   ```bash
    cd backend
    ```
 2. Generate a new migration file based on the changes in your SQLAlchemy models:
+
    ```bash
    alembic revision --autogenerate -m "Models configured"
    ```
-This command will create a new migration file in the alembic/versions/ directory.
+   This command will create a new migration file in the alembic/versions/ directory.
 ### 2. Apply the migration
 1. Apply the migration to update the database schema:
-  ```bash
+
+   ```bash
    alembic upgrade head
    ```
-This command will execute the SQL commands in the migration file and update the database.
+   This command will execute the SQL commands in the migration file and update the database.

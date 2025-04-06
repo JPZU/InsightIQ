@@ -1,7 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from core.config import settings
+
 from .models.base import Base
-from backend.core.config import settings
 
 # Crear la URL de la base de datos
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL

@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+venv/
+
+# Editor directories and files
+.vscode/
+
+# Test output
+test_results.txt

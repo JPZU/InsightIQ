@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
 from .base import Base
+
 
 class Response(Base):
     __tablename__ = "responses"
@@ -15,4 +17,5 @@ class Response(Base):
     question = relationship("Question", back_populates="response")
     chat_id = Column(Integer, ForeignKey("chats.id"))
     chat = relationship("Chat", back_populates="responses")
-    visual_resources = relationship("VisualResource", back_populates="response")
+    visual_resources = relationship(
+        "VisualResource", back_populates="response")
