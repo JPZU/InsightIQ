@@ -99,7 +99,16 @@ class DetailReportService:
     def get_restock_recommendations():
         df = DetailReportService.get_data()
         df["Restock Needed"] = df["Inventory Level"] < df["Demand Forecast"]
-        recommendations = df[df["Restock Needed"]]
-        [["Product ID", "Invetory Level", "Demand Forescat", "Units Sold"]].to_dict(orient="records")
 
-        return recommendations
+        # Crear una columna para saber cuánto falta
+        df["Shortage"] = df["Demand Forecast"] - df["Inventory Level"]
+
+        # Filtrar productos que necesitan reabastecimiento
+        recommendations = df[df["Restock Needed"]][
+            ["Product ID", "Inventory Level", "Demand Forecast", "Units Sold", "Shortage"]
+        ]
+
+        # Ordenar por mayor escasez y tomar los 10 primeros
+        top_critical = recommendations.sort_values(by="Shortage", ascending=False).head(10)
+
+        return top_critical.to_dict(orient="records")

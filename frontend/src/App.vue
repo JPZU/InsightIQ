@@ -53,6 +53,17 @@
             <i class="fa-solid fa-folder"></i>
             <span v-if="!isCollapsed">File Manager</span>
           </router-link>
+
+          <!-- Botón para generar el PDF -->
+          <router-link
+            to="/detail-report"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
+            <i class="fa-solid fa-file-pdf"></i>
+            <span v-if="!isCollapsed">Detailed Report</span>
+          </router-link>
         </ul>
 
         <!-- Botón de colapsar sidebar -->
@@ -139,11 +150,11 @@ function closeOffcanvas() {
 #content {
   transition: margin-left 0.3s ease;
   padding-bottom: 50px;
-  margin-left: 250px; /* Asegura la posición al expandir */
+  margin-left: 250px;
 }
 
 .sidebar.collapsed + #content {
-  margin-left: 70px; /* Ajusta cuando está colapsada */
+  margin-left: 70px;
 }
 
 /* Footer */
