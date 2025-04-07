@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask_babel import gettext as _
+from utils.i18n import _ 
 
 class EnvManager:
 

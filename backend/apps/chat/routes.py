@@ -2,7 +2,7 @@ import asyncio
 from functools import partial
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from flask_babel import gettext as _
+from utils.i18n import _ 
 
 from apps.chat.service import ChatService
 

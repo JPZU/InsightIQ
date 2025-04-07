@@ -1,11 +1,19 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import gettext
 import os
+from utils.i18n import set_translator, LanguageMiddleware
 
 from router import router
 
 app = FastAPI()
+
+@app.middleware("http")
+async def add_locale_middleware(request: Request, call_next):
+
+    lang = request.headers.get("accept-language", "en").split(",")[0]
+    set_translator(lang)
+    response = await call_next(request)
+    return response
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,18 +31,3 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def read_root():
     return {"message": "Welcome to SoftServeAnalytics API"}
 
-
-def get_translator(language: str):
-    locale_path = os.path.join(BASE_DIR, "locales")
-    try:
-        return gettext.translation('messages', localedir=locale_path, languages=[language])
-    except FileNotFoundError:
-        return gettext.NullTranslations()
-
-@app.get("/greet/")
-async def greet(request: Request, lang: str = "en"):
-    translator = get_translator(lang)
-    translator.install()
-    _ = translator.gettext
-
-    return {"message": _("welcome_message")}

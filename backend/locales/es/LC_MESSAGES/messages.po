@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-31 15:51-0500\n"
+"POT-Creation-Date: 2025-04-06 21:18-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -16,10 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
-
-#: main.py:40
-msgid "welcome_message"
-msgstr "¡Bienvenido a nuestra página!"
 
 #: alembic/env.py:27
 msgid "error_database_url_missing"
@@ -49,15 +45,15 @@ msgstr ""
 "Archivo '{filename}' guardado en '{location}' y subido a la tabla "
 "'{table}'."
 
-#: apps/synthetic_data/routes.py:13
+#: apps/synthetic_data/routes.py:14
 msgid "table_name_description"
 msgstr "El nombre de la tabla para generar datos sintéticos."
 
-#: apps/synthetic_data/routes.py:16
+#: apps/synthetic_data/routes.py:17
 msgid "num_records_description"
 msgstr "Número de registros sintéticos a generar."
 
-#: apps/synthetic_data/routes.py:19
+#: apps/synthetic_data/routes.py:20
 msgid "details_description"
 msgstr "Detalles de los datos sintéticos que desea generar."
 
@@ -81,4 +77,7 @@ msgstr "Formato de archivo no compatible."
 #: utils/env_manager.py:14
 msgid "error_openai_api_key_missing"
 msgstr "OPENAI_API_KEY no encontrado en .env."
+
+#~ msgid "welcome_message"
+#~ msgstr "¡Bienvenido a nuestra página!"
 

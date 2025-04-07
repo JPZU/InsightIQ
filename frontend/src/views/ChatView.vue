@@ -22,8 +22,8 @@ const submitQuestion = async () => {
     const response = await ChatService.askQuestion(question.value)
     answer.value = response.response
   } catch (error) {
-    console.error($t('chat.error_fetch'), error)
-    answer.value = { error: $t('chat.error_fetch_desc') }
+    console.error(this.$t('chat.error_fetch'), error)
+    answer.value = { error: this.$t('chat.error_fetch_desc') }
   } finally {
     loading.value = false
   }

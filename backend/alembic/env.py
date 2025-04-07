@@ -1,6 +1,6 @@
 import os
 from logging.config import fileConfig
-from flask_babel import gettext as _
+from utils.i18n import _ 
 
 from sqlalchemy import engine_from_config, pool
 

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import ApiClient from '@/services/ApiClient'
 
 class SyntheticDataService {
   private static readonly BASE_URL = `${import.meta.env.VITE_API_URL}/chat`
@@ -6,15 +7,15 @@ class SyntheticDataService {
   static uploadDatabase(file: File) {
     const formData = new FormData()
     formData.append('file', file)
-    return axios.post(`${this.BASE_URL}/upload/`, formData) // ✅ Using 'this' instead of class name
+    return ApiClient.post(`${this.BASE_URL}/upload/`, formData) 
   }
 
   static getSchema(tableName: string) {
-    return axios.get(`${this.BASE_URL}/schema/${tableName}`) // ✅ Added 'static'
+    return ApiClient.get(`${this.BASE_URL}/schema/${tableName}`) 
   }
 
   static generateSyntheticData(tableName: string, numRecords: number) {
-    return axios.post(`${this.BASE_URL}/generate/`, { tableName, numRecords }) // ✅ Added 'static'
+    return ApiClient.post(`${this.BASE_URL}/generate/`, { tableName, numRecords }) 
   }
 }
 

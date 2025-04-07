@@ -1,6 +1,6 @@
 from utils.db_manager import DBManager
 from utils.synthetic_manager import SyntheticDataManager
-from flask_babel import gettext as _
+from utils.i18n import _ 
 
 class SyntheticDataService:
 

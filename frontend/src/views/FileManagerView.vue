@@ -34,17 +34,17 @@ export default {
     },
     async uploadFile() {
       if (!this.selectedFile) {
-        this.message = $t('file_manager.select_file')
+        this.message = this.$t('file_manager.select_file')
         return
       }
       if (!this.tableName) {
-        this.message = $t('file_manager.table_name_required')
+        this.message = this.$t('file_manager.table_name_required')
         return
       }
 
       try {
         let response
-        console.log($t('file_manager.uploading'), this.tableName)
+        console.log(this.$t('file_manager.uploading'), this.tableName)
         if (this.selectedFile.name.endsWith('.xls') || this.selectedFile.name.endsWith('.xlsx')) {
           response = await FileManagerService.uploadExcel(this.selectedFile, this.tableName)
         } else {
@@ -52,8 +52,8 @@ export default {
         }
         this.message = response.data.info
       } catch (error) {
-        console.error($t('file_manager.error_uploading'), error)
-        this.message = $t('file_manager.error_uploading')
+        console.error(this.$t('file_manager.error_uploading'), error)
+        this.message = this.$t('file_manager.error_uploading')
       }
     },
   },

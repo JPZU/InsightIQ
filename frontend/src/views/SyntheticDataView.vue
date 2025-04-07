@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "@/axios"
 
 export default {
   data() {
@@ -105,16 +105,16 @@ export default {
         const { data } = await axios.get('http://localhost:8000/api/synthetic_data/tables/')
         this.tables = data.tables
       } catch (error) {
-        console.error( $t('synthetic_data.error_tables'), error)
+        console.error( this.$t('synthetic_data.error_tables'), error)
       }
     },
     async generateData() {
       if (!this.tableName) {
-        alert($t('synthetic_data.select_table_desc'))
+        alert(this.$t('synthetic_data.select_table_desc'))
         return
       }
       if (!this.numRecords) {
-        alert($t('synthetic_data.select_records'))
+        alert(this.$t('synthetic_data.select_records'))
         return
       }
       this.loading = true
@@ -134,15 +134,15 @@ export default {
         this.response = data
         this.tableSchema = this.response.schema
       } catch (error) {
-        console.error($t('synthetic_data.error_data'), error)
-        this.response = { error: $t('synthetic_data.error_data_desc') }
+        console.error(this.$t('synthetic_data.error_data'), error)
+        this.response = { error: this.$t('synthetic_data.error_data_desc') }
       } finally {
         this.loading = false
       }
     },
     addSyntheticDatabase() {
       alert(`Feature not implemented yet, but will add to ${this.tableName}!`)
-      console.log($t('synthetic_data.add_to_database'), this.tableName)
+      console.log(this.$t('synthetic_data.add_to_database'), this.tableName)
     },
   },
 }
