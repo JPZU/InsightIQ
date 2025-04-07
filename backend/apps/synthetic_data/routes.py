@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Body
+from typing import List, Dict
 
 from apps.synthetic_data.service import SyntheticDataService
 from utils.db_manager import DBManager
+from utils.synthetic_manager import SyntheticDataManager
 
 router = APIRouter()
 
@@ -24,9 +26,18 @@ async def generate_data(
         num_records,
     )
 
-
 @router.get("/tables/")
 async def get_table_names():
     db_manager = DBManager()
     tables = db_manager.get_table_names()
     return {"tables": tables}
+
+@router.post("/insert/")
+async def insert_synthetic_data(
+    table_name: str = Query(..., description="Name of the table to insert data into"),
+    data: List[Dict] = Body(..., description="List of rows as dicts to insert into DB"),
+):
+    manager = SyntheticDataManager()
+    rows_inserted = manager.insert_synthetic_data(data, table_name)
+
+    return {"status": "success", "rows_inserted": rows_inserted}

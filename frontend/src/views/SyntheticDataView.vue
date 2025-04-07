@@ -80,6 +80,7 @@ export default {
       tables: [],
       tableSchema: [],
       loading: false,
+      dictRecords: [],
     }
   },
   async mounted() {
@@ -87,9 +88,9 @@ export default {
   },
   computed: {
     parsedSyntheticData() {
-      if (!this.response || !this.response.synthetic_data) return []
+      if (!this.response || !this.response.synthetic_data_raw ) return []
 
-      const rawData = this.response.synthetic_data
+      const rawData = this.response.synthetic_data_raw
       if (rawData.length === 0) return []
 
       const headers = rawData[0].null
@@ -132,6 +133,7 @@ export default {
           },
         )
         this.response = data
+        this.dictRecords = data.synthetic_data
         this.tableSchema = this.response.schema
       } catch (error) {
         console.error('Error generating data:', error)
@@ -140,10 +142,24 @@ export default {
         this.loading = false
       }
     },
-    addSyntheticDatabase() {
-      alert(`Feature not implemented yet, but will add to ${this.tableName}!`)
-      console.log('Adding synthetic database to:', this.tableName)
-    },
+    async addSyntheticDatabase() {
+      if (!this.dictRecords || this.dictRecords.length === 0) {
+        alert('No synthetic data to insert.')
+        return
+      }
+
+      try {
+        const { data } = await axios.post('http://localhost:8000/api/synthetic_data/insert/', this.dictRecords, {
+          params: {
+            table_name: this.tableName
+          }
+        })
+        alert(`Inserted ${data.rows_inserted} rows into ${this.tableName}`)
+      } catch (error) {
+        console.error('Error inserting synthetic data:', error)
+        alert('Failed to insert data into the table.')
+      }
+    }
   },
 }
 </script>

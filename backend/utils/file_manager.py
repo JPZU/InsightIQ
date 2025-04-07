@@ -55,14 +55,14 @@ class FileManager:
             df.to_excel(writer, sheet_name=sheet_name, index=False)
 
     @staticmethod
-    def insert_dataframe_to_table(df: pd.DataFrame, table_name: str, db_manager: DBManager):
+    def insert_dataframe_to_table(df: pd.DataFrame, table_name: str, db_manager: DBManager, mode="replace"):
         """
         Inserts a pandas DataFrame into a database table.
         """
         df.to_sql(
             table_name,
             db_manager.engine,
-            if_exists="replace",
+            if_exists=mode,
             index=False)
 
     @staticmethod

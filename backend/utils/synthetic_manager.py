@@ -1,10 +1,14 @@
 import csv
 import io
+import pandas as pd
+import re
 
 from langchain_openai import ChatOpenAI
+from typing import List, Dict
 
 from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
+from utils.file_manager import FileManager
 
 
 class SyntheticDataManager:
@@ -65,12 +69,48 @@ class SyntheticDataManager:
 
         if not rows or len(rows) < 2:
             print("ERROR: No valid CSV data parsed")
-            return []
+            return {
+            "raw": [],
+            "dicts": []
+        }
 
         headers = rows[0]
+        raw_format = [headers] + rows[1:]
+        
+        dict_format = [
+            {headers[i]: row[i].strip().strip('"') for i in range(len(headers))}
+            for row in rows[1:]
+        ]
+        
         structured_data = [
             {headers[i]: row[i].strip().strip('"') for i in range(len(headers))}
             for row in rows[1:]
         ]
+        
+        return {
+            "raw": raw_format,
+            "dicts": dict_format
+        }
+    
+    def insert_synthetic_data(self, data: list, table_name: str):
+        if not data:
+            raise ValueError("No data to insert")
 
-        return structured_data
+        df = pd.DataFrame(data)
+        
+        id_like_cols = [
+            col for col in df.columns
+            if re.search(r'\b[a-zA-Z0-9_ ]*id\b', col.strip(), re.IGNORECASE)
+        ]
+
+        if id_like_cols:
+            print(f"Removing ID-like columns: {id_like_cols}")
+            df = df.drop(columns=id_like_cols)
+        
+        db_manager = DBManager()
+        FileManager.insert_dataframe_to_table(df, table_name, db_manager, mode="append")
+        
+        return len(df)
+        
+    
+

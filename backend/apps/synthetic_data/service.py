@@ -25,16 +25,26 @@ class SyntheticDataService:
         remainder = num_records
         all_synthetic_data = []
         attempts = 0
+        
+        all_raw = []
+        all_dicts = []
 
         while remainder > 0 and attempts < MAX_ATTEMPTS:
             batch_size = min(MAX_BATCH_SIZE, remainder)
             batch_data = manager.generate_synthetic_data(details, table_name, schema, batch_size, sample_data)
-            synthetic_data = manager.format_data(batch_data)
+            #synthetic_data = manager.format_data(batch_data)
+            formatted = manager.format_data(batch_data)
+            raw_batch = formatted["raw"]
+            dict_batch = formatted["dicts"]
 
-            actual_data = synthetic_data[1:] if len(synthetic_data) > 1 else []
+            if dict_batch:
+                all_raw.extend(raw_batch)
+                all_dicts.extend(dict_batch)
+
+            actual_data = formatted if len(formatted) > 1 else []
 
             if actual_data:
-                all_synthetic_data.extend(synthetic_data)
+                all_synthetic_data.extend(formatted)
 
             generated_count = len(actual_data)
 
@@ -61,5 +71,6 @@ class SyntheticDataService:
         return {
             "table": table_name,
             "schema": schema,
-            "synthetic_data": all_synthetic_data[:num_records]
+            "synthetic_data_raw": all_raw[:num_records],
+            "synthetic_data": all_dicts[:num_records]    
         }
