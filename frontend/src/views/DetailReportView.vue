@@ -1,31 +1,46 @@
 <template>
   <div class="dashboard">
-    <h1 class="text-center">📊 Detailed Sales Report</h1>
+    <h1 class="text-center">Detailed Sales Report</h1>
 
     <section class="file-schema">
-      <h2>📦 Inventory Summary</h2>
+      <h2>Inventory Summary</h2>
       <ul>
-        <li><strong>Total unique products:</strong> {{ summary.total_products }}</li>
+        <li><strong>Total products:</strong> {{ summary.total_products }}</li>
         <li><strong>Total inventory:</strong> {{ summary.total_inventory }}</li>
         <li>
           <strong>Average inventory per product:</strong>
-          {{ summary.average_for_product_inventory }}
+          {{ summary.average_inventory }}
         </li>
       </ul>
     </section>
 
     <section class="file-schema">
-      <h2>🚨 Restock Recommendations</h2>
-      <ul>
-        <li v-for="item in restock" :key="item['Product ID']">
-          {{ item['Product ID'] }} — Inventory: {{ item['Inventory Level'] }}, Forecast:
-          {{ item['Demand Forecast'] }}
-        </li>
-      </ul>
+      <h2>Restock Recommendations</h2>
+
+      <div class="table-wrapper">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Inventory Level</th>
+              <th>Forecast</th>
+              <!-- <th>Units Sold</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in restock" :key="item['Product ID']">
+              <td>{{ item['Product ID'] }}</td>
+              <td>{{ item['Inventory Level'] }}</td>
+              <td>{{ item['Demand Forecast'] }}</td>
+              <!-- <td>{{ item['Units Sold'] }}</td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <section class="file-schema">
-      <h2>🌍 Sales by Region</h2>
+      <h2>Sales by Region</h2>
       <div class="region-buttons">
         <button
           v-for="region in Object.keys(report)"
@@ -45,34 +60,58 @@
       class="file-schema"
       :id="`region-${region}`"
     >
-      <h3>📍 Region: {{ region }}</h3>
+      <h3>Region: {{ region }}</h3>
 
       <button @click="downloadRegionReport(region)" class="download-btn">
-        📥 Download Report as PDF
+        Download Report as PDF
       </button>
 
       <PieChartRegion :region="region" :data="getStoreSalesData(stores)" />
 
       <div v-for="(info, storeId) in stores" :key="storeId" class="store-block">
-        <h4>🏪 Store ID: {{ storeId }}</h4>
+        <h4>Store ID: {{ storeId }}</h4>
 
         <div class="product-columns">
+          <!-- Tabla: Top 5 Best-Selling Products -->
           <div class="column-block">
-            <h5>🔼 Top 5 Best-Selling Products</h5>
-            <ul>
-              <li v-for="p in info.top_5_products" :key="p['Product ID']">
-                {{ p['Product ID'] }} — {{ p['Units Sold'] }} units sold
-              </li>
-            </ul>
+            <h5>Top 5 Best-Selling Products</h5>
+            <div class="table-wrapper">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Product ID</th>
+                    <th>Units Sold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="p in info.top_5_products" :key="p['Product ID']">
+                    <td>{{ p['Product ID'] }}</td>
+                    <td>{{ p['Units Sold'] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
+          <!-- Tabla: Bottom 5 Worst-Selling Products -->
           <div class="column-block">
-            <h5>🔽 Bottom 5 Worst-Selling Products</h5>
-            <ul>
-              <li v-for="p in info.bottom_5_products" :key="p['Product ID']">
-                {{ p['Product ID'] }} — {{ p['Units Sold'] }} units sold
-              </li>
-            </ul>
+            <h5>Bottom 5 Worst-Selling Products</h5>
+            <div class="table-wrapper">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>Product ID</th>
+                    <th>Units Sold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="p in info.bottom_5_products" :key="p['Product ID']">
+                    <td>{{ p['Product ID'] }}</td>
+                    <td>{{ p['Units Sold'] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

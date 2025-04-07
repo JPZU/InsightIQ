@@ -31,7 +31,7 @@ const chartData = computed(() => ({
   labels: props.data.map((item) => item.name),
   datasets: [
     {
-      label: 'Unidades vendidas',
+      label: 'Units sold',
       data: props.data.map((item) => item.value),
       backgroundColor: [
         '#3498db',
@@ -58,7 +58,7 @@ const chartOptions = computed(() => ({
     },
     title: {
       display: true,
-      text: `Distribución de ventas - Región ${props.region}`,
+      text: `Sales distribution - Region ${props.region}`,
     },
   },
 }))

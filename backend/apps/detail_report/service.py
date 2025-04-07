@@ -19,7 +19,7 @@ class DetailReportService:
         summary = {
             "total_products": int(df["Product ID"].nunique()),
             "total_inventory": int(df["Inventory Level"].sum()),
-            "average_for_product_inventory": round(df["Inventory Level"].mean(), 2),
+            "average_inventory": round(df["Inventory Level"].mean(), 2),
         }
 
         return summary
