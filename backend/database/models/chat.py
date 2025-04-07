@@ -2,9 +2,6 @@ from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import relationship
 
 from .base import Base
-from .user import User
-from .question import Question
-from .response import Response
 
 
 class Chat(Base):

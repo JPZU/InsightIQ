@@ -12,6 +12,5 @@ class Alert(Base):
     createdAt = Column(DateTime)
     updatedAt = Column(DateTime)
 
-    # Relationships
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="alerts")
