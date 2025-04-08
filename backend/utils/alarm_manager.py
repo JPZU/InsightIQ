@@ -62,12 +62,16 @@ class AlarmManager:
 
     def insert_alarm(self, alarm_details: dict):
         query = text("""
-            INSERT INTO alerts (`condition`, createdAt, updatedAt, user_id)
-            VALUES (:condition, :createdAt, :updatedAt, :user_id)
+            INSERT INTO alerts (`condition`, `table_name`, `field`, `threshold`, `description`, createdAt, updatedAt, user_id)
+            VALUES (:condition, :table_name, :field, :threshold, :description, :createdAt, :updatedAt, :user_id)
         """)
         with engine.connect() as conn:
             conn.execute(query, {
                 "condition": alarm_details["condition"],
+                "table_name": alarm_details["table_name"],
+                "field": alarm_details["field"],
+                "threshold": alarm_details["threshold"],
+                "description": alarm_details["description"],
                 "createdAt": alarm_details["createdAt"],
                 "updatedAt": alarm_details["updatedAt"],
                 "user_id": alarm_details["user_id"]

@@ -33,7 +33,11 @@ def create_alarm_from_natural_language(user_input: str):
         raise ValueError("The AI response could not be parsed as JSON.")
     
     alert_data = {
-        "condition": alarm_details["condition"],  
+        "condition": alarm_details["condition"],
+        "table_name": table_name,
+        "field": alarm_details["field"],
+        "threshold": alarm_details["threshold"],
+        "description": alarm_details["description"],
         "createdAt": datetime.now(),
         "updatedAt": datetime.now(),
         "user_id": alarm_details.get("user_id", 1) 
