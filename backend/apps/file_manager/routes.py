@@ -20,8 +20,7 @@ async def upload_csv(
     # Save the uploaded file to a temporary location
     file_location = FileManager.save_upload_file(file, table_name)
     # Upload the CSV file to the database
-    file_manager_service.upload_csv(file_location, table_name)
-    return {"info": f"file '{file.filename}' saved at '{file_location}' and uploaded to table '{table_name}'"}
+    return file_manager_service.upload_csv(file, file_location, table_name)
 
 
 @router.post("/upload/excel/")
@@ -34,5 +33,4 @@ async def upload_excel(
     # Save the uploaded file to a temporary location
     file_location = FileManager.save_upload_file(file, table_name)
     # Upload the Excel file to the database
-    file_manager_service.upload_excel(file_location, table_name, sheet_name)
-    return {"info": f"file '{file.filename}' saved at '{file_location}' and uploaded to table '{table_name}'"}
+    return file_manager_service.upload_excel(file, file_location, table_name, sheet_name)

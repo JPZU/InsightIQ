@@ -6,6 +6,7 @@ from database.session import engine
 
 class AlarmManager:
     _instance = None
+    db_manager: DBManager
 
     def __new__(cls):
         if cls._instance is None:
@@ -77,3 +78,39 @@ class AlarmManager:
                 "user_id": alarm_details["user_id"]
             })
             conn.commit()
+        
+    def evaluate_alarm(self, table_name: str):
+        query = text("""
+            SELECT * FROM alerts where table_name = :table_name
+        """)
+        results_triggered = []
+
+        with engine.connect() as conn:
+            result = conn.execute(query, {"table_name": table_name})
+            alarms = result.fetchall()
+            
+            for alarm in alarms:
+                field = alarm["field"]
+                condition = alarm["condition"]
+                threshold = alarm["threshold"]
+
+                if condition == "less than":
+                    cond_sql = f"{field} < {threshold}"
+                elif condition == "greater than":
+                    cond_sql = f"{field} > {threshold}"
+                elif condition == "equal to":
+                    cond_sql = f"{field} = {threshold}"
+                else:
+                    continue  # Skip unknown conditions
+
+                check_query = text(f"SELECT * FROM {table_name} WHERE {cond_sql} LIMIT 1")
+                with self.db_manager.engine.connect() as conn:
+                    triggered = conn.execute(check_query).fetchone()
+
+                    if triggered:
+                        results_triggered.append({
+                            "alarm_id": alarm["id"],
+                            "description": alarm["description"],
+                            "triggered_data": dict(triggered)
+                        })
+        return results_triggered
