@@ -1,184 +1,96 @@
 <template>
   <div class="dashboard">
-    <h1 class="text-center">Detailed Sales Report</h1>
+    <h1 class="text-center">AI-Generated Inventory Report</h1>
 
     <section class="file-schema">
-      <h2>Inventory Summary</h2>
-      <ul>
-        <li><strong>Total products:</strong> {{ summary.total_products }}</li>
-        <li><strong>Total inventory:</strong> {{ summary.total_inventory }}</li>
-        <li>
-          <strong>Average inventory per product:</strong>
-          {{ summary.average_inventory }}
-        </li>
-      </ul>
-    </section>
+      <h2>Generated on: {{ formatDate(report.date) }}</h2>
 
-    <section class="file-schema">
-      <h2>Restock Recommendations</h2>
+      <!-- Download button -->
+      <button @click="downloadPDF" class="download-btn">Download Report as PDF</button>
 
-      <div class="table-wrapper">
-        <table class="styled-table">
-          <thead>
-            <tr>
-              <th>Product ID</th>
-              <th>Inventory Level</th>
-              <th>Forecast</th>
-              <!-- <th>Units Sold</th> -->
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in restock" :key="item['Product ID']">
-              <td>{{ item['Product ID'] }}</td>
-              <td>{{ item['Inventory Level'] }}</td>
-              <td>{{ item['Demand Forecast'] }}</td>
-              <!-- <td>{{ item['Units Sold'] }}</td> -->
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="file-schema">
-      <h2>Sales by Region</h2>
-      <div class="region-buttons">
-        <button
-          v-for="region in Object.keys(report)"
-          :key="region"
-          @click="selectedRegion = region"
-          :class="{ active: selectedRegion === region }"
-        >
-          {{ region }}
-        </button>
-      </div>
-    </section>
-
-    <section
-      v-for="(stores, region) in report"
-      :key="region"
-      v-show="selectedRegion === region"
-      class="file-schema"
-      :id="`region-${region}`"
-    >
-      <h3>Region: {{ region }}</h3>
-
-      <button @click="downloadRegionReport(region)" class="download-btn">
-        Download Report as PDF
-      </button>
-
-      <PieChartRegion :region="region" :data="getStoreSalesData(stores)" />
-
-      <div v-for="(info, storeId) in stores" :key="storeId" class="store-block">
-        <h4>Store ID: {{ storeId }}</h4>
-
-        <div class="product-columns">
-          <!-- Tabla: Top 5 Best-Selling Products -->
-          <div class="column-block">
-            <h5>Top 5 Best-Selling Products</h5>
-            <div class="table-wrapper">
-              <table class="styled-table">
-                <thead>
-                  <tr>
-                    <th>Product ID</th>
-                    <th>Units Sold</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="p in info.top_5_products" :key="p['Product ID']">
-                    <td>{{ p['Product ID'] }}</td>
-                    <td>{{ p['Units Sold'] }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Tabla: Bottom 5 Worst-Selling Products -->
-          <div class="column-block">
-            <h5>Bottom 5 Worst-Selling Products</h5>
-            <div class="table-wrapper">
-              <table class="styled-table">
-                <thead>
-                  <tr>
-                    <th>Product ID</th>
-                    <th>Units Sold</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="p in info.bottom_5_products" :key="p['Product ID']">
-                    <td>{{ p['Product ID'] }}</td>
-                    <td>{{ p['Units Sold'] }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Rendered report content -->
+      <div
+        ref="reportRef"
+        v-if="report.report_text"
+        class="report-text"
+        v-html="formattedText"
+      ></div>
+      <div v-else class="loading">Loading report...</div>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { marked } from 'marked'
+import html2pdf from 'html2pdf.js'
 import DetailReportService from '../services/DetailReportService'
-import PieChartRegion from '../components/dashboard/PieChartRegion.vue'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
 
-const summary = ref({
-  total_products: 0,
-  total_inventory: 0,
-  average_inventory: 0,
+// State for the report and a reference to the HTML block
+const report = ref<{ report_text: string; date: string }>({
+  report_text: '',
+  date: '',
 })
-const restock = ref([])
-const report = ref({})
-const selectedRegion = ref('')
+const reportRef = ref<HTMLElement | null>(null)
 
-const getStoreSalesData = (stores: any) =>
-  Object.entries(stores).map(([storeId, info]: any) => ({
-    name: storeId,
-    value: info.top_5_products.reduce((sum: number, p: any) => sum + p['Units Sold'], 0),
-  }))
+// Convert markdown to HTML
+const formattedText = computed(() =>
+  report.value.report_text ? marked.parse(report.value.report_text) : '',
+)
 
-const downloadRegionReport = async (region: string) => {
-  const section = document.getElementById(`region-${region}`)
-  if (!section) return
-
-  const canvas = await html2canvas(section, { scale: 2 })
-  const imgData = canvas.toDataURL('image/png')
-  const pdf = new jsPDF('p', 'mm', 'a4')
-  const pdfWidth = pdf.internal.pageSize.getWidth()
-  const pdfHeight = (canvas.height * pdfWidth) / canvas.width
-
-  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-  pdf.save(`region_${region}_report.pdf`)
+// Format the date for display
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleString('en-US') // Example: 4/16/2025, 11:51:23 AM
 }
 
+// Download the content as PDF
+const downloadPDF = () => {
+  if (!reportRef.value) return
+
+  const opt = {
+    margin: 0.5,
+    filename: `inventory_report_${new Date().toISOString().slice(0, 10)}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+  }
+
+  html2pdf().set(opt).from(reportRef.value).save()
+}
+
+// Fetch report from backend when mounted
 onMounted(async () => {
-  const [inv, turn, reco] = await Promise.all([
-    DetailReportService.getInventorySummary(),
-    DetailReportService.getTurnoverAnalysisByRegion(),
-    DetailReportService.getRestockRecommendations(),
-  ])
-  summary.value = inv.data
-  report.value = turn.data
-  restock.value = reco.data
-  selectedRegion.value = Object.keys(turn.data)[0]
+  const res = await DetailReportService.get_detailed_report()
+  report.value = res.data
 })
 </script>
 
 <style scoped>
-.product-columns {
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  justify-content: space-between;
+.dashboard {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.column-block {
-  flex: 1;
-  min-width: 280px;
+.text-center {
+  text-align: center;
+}
+
+.file-schema {
+  margin-bottom: 30px;
+  background: #fdfdfd;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.file-schema h2 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #2c3e50;
 }
 
 .download-btn {
@@ -197,137 +109,50 @@ onMounted(async () => {
   background-color: #035471;
 }
 
-.dashboard {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
+.report-text {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.6;
 }
 
-.region-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
+.report-text h2,
+.report-text h3 {
+  color: #046e8f;
+  margin-top: 20px;
 }
 
-.region-buttons button {
-  background-color: #f4f4f4;
-  border: 1px solid #ccc;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+.report-text p {
+  margin: 12px 0;
+  line-height: 1.6;
 }
 
-.region-buttons button.active,
-.region-buttons button:hover {
-  background-color: #046e8f;
-  color: white;
+.report-text ul,
+.report-text ol {
+  margin: 12px 0 12px 20px;
 }
 
-.store-block {
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 15px 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
-}
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.chart-wrapper {
-  background: #f9f9f9;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-table {
-  width: 100%;
-  margin-bottom: 20px;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-th {
-  background-color: #f4f4f4;
-}
-
-.file-schema {
-  margin-bottom: 30px;
-  background: #fdfdfd;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.file-schema h2 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  color: #2c3e50;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-  border-radius: 8px;
-  background: white;
-}
-
-.styled-table {
+.report-text table {
   width: 100%;
   border-collapse: collapse;
+  margin: 20px 0;
   font-size: 0.95rem;
-  background-color: white;
-  border: 1px solid #ddd;
 }
 
-.styled-table thead {
-  background-color: #f4f4f4;
-}
-
-.styled-table th {
-  padding: 12px;
+.report-text th,
+.report-text td {
+  border: 1px solid #ccc;
+  padding: 8px;
   text-align: left;
+}
+
+.report-text thead {
+  background-color: #f4f4f4;
   font-weight: bold;
-  color: #2c3e50;
-  border-bottom: 2px solid #ddd;
 }
 
-.styled-table td {
-  padding: 10px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #555;
-}
-
-.styled-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.styled-table tr:hover {
-  background-color: #f1f1f1;
-  transition: background-color 0.3s ease;
-}
-
-@media (max-width: 768px) {
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #888;
 }
 </style>

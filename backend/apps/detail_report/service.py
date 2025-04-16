@@ -1,6 +1,6 @@
 from utils.agent_manager import AgentManager
+from datetime import datetime
 import pdb
-import pandas as pd
 
 
 class DetailReportService:
@@ -14,21 +14,25 @@ class DetailReportService:
         agent = AgentManager()
 
         prompt = (
-            "Eres un analista de datos especializado en inventarios. Analiza la base de datos actual y redacta "
-            "un informe claro, profesional y bien estructurado en formato Markdown, que incluya lo siguiente:\n\n"
-            "## Resumen del Estado del Inventario\n"
-            "- Describe brevemente la situación actual del inventario.\n"
-            "- Menciona si hay productos con niveles de inventario inusuales (muy altos o bajos).\n\n"
-            "## Productos con Mayor y Menor Rotación\n"
-            "- Enumera los productos con mayor rotación y proporciona datos clave como unidades vendidas o frecuencia de salida.\n"
-            "- Haz lo mismo con los productos con menor rotación.\n\n"
-            "## Recomendaciones de Reabastecimiento\n"
-            "- Sugiere productos que deberían reabastecerse pronto.\n"
-            "- Justifica cada recomendación con base en patrones históricos.\n\n"
-            "## Conclusión\n"
-            "- Resume en pocas líneas los puntos más importantes y la acción prioritaria sugerida.\n\n"
-            "Asegúrate de usar un lenguaje claro, evitar términos técnicos innecesarios y redactar como si el informe fuera presentado a un gerente general no técnico."
+            "You are a data analyst specialized in inventory management. Analyze the current database and write "
+            "a clear, professional, and well-structured report in markdown format, including the following sections:\n\n"
+            "## Inventory Status Summary\n"
+            "- Briefly describe the current state of the inventory.\n"
+            "- Mention if there are any products with unusual stock levels (very high or very low).\n\n"
+            "## High and Low Turnover Products\n"
+            "- List the products with the highest turnover and provide key data such as units sold or frequency of movement.\n"
+            "- Do the same for the products with the lowest turnover.\n\n"
+            "## Restocking Recommendations\n"
+            "- Suggest which products should be restocked soon.\n"
+            "- Justify each recommendation based on historical patterns.\n\n"
+            "## Conclusion\n"
+            "- Summarize the most important points and the suggested priority action in a few sentences.\n\n"
+            "Make sure to use clear language, avoid unnecessary technical terms, and write the report as if presenting it to a non-technical general manager."
+            "**Important:** The entire report must be written in English, with no translations or mixed languages. "
+            "Assume your audience speaks only English."
         )
 
         result_text = agent.query_nlp_text_only(prompt)
-        return {"report_text": result_text}
+        date = datetime.now()
+        return {"report_text": result_text,
+                "date": date}

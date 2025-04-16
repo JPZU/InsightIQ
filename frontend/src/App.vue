@@ -45,17 +45,6 @@
             <span v-if="!isCollapsed">Dashboard</span>
           </router-link>
           <router-link
-            to="/file-manager"
-            @click="closeOffcanvas"
-            class="nav-link mt-1"
-            active-class="active"
-          >
-            <i class="fa-solid fa-folder"></i>
-            <span v-if="!isCollapsed">File Manager</span>
-          </router-link>
-
-          <!-- Botón para generar el PDF -->
-          <router-link
             to="/detail-report"
             @click="closeOffcanvas"
             class="nav-link mt-1"
@@ -63,6 +52,15 @@
           >
             <i class="fa-solid fa-file-pdf"></i>
             <span v-if="!isCollapsed">Detailed Report</span>
+          </router-link>
+          <router-link
+            to="/file-manager"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
+            <i class="fa-solid fa-folder"></i>
+            <span v-if="!isCollapsed">File Manager</span>
           </router-link>
         </ul>
 
