@@ -17,7 +17,7 @@ class FileManagerService:
     def upload_excel(self, file, excel_file_path, table_name, sheet_name=0):
         alarm_manager = AlarmManager()
         FileManager.excel_to_db(excel_file_path, table_name, sheet_name)
-        triggered = alarm_manager.evaluate_alarms_for_table(table_name)
+        triggered = alarm_manager.evaluate_alarm(table_name)
         return {
             "info": f"file '{file.filename}' saved and uploaded to table '{table_name}'",
             "triggered_alarms": triggered
