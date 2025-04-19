@@ -2,9 +2,9 @@ from fastapi import APIRouter
 
 from apps.chat.routes import router as chat_router
 from apps.dashboard.routes import router as dashboard_router
+from apps.detail_report.routes import router as detail_report_router
 from apps.file_manager.routes import router as file_manager_router
 from apps.synthetic_data.routes import router as synthetic_data_router
-from apps.detail_report.routes import router as detail_report_router
 
 router = APIRouter()
 router.include_router(chat_router, prefix="/chat", tags=["chat"])

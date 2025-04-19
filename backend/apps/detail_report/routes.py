@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 
 from apps.detail_report.service import DetailReportService
 
