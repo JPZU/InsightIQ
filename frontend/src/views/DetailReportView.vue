@@ -26,25 +26,21 @@ import { marked } from 'marked'
 import html2pdf from 'html2pdf.js'
 import DetailReportService from '../services/DetailReportService'
 
-// State for the report and a reference to the HTML block
 const report = ref<{ report_text: string; date: string }>({
   report_text: '',
   date: '',
 })
 const reportRef = ref<HTMLElement | null>(null)
 
-// Convert markdown to HTML
 const formattedText = computed(() =>
   report.value.report_text ? marked.parse(report.value.report_text) : '',
 )
 
-// Format the date for display
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
-  return date.toLocaleString('en-US') // Example: 4/16/2025, 11:51:23 AM
+  return date.toLocaleString('en-US')
 }
 
-// Download the content as PDF
 const downloadPDF = () => {
   if (!reportRef.value) return
 
@@ -59,7 +55,6 @@ const downloadPDF = () => {
   html2pdf().set(opt).from(reportRef.value).save()
 }
 
-// Fetch report from backend when mounted
 onMounted(async () => {
   const res = await DetailReportService.get_detailed_report()
   report.value = res.data
