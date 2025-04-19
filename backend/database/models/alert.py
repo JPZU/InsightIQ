@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .base import Base
@@ -14,6 +14,8 @@ class Alert(Base):
     description = Column(Text)               
     createdAt = Column(DateTime, default=func.now())
     updatedAt = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    is_active = Column(Boolean, default=True, nullable=False)
 
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="alerts")

@@ -14,7 +14,7 @@ def get_file_manager_service():
 @router.post("/upload/csv/")
 async def upload_csv(
     file: UploadFile = File(...),
-    table_name: str = Form(...),
+    table_name: str = Form("default_table"),
     file_manager_service: FileManagerService = Depends(get_file_manager_service),
 ):
     # Save the uploaded file to a temporary location
@@ -25,9 +25,9 @@ async def upload_csv(
 
 @router.post("/upload/excel/")
 async def upload_excel(
+    table_name: str = Form(...),
+    sheet_name: int = Form(0),
     file: UploadFile = File(...),
-    table_name: str = "default_table",
-    sheet_name: int = 0,
     file_manager_service: FileManagerService = Depends(get_file_manager_service),
 ):
     # Save the uploaded file to a temporary location

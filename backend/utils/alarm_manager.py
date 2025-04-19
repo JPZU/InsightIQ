@@ -2,6 +2,7 @@ from langchain_openai import ChatOpenAI
 from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
 from sqlalchemy.sql import text
+from datetime import datetime
 from database.session import engine
 
 class AlarmManager:
@@ -115,3 +116,40 @@ class AlarmManager:
                                 "triggered_data": dict(row)
                             })
         return results_triggered
+    
+    def delete_alarm(self, alarm_id: int):
+        query = text("DELETE FROM alerts WHERE id = :alarm_id")
+        with engine.connect() as conn:
+            conn.execute(query, {"alarm_id": alarm_id})
+            conn.commit()
+
+    def get_all_alarms(self):
+        query = text("SELECT * FROM alerts")
+        with engine.connect() as conn:
+            result = conn.execute(query).mappings().all()
+            return [dict(row) for row in result]
+
+    def edit_alarm(self, alarm_id: int, updated_details: dict):
+        if not updated_details:
+            return  
+
+        updated_details["updatedAt"] = datetime.utcnow().isoformat()
+
+        set_clauses = []
+        params = {"alarm_id": alarm_id}
+
+        for key, value in updated_details.items():
+            set_clauses.append(f"`{key}` = :{key}")
+            params[key] = value
+
+        set_clause = ", ".join(set_clauses)
+
+        query = text(f"""
+            UPDATE alerts
+            SET {set_clause}
+            WHERE id = :alarm_id
+        """)
+
+        with engine.connect() as conn:
+            conn.execute(query, params)
+            conn.commit()
