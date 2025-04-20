@@ -3,10 +3,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ChatView from '@/views/ChatView.vue'
+import DetailReportView from '@/views/DetailReportView.vue'
 
 import AdminHomeView from '@/views/admin/AdminHomeView.vue'
 import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
 import FileManagerView from '@/views/admin/FileManagerView.vue'
+// Si prefieres usar FileManagerView fuera del admin, cambia el import:
+import FileManagerView from '@/views/FileManagerView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,11 +67,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/detail-report',
+      name: 'detail-report',
+      component: DetailReportView,
+      meta: {
+        title: 'Detailed Report',
+      },
+    },
   ],
 })
 
 router.beforeEach((to, from) => {
-  document.title = to.meta?.title
+  document.title = to.meta?.title ?? 'InsightIQ'
 })
 
 export default router
