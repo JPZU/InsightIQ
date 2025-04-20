@@ -74,7 +74,8 @@
 
       <!-- Main Content -->
       <div id="content" class="flex-grow-1 p-4">
-        <RouterView />
+        <Navbar />
+        <router-view :key="route.fullPath" />
       </div>
     </div>
 
@@ -86,20 +87,19 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
+import Navbar from './components/layouts/NavbarComponent.vue'
+
+const route = useRoute()
+
+// sidebar state
 import { ref } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
-
 const isCollapsed = ref(false)
-
-function toggleSidebar() {
+const toggleSidebar = () => {
   isCollapsed.value = !isCollapsed.value
 }
-
-function closeOffcanvas() {
-  const offcanvasToggler = document.getElementById('offcanvasToggler')
-  if (offcanvasToggler) {
-    offcanvasToggler.click()
-  }
+const closeOffcanvas = () => {
+  // placeholder if needed
 }
 </script>
 
@@ -112,7 +112,7 @@ function closeOffcanvas() {
   flex-direction: column;
   position: fixed;
   height: 100vh;
-  background-color: #046e8f; /* 🎨 Color azul-morado */
+  background-color: #046e8f;
 }
 
 .sidebar.collapsed {
