@@ -8,8 +8,6 @@ import DetailReportView from '@/views/DetailReportView.vue'
 import AdminHomeView from '@/views/admin/AdminHomeView.vue'
 import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
 import FileManagerView from '@/views/admin/FileManagerView.vue'
-// Si prefieres usar FileManagerView fuera del admin, cambia el import:
-import FileManagerView from '@/views/FileManagerView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
