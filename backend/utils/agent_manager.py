@@ -70,3 +70,7 @@ class AgentManager:
             "output": response.get("output", ""),
             "result": result_data
         }
+
+    def query_nlp_text_only(self, prompt):
+        response = self.agent_executor.invoke({"input": prompt})
+        return response.get("output", "")
