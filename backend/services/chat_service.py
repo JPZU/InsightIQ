@@ -5,19 +5,19 @@ from database.session import SessionLocal
 
 
 class ChatService:
-
     @staticmethod
-    def _get_session():
-        return SessionLocal()
+    def get_chat_by_id(chat_id: int) -> Chat:
+        with SessionLocal() as db:
+            return db.query(Chat).filter(Chat.id == chat_id).first()
 
     @staticmethod
     def get_chats(user_id: int):
-        with ChatService._get_session() as db:
+        with SessionLocal() as db:
             return db.query(Chat).filter(Chat.user_id == user_id).all()
 
     @staticmethod
     def create_chat(user_id: int, name: str) -> Chat:
-        with ChatService._get_session() as db:
+        with SessionLocal() as db:
             new_chat = Chat(user_id=user_id, name=name)
             db.add(new_chat)
             db.commit()
@@ -26,14 +26,14 @@ class ChatService:
             return new_chat
 
     @staticmethod
-    def get_chat_messages(chat_id: int):
-        with ChatService._get_session() as db:
+    def get_chat_messages(chat_id: int, limit: int = 10):
+        with SessionLocal() as db:
             chat = db.query(Chat).filter(Chat.id == chat_id).first()
             if not chat:
                 return []
 
-            questions = db.query(Question).filter(Question.chat_id == chat_id).order_by(Question.createdAt)
-            responses = db.query(Response).filter(Response.chat_id == chat_id).order_by(Response.createdAt)
+            questions = db.query(Question).filter(Question.chat_id == chat_id).order_by(Question.createdAt.desc()).limit(limit).all()
+            responses = db.query(Response).filter(Response.chat_id == chat_id).order_by(Response.createdAt.desc()).limit(limit).all()
 
             messages = [
                 {"type": "question", "content": q.content, "created_at": q.createdAt} for q in questions
@@ -46,7 +46,7 @@ class ChatService:
 
     @staticmethod
     def delete_chat(chat_id: int) -> bool:
-        with ChatService._get_session() as db:
+        with SessionLocal() as db:
             chat = db.query(Chat).filter(Chat.id == chat_id).first()
             if not chat:
                 return False
@@ -56,7 +56,7 @@ class ChatService:
 
     @staticmethod
     def update_chat_name(chat_id: int, new_name: str) -> bool:
-        with ChatService._get_session() as db:
+        with SessionLocal() as db:
             chat = db.query(Chat).filter(Chat.id == chat_id).first()
             if not chat:
                 return False
@@ -67,7 +67,7 @@ class ChatService:
 
     @staticmethod
     def clear_chat_messages(chat_id: int) -> bool:
-        with ChatService._get_session() as db:
+        with SessionLocal() as db:
             chat = db.query(Chat).filter(Chat.id == chat_id).first()
             if not chat:
                 return False

@@ -37,6 +37,12 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
+from database.models.alert import Alert
+from database.models.chat import Chat
+from database.models.dataset import DataSet
+from database.models.question import Question
+from database.models.response import Response
+from database.models.user import User
 
 target_metadata = Base.metadata
 

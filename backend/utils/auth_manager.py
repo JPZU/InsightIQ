@@ -45,23 +45,16 @@ class AuthManager:
         )
 
         try:
-            print(f"Token recibido: {token}")
-            print(f"Secret key: {AuthManager.secret_key[:5]}...")
-            print(f"Algoritmo: {AuthManager.algorithm}")
-            
             payload = jwt.decode(
                 token,
                 AuthManager.secret_key,
                 algorithms=[AuthManager.algorithm]
             )
-            print(f"Payload decodificado: {payload}")
             
             user_id: str = payload.get("sub")
             if user_id is None:
-                print("No se encontró 'sub' en el payload")
                 raise credentials_exception
                 
             return int(user_id)
-        except JWTError as e:
-            print(f"Error JWT: {str(e)}")
+        except JWTError:
             raise credentials_exception

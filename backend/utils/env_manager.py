@@ -19,22 +19,22 @@ class EnvManager:
             raise ValueError(f"Missing environment variable: {key}")
         return value
 
-    @classmethod
-    def get_openai_api_key(cls) -> str:
-        return cls._get_env_var("OPENAI_API_KEY")
+    @staticmethod
+    def get_openai_api_key() -> str:
+        return EnvManager._get_env_var("OPENAI_API_KEY")
 
-    @classmethod
-    def get_database_url(cls) -> str:
-        return cls._get_env_var("DATABASE_URL")
+    @staticmethod
+    def get_database_url() -> str:
+        return EnvManager._get_env_var("DATABASE_URL")
 
-    @classmethod
-    def get_jwt_secret_key(cls) -> str:
-        return cls._get_env_var("JWT_SECRET_KEY")
+    @staticmethod
+    def get_jwt_secret_key() -> str:
+        return EnvManager._get_env_var("JWT_SECRET_KEY")
 
-    @classmethod
-    def get_jwt_algorithm(cls) -> str:
-        return cls._get_env_var("JWT_ALGORITHM")
+    @staticmethod
+    def get_jwt_algorithm() -> str:
+        return EnvManager._get_env_var("JWT_ALGORITHM")
 
-    @classmethod
-    def get_jwt_expiration_time(cls) -> int:
-        return int(cls._get_env_var("JWT_EXPIRATION_TIME"))
+    @staticmethod
+    def get_jwt_expiration_time() -> int:
+        return int(EnvManager._get_env_var("JWT_EXPIRATION_TIME"))

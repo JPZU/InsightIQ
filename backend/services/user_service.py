@@ -9,12 +9,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class UserService:
     @staticmethod
-    def _get_session():
-        return SessionLocal()
-
-    @staticmethod
     def create_user(full_name: str, username: str, email: str, password: str, role: str = "user") -> User:
-        with UserService._get_session() as db:
+        with SessionLocal() as db:
             if UserService.get_user_by_username(username):
                 raise ValueError("Username already registered")
 
@@ -36,17 +32,17 @@ class UserService:
 
     @staticmethod
     def get_user_by_id(user_id: int) -> Optional[User]:
-        with UserService._get_session() as db:
+        with SessionLocal() as db:
             return db.query(User).filter(User.id == user_id).first()
 
     @staticmethod
     def get_user_by_username(username: int) -> Optional[User]:
-        with UserService._get_session() as db:
+        with SessionLocal() as db:
             return db.query(User).filter(User.username == username).first()
 
     @staticmethod
     def get_user_by_email(user_email: int) -> Optional[User]:
-        with UserService._get_session() as db:
+        with SessionLocal() as db:
             return db.query(User).filter(User.email == user_email).first()
 
     @staticmethod
@@ -57,7 +53,7 @@ class UserService:
         password: Optional[str] = None,
         role: Optional[str] = None
     ) -> bool:
-        with UserService._get_session() as db:
+        with SessionLocal() as db:
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
                 return False
@@ -80,7 +76,7 @@ class UserService:
 
     @staticmethod
     def delete_user(user_id: int) -> bool:
-        with UserService._get_session() as db:
+        with SessionLocal() as db:
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
                 return False
