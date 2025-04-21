@@ -10,7 +10,6 @@
       <button @click="downloadChart" class="btn btn-primary mt-2">Download Chart</button>
       <p v-if="message" class="mt-2">{{ message }}</p>
     </div>
-    
   </div>
 </template>
 

@@ -1,6 +1,5 @@
 <template>
   <div class="table-responsive">
-
     <table class="table table-bordered">
       <thead>
         <tr>
@@ -15,9 +14,7 @@
     </table>
 
     <div class="text-center mb-3">
-      <button @click="exportToCSV" class="btn btn-primary">
-        Export to CSV
-      </button>
+      <button @click="exportToCSV" class="btn btn-primary">Export to CSV</button>
     </div>
 
     <!-- Paginación -->
@@ -70,33 +67,36 @@ const paginatedRows = computed(() => {
 
 const exportToCSV = () => {
   if (!props.queryOutput.length) return
-  
+
   // Prepare CSV content
-  let csvContent = "data:text/csv;charset=utf-8,"
-  
+  let csvContent = 'data:text/csv;charset=utf-8,'
+
   // Add headers if they exist
   if (headers.value.length) {
-    csvContent += headers.value.join(",") + "\r\n"
+    csvContent += headers.value.join(',') + '\r\n'
   }
-  
+
   // Add all rows (not just paginated ones)
-  props.queryOutput.forEach(row => {
-    csvContent += row.map(cell => {
-      // Escape cells that contain commas or quotes
-      if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))) {
-        return `"${cell.replace(/"/g, '""')}"`
-      }
-      return cell
-    }).join(",") + "\r\n"
+  props.queryOutput.forEach((row) => {
+    csvContent +=
+      row
+        .map((cell) => {
+          // Escape cells that contain commas or quotes
+          if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))) {
+            return `"${cell.replace(/"/g, '""')}"`
+          }
+          return cell
+        })
+        .join(',') + '\r\n'
   })
-  
+
   // Create download link
   const encodedUri = encodeURI(csvContent)
-  const link = document.createElement("a")
-  link.setAttribute("href", encodedUri)
-  link.setAttribute("download", "table_export.csv")
+  const link = document.createElement('a')
+  link.setAttribute('href', encodedUri)
+  link.setAttribute('download', 'table_export.csv')
   document.body.appendChild(link)
-  
+
   // Trigger download
   link.click()
   document.body.removeChild(link)
