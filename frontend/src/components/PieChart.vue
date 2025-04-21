@@ -2,7 +2,13 @@
   <div>
     <canvas ref="chartCanvas"></canvas>
     <div class="text-center">
+      <select v-model="exportFormat" class="form-select mt-2">
+        <option value="png">PNG</option>
+        <option value="jpg">JPG</option>
+        <option value="pdf">PDF</option>
+      </select>
       <button @click="downloadChart" class="btn btn-primary mt-2">Download Chart</button>
+      <p v-if="message" class="mt-2">{{ message }}</p>
     </div>
   </div>
 </template>
@@ -10,6 +16,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { Chart, registerables } from 'chart.js'
+import { useChartExporter } from '@/hooks/useChartExporter'
 
 Chart.register(...registerables)
 
@@ -76,14 +83,7 @@ const renderChart = () => {
   })
 }
 
-const downloadChart = () => {
-  if (!chartInstance) return
-  
-  const link = document.createElement('a')
-  link.download = `${props.chartTitle || 'pie-chart'}.png`
-  link.href = chartCanvas.value.toDataURL('image/png')
-  link.click()
-}
+const { exportFormat, message, downloadChart } = useChartExporter(props.chartTitle, chartCanvas)
 
 onMounted(renderChart)
 watch(() => [props.xAxis, props.yAxis], renderChart)
