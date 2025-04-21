@@ -1,7 +1,9 @@
-from apps.detail_report.routes import router
-from fastapi.testclient import TestClient
 from unittest.mock import patch
+
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from apps.detail_report.routes import router
 
 app = FastAPI()
 app.include_router(router, prefix="/api/detail_report")
