@@ -1,9 +1,9 @@
 from utils.agent_manager import AgentManager
 
 
-class SQLAgentService:
+class ChatService:
     sql_agent = AgentManager()
 
     @staticmethod
     def get_response(question: str) -> dict:
-        return SQLAgentService.sql_agent.query_nlp(question)
+        return ChatService.sql_agent.query_nlp(question)
