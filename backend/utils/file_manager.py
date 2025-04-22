@@ -7,7 +7,6 @@ from sqlalchemy.sql import text
 
 from utils.db_manager import DBManager
 
-
 class FileManager:
 
     @staticmethod
