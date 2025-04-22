@@ -8,9 +8,8 @@ import DetailReportView from '@/views/DetailReportView.vue'
 import AdminHomeView from '@/views/admin/AdminHomeView.vue'
 import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
 import FileManagerView from '@/views/admin/FileManagerView.vue'
-import AlarmCreateView from '@/views/admin/AlarmCreateView.vue'
-import AlarmListView from '@/views/admin/AlarmListView.vue'
-import AlarmEditView from '@/views/admin/AlarmEditView.vue'
+// Si prefieres usar FileManagerView fuera del admin, cambia el import:
+// import FileManagerView from '@/views/FileManagerView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,31 +64,6 @@ const router = createRouter({
           meta: {
             title: 'File Manager',
           },
-        },
-        {
-          path: 'alarm-create',
-          name: 'alarm-create',
-          component: AlarmCreateView,
-          meta: {
-            title: 'Create Alarm',
-          },
-        },
-        {
-          path: 'alarm-list',
-          name: 'alarm-list',
-          component: AlarmListView,
-          meta: {
-            title: 'List Alarms',
-          },
-        },
-        {
-          path: 'alarm-edit/:id',
-          name: 'alarm-edit',
-          component: AlarmEditView,
-          meta: {
-            title: 'Edit Alarm',
-          },
-          props: true,
         },
       ],
     },

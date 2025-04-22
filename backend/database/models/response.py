@@ -12,8 +12,10 @@ class Response(Base):
     createdAt = Column(DateTime)
     updatedAt = Column(DateTime)
 
-    chat = relationship("Chat", back_populates="responses")
-    chat_id = Column(Integer, ForeignKey("chats.id"))
-    question = relationship("Question", back_populates="response")
+    # Relationships
     question_id = Column(Integer, ForeignKey("questions.id"))
-    visual_resources = relationship("VisualResource", back_populates="response")
+    question = relationship("Question", back_populates="response")
+    chat_id = Column(Integer, ForeignKey("chats.id"))
+    chat = relationship("Chat", back_populates="responses")
+    visual_resources = relationship(
+        "VisualResource", back_populates="response")
