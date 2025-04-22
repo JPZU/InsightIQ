@@ -8,9 +8,9 @@ Create Date: 2025-03-15 22:26:43.484359
 from typing import Sequence, Union
 
 import sqlalchemy as sa
+from sqlalchemy import inspect
 from sqlalchemy.dialects import mysql
 from sqlalchemy.exc import OperationalError
-from sqlalchemy import inspect
 
 from alembic import op
 

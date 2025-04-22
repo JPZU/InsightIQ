@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from langchain_openai import ChatOpenAI
+from sqlalchemy.sql import text
+
+from database.session import engine
 from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
-from sqlalchemy.sql import text
-from datetime import datetime
-from database.session import engine
+
 
 class AlarmManager:
     _instance = None
@@ -79,7 +82,7 @@ class AlarmManager:
                 "user_id": alarm_details["user_id"]
             })
             conn.commit()
-        
+
     def evaluate_alarm(self, table_name: str):
         query = text("""
             SELECT * FROM alerts where table_name = :table_name
@@ -89,7 +92,7 @@ class AlarmManager:
         with engine.connect() as conn:
             result = conn.execute(query, {"table_name": table_name})
             alarms = result.mappings().all()
-            
+
             for alarm in alarms:
                 field = alarm["field"]
                 condition = alarm["condition"]
@@ -116,7 +119,7 @@ class AlarmManager:
                                 "triggered_data": dict(row)
                             })
         return results_triggered
-    
+
     def delete_alarm(self, alarm_id: int):
         query = text("DELETE FROM alerts WHERE id = :alarm_id")
         with engine.connect() as conn:
@@ -131,7 +134,7 @@ class AlarmManager:
 
     def edit_alarm(self, alarm_id: int, updated_details: dict):
         if not updated_details:
-            return  
+            return
 
         updated_details["updatedAt"] = datetime.utcnow().isoformat()
 

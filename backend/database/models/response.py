@@ -2,7 +2,6 @@ from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from .base import Base
-from .visual_resource import VisualResource
 
 
 class Response(Base):
