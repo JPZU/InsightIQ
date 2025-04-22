@@ -16,6 +16,7 @@ export const getNavbarConfig = (role: string): NavbarConfigInterface => {
         { name: 'Home', routeName: 'home' },
         { name: 'Chat', routeName: 'chat' },
         { name: 'Dashboard', routeName: 'dashboard' },
+        { name: 'Report', routeName: 'report' },
       ],
       primaryClass: 'primary-user',
     }

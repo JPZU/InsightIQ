@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String, func
 
 from .base import Base
 
@@ -8,5 +8,6 @@ class DataSet(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     file_path = Column(String(length=255))
-    createdAt = Column(DateTime)
-    updatedAt = Column(DateTime)
+    createdAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now())
+    updatedAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now(), onupdate=func.now())
+

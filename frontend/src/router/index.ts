@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import LoginView from '@/views/LoginView.vue'
+
 import HomeView from '@/views/HomeView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ChatView from '@/views/ChatView.vue'
-import DetailReportView from '@/views/DetailReportView.vue'
+import ReportView from '@/views/ReportView.vue'
 
 import AdminHomeView from '@/views/admin/AdminHomeView.vue'
 import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
@@ -12,6 +14,14 @@ import FileManagerView from '@/views/admin/FileManagerView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      meta: {
+        title: 'Login',
+      },
+    },
     {
       path: '/',
       name: 'home',
@@ -34,6 +44,14 @@ const router = createRouter({
       component: DashboardView,
       meta: {
         title: 'Dashboard',
+      },
+    },
+    {
+      path: '/report',
+      name: 'report',
+      component: ReportView,
+      meta: {
+        title: ' Report',
       },
     },
     {
@@ -64,14 +82,6 @@ const router = createRouter({
           },
         },
       ],
-    },
-    {
-      path: '/detail-report',
-      name: 'detail-report',
-      component: DetailReportView,
-      meta: {
-        title: 'Detailed Report',
-      },
     },
   ],
 })

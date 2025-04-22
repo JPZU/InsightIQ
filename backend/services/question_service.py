@@ -9,8 +9,6 @@ class QuestionService:
             question = Question(
                 content=content,
                 chat_id=chat_id,
-                createdAt=datetime.utcnow(),
-                updatedAt=datetime.utcnow()
             )
             db.add(question)
             db.commit()
