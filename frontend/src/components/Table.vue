@@ -13,8 +13,13 @@
       </tbody>
     </table>
 
-    <div class="text-center mb-3">
-      <button @click="exportToCSV" class="btn btn-primary">Export to CSV</button>
+    <div class="text-center my-3">
+      <select v-model="exportFormat" class="form-select me-2">
+        <option value="csv">CSV</option>
+        <option value="xlsx">XLSX</option>
+      </select>
+      <button @click="downloadTable" class="btn btn-primary mt-2">Download Table</button>
+      <p v-if="message" class="mt-2">{{ message }}</p>
     </div>
 
     <!-- Paginación -->
@@ -38,6 +43,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import * as XLSX from 'xlsx'
 
 const props = defineProps({
   queryOutput: {
@@ -47,7 +53,9 @@ const props = defineProps({
 })
 
 const currentPage = ref(1)
-const rowsPerPage = 5 // Máximo de registros por página
+const rowsPerPage = 5
+const exportFormat = ref('csv')
+const message = ref('')
 
 // Extraer encabezados de la primera fila si existen
 const headers = computed(() => {
@@ -65,41 +73,69 @@ const paginatedRows = computed(() => {
   return props.queryOutput.slice(start, start + rowsPerPage)
 })
 
-const exportToCSV = () => {
-  if (!props.queryOutput.length) return
-
-  // Prepare CSV content
-  let csvContent = 'data:text/csv;charset=utf-8,'
-
-  // Add headers if they exist
-  if (headers.value.length) {
-    csvContent += headers.value.join(',') + '\r\n'
+const downloadTable = () => {
+  if (!props.queryOutput.length) {
+    message.value = 'No data available for export.'
+    return
   }
 
-  // Add all rows (not just paginated ones)
-  props.queryOutput.forEach((row) => {
-    csvContent +=
-      row
-        .map((cell) => {
-          // Escape cells that contain commas or quotes
-          if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))) {
-            return `"${cell.replace(/"/g, '""')}"`
-          }
-          return cell
+  const format = exportFormat.value
+
+  if (format === 'csv') {
+    try {
+      let csvContent = 'data:text/csv;charset=utf-8,'
+
+      if (headers.value.length) {
+        csvContent += headers.value.join(',') + '\r\n'
+      }
+
+      props.queryOutput.forEach((row) => {
+        csvContent +=
+          row
+            .map((cell) =>
+              typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))
+                ? `"${cell.replace(/"/g, '""')}"`
+                : cell,
+            )
+            .join(',') + '\r\n'
+      })
+
+      const encodedUri = encodeURI(csvContent)
+      const link = document.createElement('a')
+      link.setAttribute('href', encodedUri)
+      link.setAttribute('download', 'table_export.csv')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      message.value = 'CSV file downloaded successfully!'
+    } catch (error) {
+      console.error(error)
+      message.value = 'Error exporting CSV file.'
+    }
+  }
+
+  if (format === 'xlsx') {
+    try {
+      const data = props.queryOutput.map((row) => {
+        const obj = {}
+        row.forEach((cell, i) => {
+          obj[headers.value[i] || `Column ${i + 1}`] = cell
         })
-        .join(',') + '\r\n'
-  })
+        return obj
+      })
 
-  // Create download link
-  const encodedUri = encodeURI(csvContent)
-  const link = document.createElement('a')
-  link.setAttribute('href', encodedUri)
-  link.setAttribute('download', 'table_export.csv')
-  document.body.appendChild(link)
+      const worksheet = XLSX.utils.json_to_sheet(data)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Table')
+      XLSX.writeFile(workbook, 'table_export.xlsx')
 
-  // Trigger download
-  link.click()
-  document.body.removeChild(link)
+      message.value = 'XLSX file downloaded successfully!'
+    } catch (error) {
+      console.error(error)
+      message.value = 'Error exporting XLSX file.'
+    }
+  }
 }
 </script>
 
