@@ -29,11 +29,7 @@
           <textarea v-model="alarm.description" rows="3" class="input textarea"></textarea>
         </div>
 
-        <button
-          type="submit"
-          class="btn"
-          :disabled="loading"
-        >
+        <button type="submit" class="btn" :disabled="loading">
           {{ loading ? 'Saving...' : 'Save Changes' }}
         </button>
       </form>

@@ -13,7 +13,7 @@
       </div>
 
       <p v-if="message" class="message">{{ message }}</p>
-      
+
       <!-- Modal for triggered alarms -->
       <div v-if="triggeredAlarms.length" class="modal">
         <div class="modal-content">
@@ -21,7 +21,9 @@
           <h3>Triggered Alarms</h3>
           <ul>
             <li v-for="(alarm, index) in triggeredAlarms" :key="index">
-              <p><strong>The alarm with ID {{ alarm.alarm_id }} was triggered:</strong></p>
+              <p>
+                <strong>The alarm with ID {{ alarm.alarm_id }} was triggered:</strong>
+              </p>
               <p><strong>Description:</strong> {{ alarm.description }}</p>
               <p><strong>Triggered Data:</strong></p>
               <ul>
@@ -83,8 +85,8 @@ export default {
     },
     formatKey(key) {
       // Function to format keys for better readability
-      return key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-    }
+      return key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
+    },
   },
 }
 </script>
