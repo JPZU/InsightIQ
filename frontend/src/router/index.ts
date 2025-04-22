@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ChatView from '@/views/ChatView.vue'
+import DetailReportView from '@/views/DetailReportView.vue'
 
 import AdminHomeView from '@/views/admin/AdminHomeView.vue'
 import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
@@ -10,6 +11,7 @@ import FileManagerView from '@/views/admin/FileManagerView.vue'
 import AlarmCreateView from '@/views/admin/AlarmCreateView.vue'
 import AlarmListView from '@/views/admin/AlarmListView.vue'
 import AlarmEditView from '@/views/admin/AlarmEditView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -91,11 +93,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/detail-report',
+      name: 'detail-report',
+      component: DetailReportView,
+      meta: {
+        title: 'Detailed Report',
+      },
+    },
   ],
 })
 
 router.beforeEach((to, from) => {
-  document.title = to.meta?.title
+  document.title = to.meta?.title ?? 'InsightIQ'
 })
 
 export default router

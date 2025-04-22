@@ -111,7 +111,6 @@ const isValidQueryOutput = (queryOutput) => {
             <select id="chart-type" v-model="chartType" class="form-control">
               <option value="bar">Bar Chart</option>
               <option value="pie">Pie Chart</option>
-              <option value="line">Line Chart</option>
             </select>
           </div>
 

@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from apps.chat.routes import router as chat_router
 from apps.dashboard.routes import router as dashboard_router
+from apps.detail_report.routes import router as detail_report_router
 from apps.file_manager.routes import router as file_manager_router
 from apps.synthetic_data.routes import router as synthetic_data_router
 from apps.alarm_management.routes import router as alarm_management_router
@@ -21,3 +22,8 @@ router.include_router(
 router.include_router(
     alarm_management_router, prefix="/alarm_management", tags=["alarm_management"]
 )
+
+router.include_router(
+    detail_report_router,
+    prefix="/detail_report",
+    tags=["detail_report"])
