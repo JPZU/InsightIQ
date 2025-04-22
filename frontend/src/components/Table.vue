@@ -90,13 +90,14 @@ const downloadTable = () => {
       }
 
       props.queryOutput.forEach((row) => {
-        csvContent += row
-          .map((cell) =>
-            typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))
-              ? `"${cell.replace(/"/g, '""')}"`
-              : cell
-          )
-          .join(',') + '\r\n'
+        csvContent +=
+          row
+            .map((cell) =>
+              typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))
+                ? `"${cell.replace(/"/g, '""')}"`
+                : cell,
+            )
+            .join(',') + '\r\n'
       })
 
       const encodedUri = encodeURI(csvContent)
