@@ -41,7 +41,7 @@ class SyntheticDataService:
             if generated_count < batch_size:
                 remainder = num_records - len(all_synthetic_data)
                 if remainder > 0:
-                    print(f"Insufficient rows generated ({generated_count}/{batch_size}). Retrying... ({attempts + 1}/{MAX_ATTEMPTS})")
+                    print(f"Insufficient rows generated ({generated_count}/{batch_size}). Retrying... ({attempts+1}/{MAX_ATTEMPTS})")
                     attempts += 1
                     continue
 
