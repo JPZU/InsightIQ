@@ -13,28 +13,6 @@
       </div>
 
       <p v-if="message" class="message">{{ message }}</p>
-
-      <!-- Modal for triggered alarms -->
-      <div v-if="triggeredAlarms.length" class="modal">
-        <div class="modal-content">
-          <span class="close" @click="closeModal">&times;</span>
-          <h3>Triggered Alarms</h3>
-          <ul>
-            <li v-for="(alarm, index) in triggeredAlarms" :key="index">
-              <p>
-                <strong>The alarm with ID {{ alarm.alarm_id }} was triggered:</strong>
-              </p>
-              <p><strong>Description:</strong> {{ alarm.description }}</p>
-              <p><strong>Triggered Data:</strong></p>
-              <ul>
-                <li v-for="(value, key) in alarm.triggered_data" :key="key">
-                  <strong>{{ formatKey(key) }}:</strong> {{ value || 'N/A' }}
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -48,7 +26,6 @@ export default {
       selectedFile: null,
       tableName: '',
       message: '',
-      triggeredAlarms: [], // To hold triggered alarms
     }
   },
   methods: {
@@ -74,18 +51,10 @@ export default {
           response = await FileManagerService.uploadCSV(this.selectedFile, this.tableName)
         }
         this.message = response.data.info
-        this.triggeredAlarms = response.data.triggered_alarms || [] // Set triggered alarms
       } catch (error) {
         console.error('Error uploading file:', error)
         this.message = 'Error uploading file.'
       }
-    },
-    closeModal() {
-      this.triggeredAlarms = [] // Close the modal by clearing the alarms
-    },
-    formatKey(key) {
-      // Function to format keys for better readability
-      return key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
     },
   },
 }
@@ -149,35 +118,5 @@ button:hover {
 .message {
   margin-top: 10px;
   font-weight: bold;
-}
-
-/* Modal styles */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 400px;
-  text-align: left;
-}
-
-.close {
-  font-size: 30px;
-  font-weight: bold;
-  cursor: pointer;
-  position: absolute;
-  top: 10px;
-  right: 10px;
 }
 </style>
