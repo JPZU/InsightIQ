@@ -15,7 +15,6 @@ class User(Base):
     createdAt = Column(DateTime, default=func.now(), server_default=func.now())
     updatedAt = Column(DateTime, default=func.now(), server_default=func.now(), onupdate=func.now())
 
-    # Relationships
-    datasets = relationship("DataSet", back_populates="user", cascade="all, delete-orphan")
-    chats = relationship("Chat", back_populates="user", cascade="all, delete-orphan")
     alerts = relationship("Alert", back_populates="user", cascade="all, delete-orphan")
+    chats = relationship("Chat", back_populates="user", cascade="all, delete-orphan")
+    datasets = relationship("DataSet", back_populates="user", cascade="all, delete-orphan")
