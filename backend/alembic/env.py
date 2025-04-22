@@ -1,10 +1,17 @@
 import os
+import importlib
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 from database.models.base import Base
+
+models_dir = os.path.join(os.path.dirname(__file__), "../database/models")
+for filename in os.listdir(models_dir):
+    if filename.endswith(".py") and filename not in ("__init__.py", "base.py"):
+        module_name = f"database.models.{filename[:-3]}"
+        importlib.import_module(module_name)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
