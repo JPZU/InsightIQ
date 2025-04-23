@@ -3,7 +3,8 @@
     <div class="form">
       <h2 class="text-2xl font-bold mb-4 text-center">Edit Alarm</h2>
 
-      <form @submit.prevent="updateAlarm" class="space-y-4">
+      <!-- Formulario solo si alarm está lista -->
+      <form v-if="alarm" @submit.prevent="updateAlarm" class="space-y-4">
         <div>
           <label class="label">Table Name</label>
           <input v-model="alarm.table_name" class="input" />
@@ -29,14 +30,18 @@
           <textarea v-model="alarm.description" rows="3" class="input textarea"></textarea>
         </div>
 
-        <button
-          type="submit"
-          class="btn"
-          :disabled="loading"
-        >
+        <div class="checkbox-container">
+          <input type="checkbox" id="is_active" v-model="alarm.is_active" class="checkbox" />
+          <label for="is_active" class="label ml-2">Active</label>
+        </div>
+
+        <button type="submit" class="btn" :disabled="loading">
           {{ loading ? 'Saving...' : 'Save Changes' }}
         </button>
       </form>
+
+      <!-- Mensaje de carga si alarm no está lista -->
+      <p v-else class="text-center text-gray-500">Loading alarm...</p>
     </div>
   </div>
 </template>
@@ -50,21 +55,18 @@ const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
 
-const alarm = ref({
-  id: Number(route.params.id),
-  table_name: '',
-  field: '',
-  condition: '',
-  threshold: '',
-  description: '',
-})
+// Inicializa alarm como null
+const alarm = ref<any>(null)
 
 const fetchAlarm = async () => {
   try {
     const allAlarms = await AlarmService.listAlarms()
-    const found = allAlarms.find((a: any) => a.id === alarm.value.id)
+    const found = allAlarms.find((a: any) => a.id === Number(route.params.id))
     if (found) {
-      alarm.value = found
+      alarm.value = { 
+        ...found, 
+        is_active: found.is_active === 1 // Convierte 1 a true y 0 a false
+      }
     } else {
       console.error('Alarm not found')
     }
@@ -74,10 +76,11 @@ const fetchAlarm = async () => {
 }
 
 const updateAlarm = async () => {
+  if (!alarm.value) return
   try {
     loading.value = true
     const { id, ...data } = alarm.value
-    await AlarmService.updateAlarm(id, JSON.stringify(data))
+    await AlarmService.updateAlarm(id, data)
     router.push({ name: 'AlarmList' })
   } catch (error) {
     console.error('Error updating alarm:', error)
@@ -145,5 +148,16 @@ onMounted(fetchAlarm)
 .btn:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 </style>

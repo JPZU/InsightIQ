@@ -7,3 +7,4 @@ class AlarmUpdateRequest(BaseModel):
     field: Optional[str] = None
     threshold: Optional[float] = None
     description: Optional[str] = None
+    is_active: Optional[bool] = None
