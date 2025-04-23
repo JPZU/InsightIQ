@@ -41,7 +41,7 @@ class ChatService extends BaseService {
   }
 
   async createChat(name: string = "New Chat"): Promise<{ id: number, name: string }> {
-    return await this.makeRequest(ChatService.BASE_URL, 'post', { name }) as { id: number, name: string }
+    return await this.makeRequest(ChatService.BASE_URL, 'post', { name: name }) as { id: number, name: string }
   }
 
   async getChatMessages(chatId: number): Promise<ChatMessagesResponse> {

@@ -1,3 +1,41 @@
+<script setup>
+import { computed, ref } from 'vue'
+
+const props = defineProps({
+  queryResult: {
+    type: Object,
+    required: true
+  }
+})
+
+const headers = computed(() => Object.keys(props.queryResult))
+
+const rows = computed(() => {
+  const keys = headers.value
+  const length = props.queryResult[keys[0]]?.length || 0
+  return Array.from({ length }, (_, i) => keys.map(key => props.queryResult[key][i]))
+})
+
+// Paginación
+const currentPage = ref(1)
+const rowsPerPage = 5
+
+const paginatedRows = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage
+  return rows.value.slice(start, start + rowsPerPage)
+})
+
+const totalPages = computed(() => Math.ceil(rows.value.length / rowsPerPage))
+
+// Exportar a CSV
+const exportToCSV = () => {
+  const csvRows = [headers.value.join(',')]
+  rows.value.forEach(row => csvRows.push(row.join(',')))
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
+  saveAs(blob, 'data.csv')
+}
+</script>
+
 <template>
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -35,73 +73,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, computed } from 'vue'
-
-const props = defineProps({
-  queryOutput: {
-    type: Array,
-    required: true,
-  },
-})
-
-const currentPage = ref(1)
-const rowsPerPage = 5 // Máximo de registros por página
-
-// Extraer encabezados de la primera fila si existen
-const headers = computed(() => {
-  if (props.queryOutput.length > 0 && Array.isArray(props.queryOutput[0])) {
-    return props.queryOutput[0].map((_, index) => `Column ${index + 1}`)
-  }
-  return []
-})
-
-// Cálculo de paginación
-const totalPages = computed(() => Math.ceil(props.queryOutput.length / rowsPerPage))
-
-const paginatedRows = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage
-  return props.queryOutput.slice(start, start + rowsPerPage)
-})
-
-const exportToCSV = () => {
-  if (!props.queryOutput.length) return
-
-  // Prepare CSV content
-  let csvContent = 'data:text/csv;charset=utf-8,'
-
-  // Add headers if they exist
-  if (headers.value.length) {
-    csvContent += headers.value.join(',') + '\r\n'
-  }
-
-  // Add all rows (not just paginated ones)
-  props.queryOutput.forEach((row) => {
-    csvContent +=
-      row
-        .map((cell) => {
-          // Escape cells that contain commas or quotes
-          if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))) {
-            return `"${cell.replace(/"/g, '""')}"`
-          }
-          return cell
-        })
-        .join(',') + '\r\n'
-  })
-
-  // Create download link
-  const encodedUri = encodeURI(csvContent)
-  const link = document.createElement('a')
-  link.setAttribute('href', encodedUri)
-  link.setAttribute('download', 'table_export.csv')
-  document.body.appendChild(link)
-
-  // Trigger download
-  link.click()
-  document.body.removeChild(link)
-}
-</script>
 
 <style scoped>
 .table-responsive {

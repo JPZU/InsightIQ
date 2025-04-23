@@ -22,155 +22,175 @@ const state = ref({
   loadingMessages: false,
   showNewChatModal: false,
   newChatName: '',
-  showResponseDetails: false
+  expandedMessages: {} // Nuevo estado para controlar qué mensajes tienen gráficas expandidas
 })
 
-const filteredChats = computed(() => {
-  if (!state.value.searchQuery) return state.value.chats
-  return state.value.chats.filter(chat =>
-    chat.name.toLowerCase().includes(state.value.searchQuery.toLowerCase()))
-})
+const filteredChats = computed(() =>
+  !state.value.searchQuery
+    ? state.value.chats
+    : state.value.chats.filter(chat =>
+      chat.name.toLowerCase().includes(state.value.searchQuery.toLowerCase()))
+)
 
 const fetchChats = async () => {
   state.value.loadingChats = true
-  try {
-    const response = await ChatService.getChats()
-    state.value.chats = response.response
-  } finally {
-    state.value.loadingChats = false
-  }
+  const res = await ChatService.getChats()
+  state.value.chats = res.response || []
+  state.value.loadingChats = false
 }
 
 const fetchMessages = async (chatId) => {
-  if (!chatId) return;
-  state.value.loadingMessages = true;
-  try {
-    const response = await ChatService.getChatMessages(chatId);
-    const messages = response.response.messages;
-    console.log('Fetched messages:', messages);
+  if (!chatId) return
+  state.value.loadingMessages = true
 
-    state.value.messages = messages;
-    state.value.selectedChat = chatId;
-    state.value.answer = null; // Reset answer when changing chats
+  const res = await ChatService.getChatMessages(chatId)
+  state.value.messages = res.response?.messages || []
+  state.value.selectedChat = chatId
+  state.value.answer = null
 
-    nextTick(() => {
-      const messagesContainer = document.querySelector('.chat-messages');
-      if (messagesContainer) {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching messages:', error);
-  } finally {
-    state.value.loadingMessages = false;
-  }
-};
+  // Reset expanded messages cuando cambiamos de chat
+  state.value.expandedMessages = {}
+
+  nextTick(() => {
+    scrollToBottom()
+  })
+
+  state.value.loadingMessages = false
+}
 
 const createChatWithName = async () => {
-  try {
-    const newChat = await ChatService.createChat(state.value.newChatName || "New Chat")
-    state.value.chats = Array.isArray(state.value.chats) ? state.value.chats : []
-    state.value.chats.unshift(newChat)
-    state.value.showNewChatModal = false
-    state.value.newChatName = ''
-    await fetchMessages(newChat.id)
-  } catch (error) {
-    console.error('Error creating chat:', error)
-  }
+  if (!state.value.newChatName.trim()) return alert('Por favor ingresa un nombre para el chat')
+
+  const res = await ChatService.createChat(state.value.newChatName)
+  const newChat = res.response
+  state.value.chats = [newChat, ...state.value.chats]
+  state.value.showNewChatModal = false
+  state.value.newChatName = ''
+  await fetchMessages(newChat.id)
 }
+
+const processQueryResult = (result, content) => {
+  const parsed = typeof result === 'string' ? JSON.parse(result) : result;
+
+  if (parsed && Object.keys(parsed).length > 0) {
+    const keys = Object.keys(parsed);
+    let x_axis = [];
+    let y_axis = [];
+    let chartTitle = '';
+
+    if (keys.length === 1) {
+      x_axis = parsed[keys[0]] || [];
+      chartTitle = `Distribución de ${keys[0]}`;
+    } else if (keys.length >= 2) {
+      x_axis = parsed[keys[0]] || [];
+      y_axis = parsed[keys[1]] || [];
+      chartTitle = `${keys[1]} vs ${keys[0]}`;
+    }
+
+    return {
+      content,
+      query_result: parsed,
+      x_axis,
+      y_axis,
+      chartTitle
+    };
+  }
+  return null;
+};
 
 const submitQuestion = async () => {
   if (!state.value.question.trim()) return
 
-  state.value.loading = true
-  state.value.answer = null
   const userQuestion = state.value.question
+  state.value.loading = true
+  state.value.question = ''
 
+  // Agregar pregunta del usuario
+  state.value.messages.push({
+    type: 'question',
+    content: userQuestion,
+    created_at: new Date().toISOString()
+  })
+
+  // Desplazar hacia abajo después de agregar pregunta
+  await nextTick()
+  scrollToBottom()
+
+  let res
   try {
-    state.value.messages = Array.isArray(state.value.messages) ? state.value.messages : []
-    state.value.messages.push({
-      type: 'question',
-      content: userQuestion,
-      created_at: new Date().toISOString()
-    })
-
-    let response
     if (state.value.selectedChat) {
-      response = await ChatService.askChat(state.value.selectedChat, userQuestion)
-      if (response?.success) {
-        const message = {
-          type: 'response',
-          content: response.response?.answer || "No response content",
-          created_at: new Date().toISOString(),
-          result: response.response?.result || {}
-        }
-        state.value.messages.push(message)
-        
-        // Si la respuesta contiene datos para gráficas
-        if (response.response?.result?.x_axis && response.response?.result?.y_axis) {
-          state.value.answer = response.response.result
-        }
-      }
+      res = await ChatService.askChat(state.value.selectedChat, userQuestion)
     } else {
-      response = await ChatService.askQuestion(userQuestion)
-      state.value.answer = response.response
+      res = await ChatService.askQuestion(userQuestion)
     }
 
-    state.value.question = ''
-  } catch (error) {
-    const errorContent = error instanceof Error ? error.message : 'Failed to get response'
-    const errorMessage = {
+    const msg = res.response
+    const processedResult = msg?.query_result ? processQueryResult(msg.query_result, msg.content) : null
+
+    const message = {
       type: 'response',
-      content: errorContent,
-      created_at: new Date().toISOString()
+      content: msg?.content || 'No response content',
+      created_at: new Date().toISOString(),
+      result: processedResult || {}
     }
 
-    if (state.value.selectedChat) {
-      state.value.messages.push(errorMessage)
-    } else {
-      state.value.answer = { error: errorContent }
-    }
+    state.value.messages.push(message)
+
+    // Desplazar hacia abajo después de recibir respuesta
+    await nextTick()
+    scrollToBottom()
+  } catch (error) {
+    console.error('Error al enviar pregunta:', error)
+    state.value.messages.push({
+      type: 'response',
+      content: 'Ocurrió un error al procesar tu pregunta',
+      created_at: new Date().toISOString(),
+      result: {}
+    })
   } finally {
     state.value.loading = false
   }
 }
 
-const clearFields = () => {
-  state.value.question = ''
-  state.value.answer = null
-  state.value.chartTitle = ''
+const getButtonClass = (mode) =>
+  state.value.viewMode === mode ? 'btn-primary text-white' : 'btn-outline-primary'
+
+// Función para desplazar al final del chat
+const scrollToBottom = () => {
+  const messagesContainer = document.querySelector('.chat-messages')
+  if (messagesContainer) {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
+  }
 }
 
-const getButtonClass = (mode) => {
-  return state.value.viewMode === mode ? 'btn-primary text-white' : 'btn-outline-primary'
+// Función para alternar la visualización de gráficas en un mensaje
+const toggleMessageDetails = async (index) => {
+  state.value.expandedMessages = {
+    ...state.value.expandedMessages,
+    [index]: !state.value.expandedMessages[index]
+  }
+
+  // Desplazar hacia abajo después de expandir/contraer
+  await nextTick()
+  scrollToBottom()
 }
 
-const isValidQueryOutput = (queryOutput) => {
-  return queryOutput && !queryOutput.error && Array.isArray(queryOutput) && queryOutput.length > 0
-}
-
-const toggleResponseDetails = () => {
-  state.value.showResponseDetails = !state.value.showResponseDetails
-}
-
-onMounted(fetchChats)
+onMounted(() => {
+  fetchChats()
+})
 </script>
 
 <template>
   <div class="app-container">
-    <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <input v-model="state.searchQuery" placeholder="Buscar chats..." class="search-input">
-        <button @click="state.showNewChatModal = true" class="new-chat-btn">
-          + Nuevo Chat
-        </button>
+        <input v-model="state.searchQuery" placeholder="Buscar chats..." class="search-input" />
+        <button @click="state.showNewChatModal = true" class="new-chat-btn">+ Nuevo Chat</button>
       </div>
-      
+
       <div class="chat-list">
-        <div v-for="chat in filteredChats" :key="chat.id" 
-             @click="fetchMessages(chat.id)"
-             :class="['chat-item', { 'active': chat.id === state.selectedChat }]">
+        <div v-for="chat in filteredChats" :key="chat.id" @click="fetchMessages(chat.id)"
+          :class="['chat-item', { active: chat.id === state.selectedChat }]">
           {{ chat.name }}
         </div>
       </div>
@@ -191,139 +211,80 @@ onMounted(fetchChats)
           </div>
 
           <div v-else>
-            <div v-for="(message, index) in state.messages" :key="index" 
-                 :class="['message', message.type === 'question' ? 'user-message' : 'ai-message']">
+            <div v-for="(message, index) in state.messages" :key="index"
+              :class="['message', message.type === 'question' ? 'user-message' : 'ai-message']">
               <div class="message-content">{{ message.content }}</div>
-              
-              <!-- Botón para mostrar detalles de respuesta si hay datos -->
-              <button v-if="message.type === 'response' && message.result && (message.result.x_axis || message.result.query_output)"
-                      @click="state.answer = message.result; state.showResponseDetails = true"
-                      class="details-btn">
-                Ver detalles
-              </button>
-              
-              <div class="message-time">
-                {{ new Date(message.created_at).toLocaleTimeString() }}
+
+              <div v-if="message.type === 'response' && state.expandedMessages[index] && message.result" class="message-graphs">
+                <div class="btn-group mt-2 mb-2" role="group">
+                  <input type="radio" class="btn-check" name="viewToggle" :id="'viewGraphs' + index" autocomplete="off"
+                    v-model="state.viewMode" value="graphs" />
+                  <label :class="`btn btn-sm ${getButtonClass('graphs')}`" :for="'viewGraphs' + index">Gráficas</label>
+
+                  <input type="radio" class="btn-check" name="viewToggle" :id="'viewTable' + index" autocomplete="off"
+                    v-model="state.viewMode" value="table" />
+                  <label :class="`btn btn-sm ${getButtonClass('table')}`" :for="'viewTable' + index">Tabla</label>
+                </div>
+
+                <div v-if="state.viewMode === 'graphs'">
+                  <select v-model="state.chartType" class="form-control form-control-sm mb-2">
+                    <option value="bar">Barras</option>
+                    <option value="pie">Pastel</option>
+                    <option value="line">Línea</option>
+                  </select>
+
+                  <div v-if="message.result.x_axis?.length && message.result.y_axis?.length">
+                    <BarChart v-if="state.chartType === 'bar'" :xAxis="message.result.x_axis"
+                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || 'Gráfica de Barras'" />
+                    <PieChart v-else-if="state.chartType === 'pie'" :xAxis="message.result.x_axis"
+                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || 'Gráfica de Pastel'" />
+                    <LineChart v-else-if="state.chartType === 'line'" :xAxis="message.result.x_axis"
+                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || 'Gráfica de Líneas'" />
+                  </div>
+                  <div v-else class="alert alert-info p-2">
+                    No hay datos para mostrar gráficas
+                  </div>
+                </div>
+
+                <div v-else-if="state.viewMode === 'table'">
+                  <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                      <thead>
+                        <tr>
+                          <th v-for="(value, key) in message.result.query_result" :key="key">{{ key }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(_, i) in message.result.query_result[Object.keys(message.result.query_result)[0]]"
+                          :key="i">
+                          <td v-for="(values, key) in message.result.query_result" :key="key">
+                            {{ values[i] }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="message-footer">
+                <button v-if="message.type === 'response' && message.result && Object.keys(message.result).length > 0"
+                  @click="toggleMessageDetails(index)" class="details-btn">
+                  {{ state.expandedMessages[index] ? 'Ocultar detalles' : 'Mostrar detalles' }}
+                </button>
+
+                <div class="message-time">
+                  {{ new Date(message.created_at).toLocaleTimeString() }}
+                </div>
               </div>
             </div>
 
-            <div v-if="state.messages.length === 0" class="no-messages">
-              No hay mensajes en este chat
-            </div>
-          </div>
-        </div>
-
-        <!-- Sección de visualización de gráficas/detalles -->
-        <div v-if="state.answer && state.showResponseDetails" class="response-details">
-          <div class="card">
-            <h3>Detalles de la respuesta</h3>
-            
-            <table v-if="state.answer.input || state.answer.output || state.answer.query" class="table formatted-table table-bordered">
-              <tbody>
-                <tr v-if="state.answer.input">
-                  <th scope="row">Input</th>
-                  <td>{{ state.answer.input }}</td>
-                </tr>
-                <tr v-if="state.answer.output">
-                  <th scope="row">Output</th>
-                  <td>{{ state.answer.output }}</td>
-                </tr>
-                <tr v-if="state.answer.query">
-                  <th scope="row">Query</th>
-                  <td>{{ state.answer.query }}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="btn-group mt-3" role="group">
-              <input
-                type="radio"
-                class="btn-check"
-                name="viewToggle"
-                id="viewGraphs"
-                autocomplete="off"
-                v-model="state.viewMode"
-                value="graphs"
-              />
-              <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs"> Gráficas </label>
-
-              <input
-                type="radio"
-                class="btn-check"
-                name="viewToggle"
-                id="viewTable"
-                autocomplete="off"
-                v-model="state.viewMode"
-                value="table"
-              />
-              <label :class="`btn ${getButtonClass('table')}`" for="viewTable"> Tabla </label>
-            </div>
-
-            <div v-if="state.viewMode === 'graphs'">
-              <div class="mt-3">
-                <label for="chart-type">Tipo de gráfica:</label>
-                <select id="chart-type" v-model="state.chartType" class="form-control">
-                  <option value="bar">Barras</option>
-                  <option value="pie">Pastel</option>
-                  <option value="line">Línea</option>
-                </select>
-              </div>
-
-              <div class="mt-3">
-                <label for="chart-title">Título:</label>
-                <input
-                  id="chart-title"
-                  v-model="state.chartTitle"
-                  class="form-control"
-                  placeholder="Título de la gráfica..."
-                />
-              </div>
-
-              <div
-                v-if="!state.answer.x_axis?.length || !state.answer.y_axis?.length"
-                class="alert alert-info mt-3"
-              >
-                No hay datos para mostrar gráficas
-              </div>
-
-              <BarChart
-                v-if="state.chartType === 'bar' && state.answer.x_axis?.length && state.answer.y_axis?.length"
-                :xAxis="state.answer.x_axis"
-                :yAxis="state.answer.y_axis"
-                :chartTitle="state.chartTitle || 'Gráfica de Barras'"
-              />
-              <PieChart
-                v-else-if="state.chartType === 'pie' && state.answer.x_axis?.length && state.answer.y_axis?.length"
-                :xAxis="state.answer.x_axis"
-                :yAxis="state.answer.y_axis"
-                :chartTitle="state.chartTitle || 'Gráfica de Pastel'"
-              />
-              <LineChart
-                v-else-if="state.chartType === 'line' && state.answer.x_axis?.length && state.answer.y_axis?.length"
-                :xAxis="state.answer.x_axis"
-                :yAxis="state.answer.y_axis"
-                :chartTitle="state.chartTitle || 'Gráfica de Líneas'"
-              />
-            </div>
-
-            <div v-else-if="state.viewMode === 'table'">
-              <div v-if="isValidQueryOutput(state.answer.query_output)">
-                <Table :queryOutput="state.answer.query_output" />
-              </div>
-              <div v-else class="alert alert-info mt-3">
-                No hay datos para mostrar en tabla
-              </div>
-            </div>
-
-            <button @click="state.showResponseDetails = false" class="btn btn-secondary mt-3">
-              Cerrar detalles
-            </button>
+            <div v-if="state.messages.length === 0" class="no-messages">No hay mensajes en este chat</div>
           </div>
         </div>
 
         <div class="message-input">
-          <input v-model="state.question" placeholder="Escribe un mensaje..." 
-                 @keyup.enter="submitQuestion" />
+          <input v-model="state.question" placeholder="Escribe un mensaje..." @keyup.enter="submitQuestion" />
           <button @click="submitQuestion" :disabled="state.loading">
             <span v-if="state.loading">Enviando...</span>
             <span v-else>Enviar</span>
@@ -332,13 +293,13 @@ onMounted(fetchChats)
       </div>
     </div>
 
-    <div v-if="state.showNewChatModal" class="modal">
+    <div v-if="state.showNewChatModal" class="modal" @click.self="state.showNewChatModal = false">
       <div class="modal-content">
         <h3>Nuevo Chat</h3>
-        <input v-model="state.newChatName" placeholder="Nombre del chat" />
+        <input v-model="state.newChatName" placeholder="Nombre del chat" @keyup.enter="createChatWithName" />
         <div class="modal-actions">
           <button @click="state.showNewChatModal = false">Cancelar</button>
-          <button @click="createChatWithName">Crear</button>
+          <button @click="createChatWithName" :disabled="!state.newChatName.trim()">Crear</button>
         </div>
       </div>
     </div>
@@ -426,7 +387,7 @@ onMounted(fetchChats)
 }
 
 .message {
-  max-width: 70%;
+  max-width: 80%;
   margin-bottom: 1rem;
   padding: 0.75rem;
   border-radius: 8px;
@@ -443,33 +404,51 @@ onMounted(fetchChats)
   margin-right: auto;
 }
 
+.message-content {
+  margin-bottom: 0.5rem;
+}
+
+.message-graphs {
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-height: 450px;
+  overflow: auto;
+}
+
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
 .message-time {
   font-size: 0.75rem;
   color: #666;
-  text-align: right;
-  margin-top: 0.25rem;
 }
 
 .details-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  background: none;
+  border: none;
+  color: #4a6baf;
   cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 5px;
 }
 
 .details-btn:hover {
-  background: #f8f9fa;
+  text-decoration: underline;
 }
 
 .message-input {
   display: flex;
   padding: 1rem;
   border-top: 1px solid #e0e0e0;
+  background: white;
 }
 
 .message-input input {
@@ -477,10 +456,10 @@ onMounted(fetchChats)
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  margin-right: 0.5rem;
 }
 
 .message-input button {
-  margin-left: 0.5rem;
   padding: 0 1rem;
   background: #0395ff;
   color: white;
@@ -489,53 +468,9 @@ onMounted(fetchChats)
   cursor: pointer;
 }
 
-.response-details {
-  padding: 1rem;
-  border-top: 1px solid #e0e0e0;
-  max-height: 40vh;
-  overflow-y: auto;
-}
-
-.card {
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background: white;
-}
-
-.btn-group {
-  margin-bottom: 1rem;
-}
-
-.btn-primary {
-  background-color: #0d6efd !important;
-  border-color: #0d6efd !important;
-}
-
-.btn-outline-primary {
-  border: 2px solid;
-  color: #0d6efd !important;
-  border-color: #0d6efd !important;
-  background-color: white;
-}
-
-.btn-outline-primary:hover {
-  background-color: #0d6efd !important;
-  color: white !important;
-}
-
-.formatted-table {
-  table-layout: fixed;
-  width: 100%;
-  word-wrap: break-word;
-}
-
-.formatted-table th,
-.formatted-table td {
-  max-width: 400px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
+.message-input button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
 }
 
 /* Modal */
@@ -545,7 +480,7 @@ onMounted(fetchChats)
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -557,6 +492,15 @@ onMounted(fetchChats)
   padding: 2rem;
   border-radius: 8px;
   width: 400px;
+  max-width: 90%;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .modal-actions {
@@ -564,6 +508,22 @@ onMounted(fetchChats)
   justify-content: flex-end;
   margin-top: 1rem;
   gap: 0.5rem;
+}
+
+.modal-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-actions button:first-child {
+  background: #f0f0f0;
+}
+
+.modal-actions button:last-child {
+  background: #0395ff;
+  color: white;
 }
 
 .loading-spinner {
@@ -582,7 +542,96 @@ onMounted(fetchChats)
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilos para los botones de gráficas/tabla */
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.btn-outline-primary {
+  background-color: white;
+  color: #0d6efd;
+  border: 1px solid #0d6efd;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+/* Estilos para tablas */
+.table-responsive {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  max-height: 400px;
+  overflow: auto;
+  display: block;
+}
+
+.table th,
+.table td {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f8f9fa;
+}
+
+.table-sm th,
+.table-sm td {
+  padding: 0.3rem;
+}
+
+/* Estilos para alertas */
+.alert {
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.alert-info {
+  background-color: #e7f5ff;
+  color: #1864ab;
+  border: 1px solid #d0ebff;
+}
+
+/* Estilos para select e inputs */
+.form-control {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+.form-control-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
 }
 </style>

@@ -8,11 +8,12 @@ import ChatView from '@/views/ChatView.vue'
 import ReportView from '@/views/ReportView.vue'
 
 import AdminHomeView from '@/views/admin/AdminHomeView.vue'
-import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
-import FileManagerView from '@/views/admin/FileManagerView.vue'
 import AlarmCreateView from '@/views/admin/AlarmCreateView.vue'
-import AlarmListView from '@/views/admin/AlarmListView.vue'
 import AlarmEditView from '@/views/admin/AlarmEditView.vue'
+import AlarmListView from '@/views/admin/AlarmListView.vue'
+import AlarmView from '@/views/admin/AlarmView.vue'
+import FileManagerView from '@/views/admin/FileManagerView.vue'
+import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -82,6 +83,14 @@ const router = createRouter({
           component: FileManagerView,
           meta: {
             title: 'File Manager',
+          },
+        },
+        {
+          path: 'alarm',
+          name: 'alarm',
+          component: AlarmView,
+          meta: {
+            title: 'Alarms Manager',
           },
         },
         {
