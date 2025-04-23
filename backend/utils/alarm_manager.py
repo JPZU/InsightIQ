@@ -86,7 +86,7 @@ class AlarmManager:
             
     def evaluate_alarm(self, table_name: str):
         query = text("""
-            SELECT * FROM alerts where table_name = :table_name
+            SELECT * FROM alerts where table_name = :table_name AND is_active = 1
         """)
         results_triggered = []
 
