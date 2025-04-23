@@ -25,17 +25,19 @@
     <!-- Paginación -->
     <div class="pagination-container">
       <button class="btn btn-outline-primary" :disabled="currentPage === 1" @click="currentPage--">
-        {{$t('dashboard.previous')}}
+        {{ $t('dashboard.previous') }}
       </button>
 
-      <span class="page-indicator"> {{$t('dashboard.page')}} {{ currentPage }} {{$t('dashboard.of')}} {{ totalPages }} </span>
+      <span class="page-indicator">
+        {{ $t('dashboard.page') }} {{ currentPage }} {{ $t('dashboard.of') }} {{ totalPages }}
+      </span>
 
       <button
         class="btn btn-outline-primary"
         :disabled="currentPage === totalPages"
         @click="currentPage++"
       >
-      {{$t('dashboard.next')}}
+        {{ $t('dashboard.next') }}
       </button>
     </div>
   </div>

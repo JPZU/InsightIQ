@@ -51,7 +51,12 @@ const isValidQueryOutput = (queryOutput) => {
     <div class="content-container">
       <form class="card" @submit.prevent="submitQuestion">
         <h1 class="text-center mb-3">{{ $t('chat.ask') }}</h1>
-        <input class="form-control" v-model="question" :placeholder="$t('chat.type_here')" required />
+        <input
+          class="form-control"
+          v-model="question"
+          :placeholder="$t('chat.type_here')"
+          required
+        />
         <div class="d-flex gap-2 mt-2">
           <button type="submit" class="btn btn-primary flex-grow-1" :disabled="loading">
             {{ loading ? $t('chat.sending') : $t('chat.send') }}
@@ -67,15 +72,15 @@ const isValidQueryOutput = (queryOutput) => {
         <table class="table formatted-table table-bordered">
           <tbody>
             <tr>
-              <th scope="row">{{$t('chat.input')}}</th>
+              <th scope="row">{{ $t('chat.input') }}</th>
               <td>{{ answer.input || $t('chat.na') }}</td>
             </tr>
             <tr>
-              <th scope="row">{{$t('chat.output')}}</th>
+              <th scope="row">{{ $t('chat.output') }}</th>
               <td>{{ answer.output || $t('chat.na') }}</td>
             </tr>
             <tr>
-              <th scope="row">{{$t('chat.query')}}</th>
+              <th scope="row">{{ $t('chat.query') }}</th>
               <td>{{ answer.query || $t('chat.na') }}</td>
             </tr>
           </tbody>
@@ -91,7 +96,9 @@ const isValidQueryOutput = (queryOutput) => {
             v-model="viewMode"
             value="graphs"
           />
-          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs">{{$t('chat.charts')}}</label>
+          <label :class="`btn ${getButtonClass('graphs')}`" for="viewGraphs">{{
+            $t('chat.charts')
+          }}</label>
 
           <input
             type="radio"
@@ -102,15 +109,17 @@ const isValidQueryOutput = (queryOutput) => {
             v-model="viewMode"
             value="table"
           />
-          <label :class="`btn ${getButtonClass('table')}`" for="viewTable">{{$t('chat.table')}}</label>
+          <label :class="`btn ${getButtonClass('table')}`" for="viewTable">{{
+            $t('chat.table')
+          }}</label>
         </div>
 
         <div v-if="viewMode === 'graphs'">
           <div class="mt-3">
-            <label for="chart-type">{{$t('chat.select_chart')}}</label>
+            <label for="chart-type">{{ $t('chat.select_chart') }}</label>
             <select id="chart-type" v-model="chartType" class="form-control">
-              <option value="bar">{{$t('chat.bar_chart')}}</option>
-              <option value="pie">{{$t('chat.pie_chart')}}</option>
+              <option value="bar">{{ $t('chat.bar_chart') }}</option>
+              <option value="pie">{{ $t('chat.pie_chart') }}</option>
             </select>
           </div>
 

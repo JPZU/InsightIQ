@@ -31,7 +31,9 @@
         >
           <h3>{{ column }}</h3>
           <p>{{ $t('dashboard.values_1') }} {{ stats.count }} {{ $t('dashboard.values_2') }}</p>
-          <p><strong>{{ $t('dashboard.stdev') }}</strong> {{ stats.std.toFixed(2) }}</p>
+          <p>
+            <strong>{{ $t('dashboard.stdev') }}</strong> {{ stats.std.toFixed(2) }}
+          </p>
           <BarChartDashboard :columnName="column" :stats="filterStats(stats)" />
         </div>
       </div>
@@ -74,7 +76,6 @@ const fetchDashboardData = async () => {
     console.error(t('dashboard.error_data'), error)
   }
 }
-
 
 const filterStats = (stats: Record<string, number>) => {
   const { std, count, ...filteredStats } = stats
