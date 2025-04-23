@@ -1,11 +1,13 @@
+import os
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import os
-from utils.i18n import set_translator, LanguageMiddleware
 
 from router import router
+from utils.i18n import set_translator
 
 app = FastAPI()
+
 
 @app.middleware("http")
 async def add_locale_middleware(request: Request, call_next):
@@ -27,7 +29,7 @@ app.include_router(router, prefix="/api")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to SoftServeAnalytics API"}
-

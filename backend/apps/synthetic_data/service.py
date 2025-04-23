@@ -1,6 +1,7 @@
 from utils.db_manager import DBManager
+from utils.i18n import _
 from utils.synthetic_manager import SyntheticDataManager
-from utils.i18n import _ 
+
 
 class SyntheticDataService:
 
@@ -18,7 +19,6 @@ class SyntheticDataService:
 
         if not schema:
             return {"error": _("table_not_found").format(table_name=table_name)}
-
 
         if details and len(details) > 500:
             return {"error": _("error_details_too_long")}
