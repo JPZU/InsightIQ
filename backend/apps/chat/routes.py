@@ -1,13 +1,12 @@
 import asyncio
 from functools import partial
-
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from utils.i18n import _ 
 
 from apps.chat.service import ChatService
 
 router = APIRouter()
-
 
 class ChatRequest(BaseModel):
     question: str
@@ -25,12 +24,12 @@ async def question(request: ChatRequest):
         if not response:
             raise HTTPException(
                 status_code=500,
-                detail="Failed to process SQL query")
+                detail=_("error_sql_processing_failed"))
 
         return {"response": response}
 
     except asyncio.TimeoutError:
         raise HTTPException(
             status_code=503,
-            detail="Server is busy or not connected. Please try again later."
+            detail=_("error_server_busy")
         )

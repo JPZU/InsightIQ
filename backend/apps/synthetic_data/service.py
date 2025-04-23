@@ -1,6 +1,6 @@
 from utils.db_manager import DBManager
 from utils.synthetic_manager import SyntheticDataManager
-
+from utils.i18n import _ 
 
 class SyntheticDataService:
 
@@ -17,10 +17,11 @@ class SyntheticDataService:
         sample_data = db_manager.get_sample_data(table_name, limit)
 
         if not schema:
-            return {"error": f"Table '{table_name}' not found."}
+            return {"error": _("table_not_found").format(table_name=table_name)}
+
 
         if details and len(details) > 500:
-            return {"error": "Details too long. Please provide a shorter description."}
+            return {"error": _("error_details_too_long")}
 
         remainder = num_records
         all_synthetic_data = []
@@ -41,22 +42,22 @@ class SyntheticDataService:
             if generated_count < batch_size:
                 remainder = num_records - len(all_synthetic_data)
                 if remainder > 0:
-                    print(f"Insufficient rows generated ({generated_count}/{batch_size}). Retrying... ({attempts+1}/{MAX_ATTEMPTS})")
+                    print(_(f"Insufficient rows generated ({generated_count}/{batch_size}). Retrying... ({attempts+1}/{MAX_ATTEMPTS})"))
                     attempts += 1
                     continue
 
             elif generated_count > batch_size:
-                print(f"Too many rows generated ({generated_count}/{batch_size}). Trimming excess...")
+                print(_(f"Too many rows generated ({generated_count}/{batch_size}). Trimming excess..."))
                 all_synthetic_data = all_synthetic_data[:num_records]
 
             remainder = num_records - len(all_synthetic_data)
-            print(f"Batch generated: {generated_count}, Remaining: {remainder}")
+            print(_(f"Batch generated: {generated_count}, Remaining: {remainder}"))
 
             if remainder <= 0:
                 break
 
         if remainder > 0:
-            print(f"Max attempts reached. Could not generate full {num_records} records.")
+            print(_(f"Max attempts reached. Could not generate full {num_records} records."))
 
         return {
             "table": table_name,

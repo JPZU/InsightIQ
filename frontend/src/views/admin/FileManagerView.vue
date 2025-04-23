@@ -1,15 +1,15 @@
 <template>
   <div class="container">
     <div class="card">
-      <h1 class="text-center">File Manager</h1>
-      <p class="text-center">Upload CSV or Excel files to load data into the database.</p>
+      <h1 class="text-center">{{ $t('file_manager.title') }}</h1>
+      <p class="text-center">{{ $t('file_manager.instructions') }}</p>
 
       <div class="upload-section">
         <label class="file-input-container">
           <input type="file" @change="onFileSelected" accept=".csv,.xls,.xlsx" />
         </label>
-        <input type="text" v-model="tableName" placeholder="Table Name" />
-        <button @click="uploadFile">Upload File</button>
+        <input type="text" v-model="tableName" :placeholder="$t('file_manager.table_name')" />
+        <button @click="uploadFile">{{ $t('file_manager.upload') }}</button>
       </div>
 
       <p v-if="message" class="message">{{ message }}</p>
@@ -34,17 +34,17 @@ export default {
     },
     async uploadFile() {
       if (!this.selectedFile) {
-        this.message = 'Please select a file.'
+        this.message = this.$t('file_manager.select_file')
         return
       }
       if (!this.tableName) {
-        this.message = 'Please enter a table name.'
+        this.message = this.$t('file_manager.table_name_required')
         return
       }
 
       try {
         let response
-        console.log('Uploading file with table name:', this.tableName)
+        console.log(this.$t('file_manager.uploading'), this.tableName)
         if (this.selectedFile.name.endsWith('.xls') || this.selectedFile.name.endsWith('.xlsx')) {
           response = await FileManagerService.uploadExcel(this.selectedFile, this.tableName)
         } else {
@@ -52,8 +52,8 @@ export default {
         }
         this.message = response.data.info
       } catch (error) {
-        console.error('Error uploading file:', error)
-        this.message = 'Error uploading file.'
+        console.error(this.$t('file_manager.error_uploading'), error)
+        this.message = this.$t('file_manager.error_uploading')
       }
     },
   },

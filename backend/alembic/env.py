@@ -1,5 +1,6 @@
 import os
 from logging.config import fileConfig
+from utils.i18n import _ 
 
 from sqlalchemy import engine_from_config, pool
 
@@ -23,7 +24,7 @@ if os.path.exists(ENV_PATH):
 database_url = os.getenv("DATABASE_URL")
 
 if not database_url:
-    raise ValueError("The DATABASE_URL environment variable is not set")
+    raise ValueError(_("error_database_url_missing"))
 
 config.set_main_option("sqlalchemy.url", database_url)
 
