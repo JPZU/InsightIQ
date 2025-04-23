@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
 from services.chat_service import ChatService
 from services.question_service import QuestionService
 from services.response_service import ResponseService
@@ -36,10 +37,20 @@ def get_chats(current_user: int = Depends(AuthManager.get_current_user)):
         return BaseResponse(success=False, message=f"Failed to retrieve chats: {str(e)}")
 
 
+class CreateChatRequest(BaseModel):
+    name: str = "New Chat"
+
 @router.post("/")
-def create_chat(name: str = "New Chat", current_user: int = Depends(AuthManager.get_current_user)):
+def create_chat(
+    request: CreateChatRequest = None,
+    name: str = None,
+    current_user: int = Depends(AuthManager.get_current_user)
+):
     try:
-        chat = ChatService.create_chat(current_user, name)
+        # Determinar el nombre del chat
+        chat_name = request.name if request else (name if name else "New Chat")
+        
+        chat = ChatService.create_chat(current_user, chat_name)
         return BaseResponse(success=True, response={"id": chat.id, "name": chat.name})
     except Exception as e:
         logger.error(f"Error in create_chat: {str(e)}")
@@ -58,11 +69,16 @@ def get_chat_messages(chat_id: int, current_user: int = Depends(AuthManager.get_
         logger.error(f"Error in get_chat_messages: {str(e)}")
         return BaseResponse(success=False, message=f"Failed to retrieve chat messages: {str(e)}")
 
-
-from pydantic import BaseModel
+from typing import Optional, Dict, Any
 
 class ChatQuestionRequest(BaseModel):
     question: str
+
+class ResultData(BaseModel):
+    output: str
+    result: Optional[Dict[str, Any]] = None
+    sql_query: Optional[str] = None
+    intermediate_steps: Optional[list] = None
 
 @router.post("/{chat_id}")
 def ask_chat(
@@ -70,58 +86,28 @@ def ask_chat(
     request: ChatQuestionRequest,
     current_user: int = Depends(AuthManager.get_current_user)
 ):
-    try:
-        get_authorized_chat(chat_id, current_user)
-        
-        try:
-            agent_response = agent.query_nlp(request.question, chat_id)
-            print('hola')
-            response_text = agent_response.get("output", "")
-            result_data = agent_response.get("result", {})
-        except Exception as agent_error:
-            logger.error(f"Agent error in ask_chat: {str(agent_error)}")
-            return BaseResponse(
-                success=False,
-                response={
-                    "answer": f"Error processing your question: {str(agent_error)}",
-                    "result": {}
-                },
-                message=f"Agent error: {str(agent_error)}"
-            )
-        
-        try:
-            new_question = QuestionService.create_question(chat_id, request.question)
-            ResponseService.create_response(chat_id, new_question.id, response_text)
-        except Exception as db_error:
-            logger.error(f"Database error in ask_chat: {str(db_error)}")
-            return BaseResponse(
-                success=True,
-                response={
-                    "answer": response_text,
-                    "result": result_data
-                },
-                message="Warning: Response not saved to database"
-            )
-        
-        return BaseResponse(
-            success=True,
-            response={
-                "answer": response_text,
-                "result": result_data
-            }
-        )
-    except HTTPException as he:
-        raise he
-    except Exception as e:
-        logger.error(f"Error in ask_chat: {str(e)}")
-        return BaseResponse(
-            success=False,
-            response={
-                "answer": f"System error: {str(e)}",
-                "result": {}
-            },
-            message=f"Failed to process question: {str(e)}"
-        )
+
+    get_authorized_chat(chat_id, current_user)
+    
+    agent_response = agent.query_nlp(request.question, chat_id)
+    content = agent_response.get("content", "")
+    query_result = agent_response.get("query_result", {})
+    
+    new_question = QuestionService.create_question(chat_id, request.question)
+    response = ResponseService.create_response(
+        chat_id=chat_id,
+        question_id=new_question.id,
+        content=content,
+        query_result=query_result
+    )
+
+    return BaseResponse(
+        success=True,
+        response={
+            "content": content,
+            "query_result": query_result
+        }
+    )
 
 
 @router.put("/{chat_id}")

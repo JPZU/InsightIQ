@@ -67,8 +67,8 @@ class AgentManager:
                 result_data = {"error": str(e)}
 
         return {
-            "output": response.get("output", ""),
-            "result": result_data
+            "content": response.get("output", ""),
+            "query_result": result_data,
         }
 
     def query_nlp_text_only(self, prompt):

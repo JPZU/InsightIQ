@@ -3,7 +3,7 @@ from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
 from sqlalchemy.sql import text
 from datetime import datetime
-from database.session import engine
+from database.session import SessionLocal
 
 class AlarmManager:
     _instance = None
@@ -12,7 +12,7 @@ class AlarmManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(AlarmManager, cls).__new__(cls)
-            api_key = EnvManager.get_api_key()
+            api_key = EnvManager.get_openai_api_key()
             cls._instance.llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 openai_api_key=api_key,
@@ -41,7 +41,6 @@ class AlarmManager:
         The user will describe the alarm in natural language, and you will generate a structured alarm detail.
 
         Table schema: {table_schema}.
-
         """
 
         if sample_data:
@@ -67,11 +66,11 @@ class AlarmManager:
             INSERT INTO alerts (`condition`, `table_name`, `field`, `threshold`, `description`, createdAt, updatedAt, user_id, is_active)
             VALUES (:condition, :table_name, :field, :threshold, :description, :createdAt, :updatedAt, :user_id, :is_active)
         """)
-        
+
         is_active = alarm_details.get("is_active", True)  # By default, set to True
         
-        with engine.connect() as conn:
-            conn.execute(query, {
+        with SessionLocal() as session:
+            session.execute(query, {
                 "condition": alarm_details["condition"],
                 "table_name": alarm_details["table_name"],
                 "field": alarm_details["field"],
@@ -80,20 +79,20 @@ class AlarmManager:
                 "createdAt": alarm_details["createdAt"],
                 "updatedAt": alarm_details["updatedAt"],
                 "user_id": alarm_details["user_id"],
-                "is_active": is_active  
+                "is_active": is_active
             })
-            conn.commit()
-            
+            session.commit()
+
     def evaluate_alarm(self, table_name: str):
         query = text("""
-            SELECT * FROM alerts where table_name = :table_name
+            SELECT * FROM alerts where table_name = :table_name AND is_active = 1
         """)
         results_triggered = []
 
-        with engine.connect() as conn:
-            result = conn.execute(query, {"table_name": table_name})
+        with SessionLocal() as session:
+            result = session.execute(query, {"table_name": table_name})
             alarms = result.mappings().all()
-            
+
             for alarm in alarms:
                 field = alarm["field"]
                 condition = alarm["condition"]
@@ -109,33 +108,34 @@ class AlarmManager:
                     continue  # Skip unknown conditions
 
                 check_query = text(f"SELECT * FROM {table_name} WHERE {cond_sql}")
-                with self.db_manager.engine.connect() as conn:
-                    triggered = conn.execute(check_query).mappings().all()
+                triggered = session.execute(check_query).mappings().all()
 
-                    if triggered:
-                        for row in triggered:
-                            results_triggered.append({
-                                "alarm_id": alarm["id"],
-                                "description": alarm["description"],
-                                "triggered_data": dict(row)
-                            })
+                if triggered:
+                    for row in triggered:
+                        results_triggered.append({
+                            "alarm_id": alarm["id"],
+                            "description": alarm["description"],
+                            "triggered_data": dict(row)
+                        })
         return results_triggered
-    
+
     def delete_alarm(self, alarm_id: int):
         query = text("DELETE FROM alerts WHERE id = :alarm_id")
-        with engine.connect() as conn:
-            conn.execute(query, {"alarm_id": alarm_id})
-            conn.commit()
+
+        with SessionLocal() as session:
+            session.execute(query, {"alarm_id": alarm_id})
+            session.commit()
 
     def get_all_alarms(self):
         query = text("SELECT * FROM alerts")
-        with engine.connect() as conn:
-            result = conn.execute(query).mappings().all()
+
+        with SessionLocal() as session:
+            result = session.execute(query).mappings().all()
             return [dict(row) for row in result]
 
     def edit_alarm(self, alarm_id: int, updated_details: dict):
         if not updated_details:
-            return  
+            return
 
         updated_details["updatedAt"] = datetime.utcnow().isoformat()
 
@@ -154,6 +154,6 @@ class AlarmManager:
             WHERE id = :alarm_id
         """)
 
-        with engine.connect() as conn:
-            conn.execute(query, params)
-            conn.commit()
+        with SessionLocal() as session:
+            session.execute(query, params)
+            session.commit()

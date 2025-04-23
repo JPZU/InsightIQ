@@ -14,8 +14,8 @@ class Alert(Base):
     table_name = Column(String(255))       
     threshold = Column(Integer)              
 
-    createdAt = Column(DateTime, default=func.now(), nullable=False, default=func.now(), server_default=func.now())
-    updatedAt = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False, default=func.now(), server_default=func.now(), onupdate=func.now())
+    createdAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now())
+    updatedAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now(), onupdate=func.now())
 
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="alerts")

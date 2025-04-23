@@ -1,8 +1,8 @@
-"""initial
+"""initial migration
 
-Revision ID: a344ce864f5f
-Revises: bb1191e7de16
-Create Date: 2025-04-07 22:20:25.276460
+Revision ID: 97c4d19f7621
+Revises: 
+Create Date: 2025-04-22 19:08:19.935323
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a344ce864f5f'
-down_revision: Union[str, None] = 'bb1191e7de16'
+revision: str = '97c4d19f7621'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -23,8 +23,8 @@ def upgrade() -> None:
     op.create_table('datasets',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('file_path', sa.String(length=255), nullable=True),
-    sa.Column('createdAt', sa.DateTime(), nullable=True),
-    sa.Column('updatedAt', sa.DateTime(), nullable=True),
+    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_datasets_id'), 'datasets', ['id'], unique=False)
@@ -44,8 +44,13 @@ def upgrade() -> None:
     op.create_table('alerts',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('condition', sa.String(length=255), nullable=True),
-    sa.Column('createdAt', sa.DateTime(), nullable=True),
-    sa.Column('updatedAt', sa.DateTime(), nullable=True),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('field', sa.String(length=255), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('table_name', sa.String(length=255), nullable=True),
+    sa.Column('threshold', sa.Integer(), nullable=True),
+    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -65,8 +70,8 @@ def upgrade() -> None:
     op.create_table('questions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('content', sa.String(length=255), nullable=True),
-    sa.Column('createdAt', sa.DateTime(), nullable=True),
-    sa.Column('updatedAt', sa.DateTime(), nullable=True),
+    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('chat_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -76,8 +81,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('content', sa.Text(), nullable=True),
     sa.Column('query_result', sa.JSON(), nullable=True),
-    sa.Column('createdAt', sa.DateTime(), nullable=True),
-    sa.Column('updatedAt', sa.DateTime(), nullable=True),
+    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('chat_id', sa.Integer(), nullable=True),
     sa.Column('question_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ),
