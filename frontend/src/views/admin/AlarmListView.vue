@@ -2,7 +2,9 @@
   <div class="p-6 max-w-4xl mx-auto">
     <h2 class="text-2xl font-bold mb-4">Registered Alarms</h2>
 
-    <div v-if="alarms.length === 0" class="text-gray-600">No alarms registered.</div>
+    <div v-if="alarms.length === 0" class="text-gray-600">
+      No alarms registered.
+    </div>
 
     <div v-else class="space-y-4">
       <div
@@ -16,8 +18,18 @@
           <p><strong>Condition:</strong> {{ alarm.condition }} {{ alarm.threshold }}</p>
           <p><strong>Description:</strong> {{ alarm.description }}</p>
         </div>
-        <button @click="goToEditAlarm(alarm.id)" class="btn-edit">Edit</button>
-        <button @click="deleteAlarm(alarm.id)" class="btn-delete">Delete</button>
+        <button
+          @click="goToEditAlarm(alarm.id)"
+          class="btn-edit"
+        >
+          Edit
+        </button>
+        <button
+          @click="deleteAlarm(alarm.id)"
+          class="btn-delete"
+        >
+          Delete
+        </button>
       </div>
     </div>
   </div>
@@ -56,7 +68,7 @@ const fetchAlarms = async () => {
 const deleteAlarm = async (id: number) => {
   try {
     await AlarmService.deleteAlarm(id)
-    alarms.value = alarms.value.filter((alarm) => alarm.id !== id)
+    alarms.value = alarms.value.filter(alarm => alarm.id !== id)
   } catch (error) {
     console.error('Error deleting alarm:', error)
   }
@@ -77,11 +89,11 @@ onMounted(fetchAlarms)
 }
 
 .btn-edit:hover {
-  background-color: #2563eb;
+  background-color: #2563eb; 
 }
 
 .btn-delete {
-  background-color: #ef4444;
+  background-color: #ef4444; 
   color: white;
   padding: 8px 12px;
   border-radius: 4px;
@@ -91,6 +103,6 @@ onMounted(fetchAlarms)
 }
 
 .btn-delete:hover {
-  background-color: #dc2626;
+  background-color: #dc2626; 
 }
 </style>

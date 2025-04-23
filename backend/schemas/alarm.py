@@ -1,7 +1,5 @@
-from typing import Optional
-
 from pydantic import BaseModel
-
+from typing import Optional
 
 class AlarmUpdateRequest(BaseModel):
     table_name: Optional[str] = None
@@ -9,3 +7,4 @@ class AlarmUpdateRequest(BaseModel):
     field: Optional[str] = None
     threshold: Optional[float] = None
     description: Optional[str] = None
+    is_active: Optional[bool] = None

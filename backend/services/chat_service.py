@@ -3,7 +3,6 @@ from database.models.question import Question
 from database.models.response import Response
 from database.session import SessionLocal
 
-
 class ChatService:
 
     @staticmethod
@@ -31,16 +30,16 @@ class ChatService:
             chat = db.query(Chat).filter(Chat.id == chat_id).first()
             if not chat:
                 return []
-
+            
             questions = db.query(Question).filter(Question.chat_id == chat_id).order_by(Question.createdAt).offset(start).limit(end - start).all()
             responses = db.query(Response).filter(Response.chat_id == chat_id).order_by(Response.createdAt).offset(start).limit(end - start).all()
-
+            
             messages = [
                 {"type": "question", "content": q.content, "created_at": q.createdAt} for q in questions
             ] + [
                 {"type": "response", "content": r.content, "created_at": r.createdAt} for r in responses
             ]
-
+            
             messages.sort(key=lambda x: x["created_at"])
             return messages
 
@@ -71,9 +70,9 @@ class ChatService:
             chat = db.query(Chat).filter(Chat.id == chat_id).first()
             if not chat:
                 return False
-
+            
             db.query(Question).filter(Question.chat_id == chat_id).delete()
             db.query(Response).filter(Response.chat_id == chat_id).delete()
-
+            
             db.commit()
             return True

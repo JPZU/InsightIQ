@@ -9,6 +9,7 @@ export const getNavbarConfig = (role: string): NavbarConfigInterface => {
         { name: 'File Manager', routeName: 'file-manager' },
         { name: 'Create Alarm', routeName: 'alarm-create' },
         { name: 'Alarm List', routeName: 'alarm-list' },
+        
       ],
       primaryClass: 'primary-admin',
     }

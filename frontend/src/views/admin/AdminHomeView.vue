@@ -38,9 +38,7 @@
           <div class="card shadow-sm p-3 card-hover h-100 text-center">
             <i class="bi bi-bell-plus h2" style="color: #183446"></i>
             <h5>Create Alarm</h5>
-            <p class="text-muted">
-              Describe in natural language the condition for generating an alarm..
-            </p>
+            <p class="text-muted">Describe in natural language the condition for generating an alarm..</p>
           </div>
         </div>
         <div class="col-md-4" @click="$router.push('/admin/alarm-list')">
