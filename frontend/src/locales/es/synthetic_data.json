@@ -1,0 +1,21 @@
+{
+  "title": "Generar datos sintéticos",
+  "change_language": "Cambiar idioma",
+  "select_table": "Seleccionar tabla",
+  "loading_tables": "Cargando tablas...",
+  "records": "Número de registros",
+  "details": "Detalles",
+  "details_desc": "Si lo deseas, danos más detalles sobre el estilo que deberían tener los datos sintéticos.",
+  "request_limit": "Por favor, escribe tu solicitud en menos de 500 caracteres.",
+  "request_example": "Ejemplo: Genera personas mayores de 35 años.",
+  "generate": "Generar datos",
+  "generating": "Generando datos...",
+  "generated": "Datos generados para:",
+  "add_to": "Agregar datos a ",
+  "error_tables": "Error al obtener las tablas",
+  "select_table_desc": "Por favor, selecciona una tabla.",
+  "select_records": "Por favor, selecciona una cantidad de registros para generar.",
+  "error_data": "Error al generar datos",
+  "error_data_desc": "No se pudieron generar los datos sintéticos.",
+  "add_to_database": "Agregando base de datos sintética a:"
+}

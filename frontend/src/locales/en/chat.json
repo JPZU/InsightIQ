@@ -1,0 +1,23 @@
+{
+  "title": "InsightIQ",
+  "change_language": "Change Language",
+  "chat": "Chat",
+  "error_fetch": "Error fetching response:",
+  "error_fetch_desc": "Failed to fetch response. Please try again.",
+  "ask": "Ask a question",
+  "type_here": "Type here...",
+  "sending": "Sending...",
+  "send": "Send",
+  "response": "Response",
+  "na": "N/A",
+  "input": "Input",
+  "output": "Output",
+  "query": "Query",
+  "charts": "Charts",
+  "table": "Table",
+  "select_chart": "Select Chart Type:",
+  "bar_chart": "Bar Chart",
+  "pie_chart": "Pie Chart",
+  "no_chart": "Chart not available. No data to display.",
+  "no_table": "Table not available. No data to display."
+}

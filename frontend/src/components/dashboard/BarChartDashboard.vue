@@ -16,6 +16,14 @@ import {
   CategoryScale,
   LinearScale,
 } from 'chart.js'
+import type { I18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n'
+
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {
+    $t: (key: string, ...args: unknown[]) => string
+  }
+}
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
@@ -40,25 +48,27 @@ const filteredStats = computed(() => {
   return orderedStats
 })
 
+const { t } = useI18n()
+
 const chartData = computed(() => ({
   labels: Object.keys(filteredStats.value),
   datasets: [
     {
-      label: `Statistics for ${props.columnName}`,
+      label: `${t('dashboard.statistics_for')} ${props.columnName}`,
       data: Object.values(filteredStats.value),
       backgroundColor: ['#3498db', '#1abc9c', '#f39c12', '#e74c3c', '#9b59b6', '#2ecc71'],
     },
   ],
 }))
 
-const chartOptions = {
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },
-    title: { display: true, text: `Statistics for ${props.columnName}` },
+    title: { display: true, text: `${t('dashboard.statistics_for')} ${props.columnName}` },
   },
-}
+}))
 </script>
 
 <style scoped>

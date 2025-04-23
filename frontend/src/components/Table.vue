@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
+import * as XLSX from 'xlsx'
 
 const props = defineProps({
   queryResult: {
@@ -27,12 +28,36 @@ const paginatedRows = computed(() => {
 
 const totalPages = computed(() => Math.ceil(rows.value.length / rowsPerPage))
 
-// Exportar a CSV
+// Formato de exportación
+const exportFormat = ref('csv')  // 'csv' or 'xlsx'
+
+// Exportar la tabla en CSV
 const exportToCSV = () => {
   const csvRows = [headers.value.join(',')]
   rows.value.forEach(row => csvRows.push(row.join(',')))
-  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
-  saveAs(blob, 'data.csv')
+  const csvContent = csvRows.join('\n')
+  const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent)
+  const link = document.createElement('a')
+  link.setAttribute('href', encodedUri)
+  link.setAttribute('download', 'data.csv')
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
+// Exportar la tabla en XLSX
+const exportToXLSX = () => {
+  const data = rows.value.map(row => {
+    const obj = {}
+    row.forEach((cell, i) => {
+      obj[headers.value[i]] = cell
+    })
+    return obj
+  })
+  const worksheet = XLSX.utils.json_to_sheet(data)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Table')
+  XLSX.writeFile(workbook, 'data.xlsx')
 }
 </script>
 
@@ -51,8 +76,12 @@ const exportToCSV = () => {
       </tbody>
     </table>
 
-    <div class="text-center mb-3">
-      <button @click="exportToCSV" class="btn btn-primary">Export to CSV</button>
+    <div class="text-center my-3">
+      <select v-model="exportFormat" class="form-select me-2">
+        <option value="csv">CSV</option>
+        <option value="xlsx">XLSX</option>
+      </select>
+      <button @click="exportFormat === 'csv' ? exportToCSV() : exportToXLSX()" class="btn btn-primary mt-2">Download Table</button>
     </div>
 
     <!-- Paginación -->
@@ -73,7 +102,6 @@ const exportToCSV = () => {
     </div>
   </div>
 </template>
-
 <style scoped>
 .table-responsive {
   overflow-x: auto;

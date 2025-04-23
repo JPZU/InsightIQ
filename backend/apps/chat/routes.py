@@ -47,7 +47,6 @@ def create_chat(
     current_user: int = Depends(AuthManager.get_current_user)
 ):
     try:
-        # Determinar el nombre del chat
         chat_name = request.name if request else (name if name else "New Chat")
         
         chat = ChatService.create_chat(current_user, chat_name)

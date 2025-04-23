@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 
+from utils.i18n import _
+
 
 class EnvManager:
     _initialized = False

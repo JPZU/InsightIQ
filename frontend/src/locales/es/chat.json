@@ -1,0 +1,23 @@
+{
+  "title": "InsightIQ",
+  "change_language": "Cambiar idioma",
+  "chat": "Chat",
+  "error_fetch": "Error al obtener la respuesta:",
+  "error_fetch_desc": "No se pudo obtener la respuesta. Por favor, inténtalo de nuevo.",
+  "ask": "Haz una pregunta",
+  "type_here": "Escribe aquí...",
+  "sending": "Enviando...",
+  "send": "Enviar",
+  "response": "Respuesta",
+  "na": "N/A",
+  "input": "Entrada",
+  "output": "Salida",
+  "query": "Consulta",
+  "charts": "Gráficos",
+  "table": "Tabla",
+  "select_chart": "Selecciona el tipo de gráfico:",
+  "bar_chart": "Gráfico de barras",
+  "pie_chart": "Gráfico de pastel",
+  "no_chart": "Gráfico no disponible. No hay datos para mostrar.",
+  "no_table": "Tabla no disponible. No hay datos para mostrar."
+}
