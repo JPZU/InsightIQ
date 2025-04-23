@@ -77,3 +77,7 @@ class AgentManager:
             "x_axis": x_axis,
             "y_axis": y_axis,
         }
+
+    def query_nlp_text_only(self, prompt):
+        response = self.agent_executor.invoke({"input": prompt})
+        return response.get("output", "")

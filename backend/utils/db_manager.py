@@ -70,3 +70,9 @@ class DBManager:
         else:
             raise ValueError(_("error_unsupported_file_format"))
         return df, file_name
+
+    def get_all_data_from_table(self, table_name: str):
+        query = text(f"SELECT * FROM {table_name}")
+        with self.engine.connect() as conn:
+            result = conn.execute(query).fetchall()
+        return [dict(row._mapping) for row in result] if result else None

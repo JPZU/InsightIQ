@@ -45,6 +45,24 @@
             <span v-if="!isCollapsed">{{ $t('app.dashboard') }}</span>
           </router-link>
           <router-link
+            to="/detail-report"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
+            <i class="fa-solid fa-file-pdf"></i>
+            <span v-if="!isCollapsed">Detailed Report</span>
+          </router-link>
+          <router-link
+            to="/detail-report"
+            @click="closeOffcanvas"
+            class="nav-link mt-1"
+            active-class="active"
+          >
+            <i class="fa-solid fa-file-pdf"></i>
+            <span v-if="!isCollapsed">Detailed Report</span>
+          </router-link>
+          <router-link
             to="/file-manager"
             @click="closeOffcanvas"
             class="nav-link mt-1"
@@ -73,7 +91,8 @@
 <option value="es">Español (CO)</option>
 </select>
 
-        <RouterView />
+        <Navbar />
+        <router-view :key="route.fullPath" />
       </div>
     </div>
 
@@ -85,21 +104,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n';
+import Navbar from './components/layouts/NavbarComponent.vue'
 
+const route = useRoute()
+
+// sidebar state
+import { ref } from 'vue'
 const isCollapsed = ref(false)
-
-function toggleSidebar() {
+const toggleSidebar = () => {
   isCollapsed.value = !isCollapsed.value
 }
 
-function closeOffcanvas() {
-  const offcanvasToggler = document.getElementById('offcanvasToggler')
-  if (offcanvasToggler) {
-    offcanvasToggler.click()
-  }
+const closeOffcanvas = () => {
+  // placeholder if needed
 }
 
 const { locale } = useI18n();
@@ -122,7 +141,7 @@ watch(locale, (newLang) => {
   flex-direction: column;
   position: fixed;
   height: 100vh;
-  background-color: #046e8f; /* 🎨 Color azul-morado */
+  background-color: #046e8f;
 }
 
 .sidebar.collapsed {
@@ -158,11 +177,11 @@ watch(locale, (newLang) => {
 #content {
   transition: margin-left 0.3s ease;
   padding-bottom: 50px;
-  margin-left: 250px; /* Asegura la posición al expandir */
+  margin-left: 250px;
 }
 
 .sidebar.collapsed + #content {
-  margin-left: 70px; /* Ajusta cuando está colapsada */
+  margin-left: 70px;
 }
 
 /* Footer */

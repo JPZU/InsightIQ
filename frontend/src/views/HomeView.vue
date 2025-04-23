@@ -1,40 +1,19 @@
 <template>
   <div class="d-flex flex-column min-vh-100">
-    <!-- Navbar -->
-    <!-- <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0090C1;">
-            <a class="navbar-brand px-3" href="#">InsightIQ</a>
-        </nav> -->
-
-    <!-- Hero Section -->
-    <section
-      class="text-center pb-1 bg-light d-flex flex-column align-items-center justify-content-center"
-    >
+    <section class="text-center pb-1 d-flex flex-column align-items-center justify-content-center">
       <h1 class="display-6 fw-bold mt-3 mb-3" style="color: #183446">{{ $t('app.welcome') }}</h1>
       <p class="text-muted mt-2 mb-4">{{ $t('app.description') }}</p>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <div
-            class="card shadow-sm p-3 card-hover h-100 d-flex flex-column align-items-center text-center gap-3"
-            style="min-height: 420px"
-            @click="$router.push('/chat')"
-          >
+      <div class="row g-3 justify-content-center">
+        <div class="col-md-4" @click="$router.push('/chat')">
+          <div class="card shadow-sm p-3 card-hover h-100 text-center">
             <i class="bi bi-chat-left-text h2" style="color: #00a6a6"></i>
             <h5 class="mt-2">{{ $t('app.natural_language') }}</h5>
             <p class="text-muted">{{ $t('app.natural_language_desc') }}</p>
-            <img
-              src="/nlp.jpg"
-              alt="Chat Icon"
-              class="img-fluid"
-              style="max-height: 220px; object-fit: contain"
-            />
+            <img src="/nlp.jpg" alt="Chat Icon" class="img-fluid" style="max-height: 220px" />
           </div>
         </div>
-        <div class="col-md-4">
-          <div
-            class="card shadow-sm p-3 card-hover h-100 d-flex flex-column align-items-center text-center gap-3"
-            style="min-height: 420px"
-            @click="$router.push('/dashboard')"
-          >
+        <div class="col-md-4" @click="$router.push('/dashboard')">
+          <div class="card shadow-sm p-3 card-hover h-100 text-center">
             <i class="bi bi-bar-chart h2" style="color: #00a6a6"></i>
             <h5 class="mt-2">{{ $t('app.reports') }}</h5>
             <p class="text-muted">{{ $t('app.reports_desc') }}</p>
@@ -42,24 +21,7 @@
               src="/reports.png"
               alt="Dashboard Icon"
               class="img-fluid"
-              style="max-height: 220px; object-fit: contain"
-            />
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div
-            class="card shadow-sm p-3 card-hover h-100 d-flex flex-column align-items-center text-center gap-3"
-            style="min-height: 420px"
-            @click="$router.push('/synthetic-data')"
-          >
-            <i class="bi bi-database h2" style="color: #183446"></i>
-            <h5 class="mt-2">{{ $t('app.synthetic_data_generate') }}</h5>
-            <p class="text-muted">{{ $t('app.synthetic_data_desc') }}</p>
-            <img
-              src="/synthetic-data.png"
-              alt="Synthetic Data Icon"
-              class="img-fluid"
-              style="max-height: 220px; object-fit: contain"
+              style="max-height: 220px"
             />
           </div>
         </div>
@@ -73,17 +35,3 @@
     </section>
   </div>
 </template>
-
-<style>
-.card-hover {
-  transition:
-    transform 0.3s ease-in-out,
-    box-shadow 0.3s ease-in-out;
-  cursor: pointer;
-}
-
-.card-hover:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-</style>
