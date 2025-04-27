@@ -1,22 +1,18 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from core.config import settings
+from utils.env_manager import EnvManager
 
 from .models.base import Base
 
-# Crear la URL de la base de datos
-SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
+SQLALCHEMY_DATABASE_URL = EnvManager.get_database_url()
 
-# Crear el motor de SQLAlchemy
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    pool_pre_ping=True,  # Verifica la conexión antes de usarla
-    pool_recycle=3600,  # Recicla las conexiones después de 1 hora
+    pool_pre_ping=True,
+    pool_recycle=3600,
 )
 
-# Crear una sesión local
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base para los modelos
 Base = Base

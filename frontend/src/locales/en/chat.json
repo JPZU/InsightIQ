@@ -19,5 +19,16 @@
   "bar_chart": "Bar Chart",
   "pie_chart": "Pie Chart",
   "no_chart": "Chart not available. No data to display.",
-  "no_table": "Table not available. No data to display."
+  "no_table": "Table not available. No data to display.",
+  "search_placeholder": "Search chats...",
+  "new_chat": "+ New Chat",
+  "select_chat": "Select a chat",
+  "graphs": "Graphs",
+  "line_chart": "Line Chart",
+  "hide_details": "Hide details",
+  "show_details": "Show details",
+  "no_messages": "No messages in this chat",
+  "chat_name": "Chat name",
+  "cancel": "Cancel",
+  "create": "Create"
 }

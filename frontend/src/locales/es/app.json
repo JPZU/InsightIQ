@@ -6,7 +6,7 @@
   "synthetic_data": "Datos sintéticos",
   "dashboard": "Panel de control",
   "file_manager": "Gestor de archivos",
-  "rights": " InsightIQ - Todos los derechos reservados",
+  "rights": "InsightIQ - Todos los derechos reservados",
   "welcome": "Bienvenido a InsightIQ",
   "description": "Empoderando a las empresas con inteligentes análisis en datos.",
   "natural_language": "Consultas en lenguaje natural",
@@ -16,5 +16,16 @@
   "synthetic_data_generate": "Generar datos sintéticos",
   "synthetic_data_desc": "Crea conjuntos de datos sintéticos personalizados según tus necesidades.",
   "smart_manage": "Comienza a gestionar tus datos de forma más inteligente",
-  "smart_manage_desc": "Experimenta hoy el poder de los conocimientos de datos impulsados por IA."
+  "smart_manage_desc": "Experimenta hoy el poder de los conocimientos de datos impulsados por IA.",
+  "admin_home": "Inicio de administrador",
+  "alarms_manager": "Gestor de alarmas",
+  "report": "Informe",
+  "login": "Iniciar sesión",
+  "logout": "Cerrar sesión",
+  "my_account": "Mi cuenta",
+  "profile": "Perfil",
+  "go_to_admin": "Ir al panel de administrador",
+  "go_to_home": "Ir a inicio",
+  "invalid_credentials": "Credenciales inválidas",
+  "login_error": "Error de inicio de sesión"
 }
