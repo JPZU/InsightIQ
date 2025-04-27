@@ -19,8 +19,7 @@ async function handleLogin() {
         const success = await AuthService.login(username.value, password.value);
 
         if (success) {
-            // Redirect to home or dashboard
-            router.push('/dashboard');
+            router.push('/');
         } else {
             errorMessage.value = 'Login failed. Please check your credentials.';
         }

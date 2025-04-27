@@ -1,31 +1,48 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getNavbarConfig } from '@/utils/NavbarUtils'
-import type { NavbarInterface } from '@/interfaces/NavbarInterface'
+import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/AuthService'
 import AlarmService from '@/services/AlarmService'
 
+const { locale, t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const navbarConfig = ref<NavbarInterface>({ primaryClass: '', tabs: [] })
-const currentLanguage = ref('es')
+const currentLanguage = computed(() => locale.value)
+
 const showLoginModal = ref(false)
 const loginForm = ref({
   username: '',
   password: '',
   loading: false,
-  error: ''
+  error: '',
 })
 
 const isLoggedIn = computed(() => AuthService.isAuthenticated())
-
-// 🔔 Estado para alarmas activadas
+const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 const triggeredAlarms = ref<any[]>([])
 
-watch(route, (newRoute) => {
-  const role = newRoute.path.startsWith('/admin') ? 'admin' : 'user'
-  navbarConfig.value = getNavbarConfig(role)
+// Configuración quemada de las tabs
+const navbarTabs = computed(() => {
+  if (isAdminRoute.value) {
+    return [
+      { name: 'Admin Home', name_es: 'Inicio Admin', routeName: 'admin-home' },
+      { name: 'Synthetic Data', name_es: 'Datos Sintéticos', routeName: 'synthetic-data' },
+      { name: 'File Manager', name_es: 'Gestor de Archivos', routeName: 'file-manager' },
+      { name: 'Alarm Manager', name_es: 'Gestor de Alarmas', routeName: 'alarm' },
+    ]
+  } else {
+    return [
+      { name: 'Home', name_es: 'Inicio', routeName: 'home' },
+      { name: 'Chat', name_es: 'Chat', routeName: 'chat' },
+      { name: 'Dashboard', name_es: 'Panel', routeName: 'dashboard' },
+      { name: 'Report', name_es: 'Reporte', routeName: 'report' },
+    ]
+  }
+})
+
+const navbarClass = computed(() => {
+  return isAdminRoute.value ? 'bg-danger' : 'bg-primary'
 })
 
 const checkTriggeredAlarms = async () => {
@@ -42,38 +59,33 @@ const closeModal = () => {
 }
 
 onMounted(() => {
-  const role = route.path.startsWith('/admin') ? 'admin' : 'user'
-  navbarConfig.value = getNavbarConfig(role)
+  checkTriggeredAlarms()
 })
 
-const changeLanguage = () => {
-  currentLanguage.value = currentLanguage.value === 'es' ? 'en' : 'es'
+const changeLanguage = (lang: string) => {
+  locale.value = lang
 }
 
 const handleLogin = async () => {
   loginForm.value.loading = true
   loginForm.value.error = ''
-  
+
   try {
     const success = await AuthService.login(
-      loginForm.value.username, 
+      loginForm.value.username,
       loginForm.value.password
     )
-    
+
     if (success) {
       showLoginModal.value = false
       loginForm.value.username = ''
       loginForm.value.password = ''
       router.push({ name: 'home' })
     } else {
-      loginForm.value.error = currentLanguage.value === 'es' 
-        ? 'Credenciales incorrectas' 
-        : 'Invalid credentials'
+      loginForm.value.error = t('auth.invalid_credentials')
     }
   } catch (error) {
-    loginForm.value.error = currentLanguage.value === 'es' 
-      ? 'Error al iniciar sesión' 
-      : 'Login error'
+    loginForm.value.error = t('auth.login_error')
     console.error('Login error:', error)
   } finally {
     loginForm.value.loading = false
@@ -90,7 +102,7 @@ const handleLogout = async () => {
 }
 
 const goToProfile = () => {
-  console.log('Ir al perfil del usuario')
+  router.push({ name: 'profile' })
 }
 </script>
 
@@ -103,18 +115,13 @@ const goToProfile = () => {
 
       <div class="d-flex align-items-center">
         <div class="dropdown me-3">
-          <button
-            class="btn btn-outline-secondary dropdown-toggle"
-            type="button"
-            id="languageDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown"
+            data-bs-toggle="dropdown" aria-expanded="false">
             {{ currentLanguage === 'es' ? 'Español' : 'English' }}
           </button>
           <ul class="dropdown-menu" aria-labelledby="languageDropdown">
             <li>
-              <a class="dropdown-item" href="#" @click.prevent="changeLanguage">
+              <a class="dropdown-item" href="#" @click.prevent="changeLanguage(currentLanguage === 'es' ? 'en' : 'es')">
                 {{ currentLanguage === 'es' ? 'English' : 'Español' }}
               </a>
             </li>
@@ -122,35 +129,36 @@ const goToProfile = () => {
         </div>
 
         <div v-if="!isLoggedIn">
-          <button
-            type="button"
-            class="btn btn-primary me-2"
-            :class="navbarConfig.primaryClass"
-            @click="router.push({ name: 'login' })"
-          >
-            {{ currentLanguage === 'es' ? 'Iniciar sesión' : 'Login' }}
+          <button type="button" class="btn btn-primary me-2" :class="navbarClass"
+            @click="router.push({ name: 'login' })">
+            {{ $t('app.login') }}
           </button>
         </div>
+
         <div v-else class="dropdown">
-          <button
-            class="btn btn-outline-primary dropdown-toggle"
-            :class="navbarConfig.primaryClass"
-            type="button"
-            id="userDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            {{ currentLanguage === 'es' ? 'Mi cuenta' : 'My account' }}
+          <button class="btn btn-outline-primary dropdown-toggle" :class="navbarClass" type="button"
+            id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ $t('app.my_account') }}
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
             <li>
               <a class="dropdown-item" href="#" @click.prevent="goToProfile">
-                {{ currentLanguage === 'es' ? 'Perfil' : 'Profile' }}
+                {{ $t('app.profile') }}
               </a>
             </li>
             <li>
               <a class="dropdown-item" href="#" @click.prevent="handleLogout">
-                {{ currentLanguage === 'es' ? 'Cerrar sesión' : 'Logout' }}
+                {{ $t('app.logout') }}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" @click.prevent="router.push('/admin')">
+                {{ $t('app.go_to_admin') }}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" @click.prevent="router.push('/')">
+                {{ $t('app.go_to_home') }}
               </a>
             </li>
           </ul>
@@ -159,19 +167,12 @@ const goToProfile = () => {
     </div>
   </nav>
 
-  <ul
-    class="nav justify-content-center nav-underline d-flex align-items-center"
-    :class="navbarConfig?.primaryClass"
-    style="height: 65px"
-    v-if="isLoggedIn"
-  >
-    <li v-for="tab in navbarConfig?.tabs" :key="tab.name" class="nav-item mx-5">
-      <router-link
-        class="nav-link text-white"
-        :class="{ 'active fw-bold': route.name === tab?.routeName }"
-        :to="{ name: tab?.routeName }"
-      >
-        {{ tab?.name }}
+  <ul class="nav justify-content-center nav-underline d-flex align-items-center" :class="navbarClass"
+    style="height: 65px" v-if="isLoggedIn">
+    <li v-for="tab in navbarTabs" :key="tab.name" class="nav-item mx-5">
+      <router-link class="nav-link text-white" :class="{ 'active fw-bold': route.name === tab.routeName }"
+        :to="{ name: tab.routeName }">
+        {{ currentLanguage === 'es' ? tab.name_es : tab.name }}
       </router-link>
     </li>
   </ul>
@@ -183,7 +184,9 @@ const goToProfile = () => {
       <h3>Triggered Alarms</h3>
       <ul>
         <li v-for="(alarm, index) in triggeredAlarms" :key="index">
-          <p><strong>The alarm with ID {{ alarm.alarm_id }} was triggered:</strong></p>
+          <p>
+            <strong>The alarm with ID {{ alarm.alarm_id }} was triggered:</strong>
+          </p>
           <p><strong>Description:</strong> {{ alarm.description }}</p>
           <p><strong>Triggered Data:</strong></p>
           <ul>
@@ -228,5 +231,41 @@ const goToProfile = () => {
   position: absolute;
   top: 10px;
   right: 15px;
+}
+
+/* Estilos para las tabs */
+.nav-underline .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.nav-underline .nav-link:hover {
+  color: white;
+  border-bottom-color: white;
+}
+
+.nav-underline .nav-link.active {
+  color: white;
+  border-bottom-color: white;
+}
+
+/* Colores para admin/user */
+.bg-danger {
+  background-color: #c73659 !important;
+}
+
+.bg-primary {
+  background-color: #0395ff !important;
+  color: white !important;
+}
+
+.btn-outline-primary.bg-danger {
+  color: white;
+  border-color: white;
+}
+
+.btn-outline-primary.bg-danger:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 </style>

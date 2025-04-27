@@ -184,8 +184,8 @@ onMounted(() => {
   <div class="app-container">
     <div class="sidebar">
       <div class="sidebar-header">
-        <input v-model="state.searchQuery" placeholder="Buscar chats..." class="search-input" />
-        <button @click="state.showNewChatModal = true" class="new-chat-btn">+ Nuevo Chat</button>
+        <input v-model="state.searchQuery" :placeholder="$t('chat.search_placeholder')" class="search-input" />
+        <button @click="state.showNewChatModal = true" class="new-chat-btn">{{ $t('chat.new_chat') }}</button>
       </div>
 
       <div class="chat-list">
@@ -200,7 +200,7 @@ onMounted(() => {
       <div v-if="!state.selectedChat" class="empty-state">
         <div class="empty-content">
           <i class="bi bi-chat-left-text"></i>
-          <h3>Selecciona un chat</h3>
+          <h3>{{ $t('chat.select_chat') }}</h3>
         </div>
       </div>
 
@@ -219,30 +219,30 @@ onMounted(() => {
                 <div class="btn-group mt-2 mb-2" role="group">
                   <input type="radio" class="btn-check" name="viewToggle" :id="'viewGraphs' + index" autocomplete="off"
                     v-model="state.viewMode" value="graphs" />
-                  <label :class="`btn btn-sm ${getButtonClass('graphs')}`" :for="'viewGraphs' + index">Gráficas</label>
+                  <label :class="`btn btn-sm ${getButtonClass('graphs')}`" :for="'viewGraphs' + index">{{ $t('chat.graphs') }}</label>
 
                   <input type="radio" class="btn-check" name="viewToggle" :id="'viewTable' + index" autocomplete="off"
                     v-model="state.viewMode" value="table" />
-                  <label :class="`btn btn-sm ${getButtonClass('table')}`" :for="'viewTable' + index">Tabla</label>
+                  <label :class="`btn btn-sm ${getButtonClass('table')}`" :for="'viewTable' + index">{{ $t('chat.table') }}</label>
                 </div>
 
                 <div v-if="state.viewMode === 'graphs'">
                   <select v-model="state.chartType" class="form-control form-control-sm mb-2">
-                    <option value="bar">Barras</option>
-                    <option value="pie">Pastel</option>
-                    <option value="line">Línea</option>
+                    <option value="bar">{{ $t('chat.bar_chart') }}</option>
+                    <option value="pie">{{ $t('chat.pie_chart') }}</option>
+                    <option value="line">{{ $t('chat.line_chart') }}</option>
                   </select>
 
                   <div v-if="message.result.x_axis?.length && message.result.y_axis?.length">
                     <BarChart v-if="state.chartType === 'bar'" :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || 'Gráfica de Barras'" />
+                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || $t('chat.bar_chart')" />
                     <PieChart v-else-if="state.chartType === 'pie'" :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || 'Gráfica de Pastel'" />
+                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || $t('chat.pie_chart')" />
                     <LineChart v-else-if="state.chartType === 'line'" :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || 'Gráfica de Líneas'" />
+                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || $t('chat.line_chart')" />
                   </div>
                   <div v-else class="alert alert-info p-2">
-                    No hay datos para mostrar gráficas
+                    {{ $t('chat.no_chart') }}
                   </div>
                 </div>
 
@@ -270,7 +270,7 @@ onMounted(() => {
               <div class="message-footer">
                 <button v-if="message.type === 'response' && message.result && Object.keys(message.result).length > 0"
                   @click="toggleMessageDetails(index)" class="details-btn">
-                  {{ state.expandedMessages[index] ? 'Ocultar detalles' : 'Mostrar detalles' }}
+                  {{ state.expandedMessages[index] ? $t('chat.hide_details') : $t('chat.show_details') }}
                 </button>
 
                 <div class="message-time">
@@ -279,15 +279,15 @@ onMounted(() => {
               </div>
             </div>
 
-            <div v-if="state.messages.length === 0" class="no-messages">No hay mensajes en este chat</div>
+            <div v-if="state.messages.length === 0" class="no-messages">{{ $t('chat.no_messages') }}</div>
           </div>
         </div>
 
         <div class="message-input">
-          <input v-model="state.question" placeholder="Escribe un mensaje..." @keyup.enter="submitQuestion" />
+          <input v-model="state.question" :placeholder="$t('chat.ask')" @keyup.enter="submitQuestion" />
           <button @click="submitQuestion" :disabled="state.loading">
-            <span v-if="state.loading">Enviando...</span>
-            <span v-else>Enviar</span>
+            <span v-if="state.loading">{{ $t('chat.sending') }}</span>
+            <span v-else>{{ $t('chat.send') }}</span>
           </button>
         </div>
       </div>
@@ -295,11 +295,11 @@ onMounted(() => {
 
     <div v-if="state.showNewChatModal" class="modal" @click.self="state.showNewChatModal = false">
       <div class="modal-content">
-        <h3>Nuevo Chat</h3>
-        <input v-model="state.newChatName" placeholder="Nombre del chat" @keyup.enter="createChatWithName" />
+        <h3>{{ $t('chat.new_chat') }}</h3>
+        <input v-model="state.newChatName" :placeholder="$t('chat.chat_name')" @keyup.enter="createChatWithName" />
         <div class="modal-actions">
-          <button @click="state.showNewChatModal = false">Cancelar</button>
-          <button @click="createChatWithName" :disabled="!state.newChatName.trim()">Crear</button>
+          <button @click="state.showNewChatModal = false">{{ $t('chat.cancel') }}</button>
+          <button @click="createChatWithName" :disabled="!state.newChatName.trim()">{{ $t('chat.create') }}</button>
         </div>
       </div>
     </div>
