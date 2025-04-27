@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from langchain_openai import ChatOpenAI
+from sqlalchemy.sql import text
+
+from database.session import SessionLocal
 from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
-from sqlalchemy.sql import text
-from datetime import datetime
-from database.session import SessionLocal
+
 
 class AlarmManager:
     _instance = None
@@ -68,7 +71,7 @@ class AlarmManager:
         """)
 
         is_active = alarm_details.get("is_active", True)  # By default, set to True
-        
+
         with SessionLocal() as session:
             session.execute(query, {
                 "condition": alarm_details["condition"],

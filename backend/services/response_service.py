@@ -6,8 +6,8 @@ class ResponseService:
 
     @staticmethod
     def create_response(
-        chat_id: int, 
-        question_id: int, 
+        chat_id: int,
+        question_id: int,
         content: str,
         query_result: dict = None
     ) -> Response:

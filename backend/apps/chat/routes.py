@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, Depends
+from typing import Any, Dict, Optional
+import logging
+
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+
 from services.chat_service import ChatService
 from services.question_service import QuestionService
 from services.response_service import ResponseService
 from utils.agent_manager import AgentManager
 from utils.auth_manager import AuthManager
 from utils.base_schema import BaseResponse
-import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,6 +43,7 @@ def get_chats(current_user: int = Depends(AuthManager.get_current_user)):
 class CreateChatRequest(BaseModel):
     name: str = "New Chat"
 
+
 @router.post("/")
 def create_chat(
     request: CreateChatRequest = None,
@@ -48,7 +52,7 @@ def create_chat(
 ):
     try:
         chat_name = request.name if request else (name if name else "New Chat")
-        
+
         chat = ChatService.create_chat(current_user, chat_name)
         return BaseResponse(success=True, response={"id": chat.id, "name": chat.name})
     except Exception as e:
@@ -68,10 +72,10 @@ def get_chat_messages(chat_id: int, current_user: int = Depends(AuthManager.get_
         logger.error(f"Error in get_chat_messages: {str(e)}")
         return BaseResponse(success=False, message=f"Failed to retrieve chat messages: {str(e)}")
 
-from typing import Optional, Dict, Any
 
 class ChatQuestionRequest(BaseModel):
     question: str
+
 
 class ResultData(BaseModel):
     output: str
@@ -79,19 +83,20 @@ class ResultData(BaseModel):
     sql_query: Optional[str] = None
     intermediate_steps: Optional[list] = None
 
+
 @router.post("/{chat_id}")
 def ask_chat(
-    chat_id: int, 
+    chat_id: int,
     request: ChatQuestionRequest,
     current_user: int = Depends(AuthManager.get_current_user)
 ):
 
     get_authorized_chat(chat_id, current_user)
-    
+
     agent_response = agent.query_nlp(request.question, chat_id)
     content = agent_response.get("content", "")
     query_result = agent_response.get("query_result", {})
-    
+
     new_question = QuestionService.create_question(chat_id, request.question)
     response = ResponseService.create_response(
         chat_id=chat_id,

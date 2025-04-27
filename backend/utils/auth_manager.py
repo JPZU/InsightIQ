@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
+from typing import Optional
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from typing import Optional
+
 from utils.env_manager import EnvManager
 
 
@@ -29,11 +31,11 @@ class AuthManager:
             expire = datetime.now() + expires_delta
         else:
             expire = datetime.now() + timedelta(minutes=AuthManager.token_expire_minutes)
-        
+
         to_encode.update({"exp": int(expire.timestamp())})
-        
+
         encoded_jwt = jwt.encode(to_encode, AuthManager.secret_key, algorithm=AuthManager.algorithm)
-        
+
         return encoded_jwt
 
     @staticmethod
@@ -50,11 +52,11 @@ class AuthManager:
                 AuthManager.secret_key,
                 algorithms=[AuthManager.algorithm]
             )
-            
+
             user_id: str = payload.get("sub")
             if user_id is None:
                 raise credentials_exception
-                
+
             return int(user_id)
         except JWTError:
             raise credentials_exception

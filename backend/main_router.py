@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from apps.auth.routes import router as auth_router
 from apps.alarm_management.routes import router as alarm_management_router
+from apps.auth.routes import router as auth_router
 from apps.chat.routes import router as chat_router
 from apps.dashboard.routes import router as dashboard_router
 from apps.detail_report.routes import router as detail_report_router

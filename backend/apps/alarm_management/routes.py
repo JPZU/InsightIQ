@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Query, Path, HTTPException
-from apps.alarm_management.service import create_alarm_from_natural_language, delete_alarm_by_id, get_all_alarms, update_alarm_by_id, evaluate_alarm
+from fastapi import APIRouter, HTTPException, Path, Query
+
+from apps.alarm_management.service import (create_alarm_from_natural_language,
+                                           delete_alarm_by_id, evaluate_alarm,
+                                           get_all_alarms, update_alarm_by_id)
 from schemas.alarm import AlarmUpdateRequest
 
 router = APIRouter()
@@ -14,6 +17,7 @@ def create_alarm(user_input: str = Query(..., description="Describe your alarm i
     result = create_alarm_from_natural_language(user_input)
     return result
 
+
 @router.delete("/delete/{alarm_id}")
 def delete_alarm(alarm_id: int):
     """
@@ -24,13 +28,15 @@ def delete_alarm(alarm_id: int):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
 @router.get("/list")
 def list_alarms():
     """
     Retrieve all alarms stored in the system.
     """
     return get_all_alarms()
+
 
 @router.patch("/update/{alarm_id}")
 def update_alarm(
@@ -49,7 +55,8 @@ def update_alarm(
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
 @router.get("/check_alarm")
 def check_alarm(
     table_name: str = Query(..., description="Name of the table to check alarms for"),
