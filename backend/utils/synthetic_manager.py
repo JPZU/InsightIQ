@@ -13,7 +13,7 @@ class SyntheticDataManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(SyntheticDataManager, cls).__new__(cls)
-            api_key = EnvManager.get_api_key()
+            api_key = EnvManager.get_openai_api_key()
             cls._instance.llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 openai_api_key=api_key,
@@ -39,7 +39,7 @@ class SyntheticDataManager:
         if details:
             prompt += f"""
             Be creative but adhere to the schema.
-            Following are some user specified requirements, 
+            Following are some user specified requirements,
             Fulfill their request adhering to the format: '{details}'.
             """
         if sample_data:

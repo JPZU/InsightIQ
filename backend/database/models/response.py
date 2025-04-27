@@ -1,21 +1,21 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, func, Text, JSON
 from sqlalchemy.orm import relationship
 
 from .base import Base
+from .question import Question
 
 
 class Response(Base):
     __tablename__ = "responses"
 
     id = Column(Integer, primary_key=True, index=True)
-    content = Column(String(length=255))
-    createdAt = Column(DateTime)
-    updatedAt = Column(DateTime)
+    content = Column(Text)
+    query_result = Column(JSON)
+    createdAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now())
+    updatedAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now(), onupdate=func.now())
 
-    # Relationships
-    question_id = Column(Integer, ForeignKey("questions.id"))
-    question = relationship("Question", back_populates="response")
-    chat_id = Column(Integer, ForeignKey("chats.id"))
     chat = relationship("Chat", back_populates="responses")
-    visual_resources = relationship(
-        "VisualResource", back_populates="response")
+    chat_id = Column(Integer, ForeignKey("chats.id"))
+
+    question = relationship("Question", back_populates="response")
+    question_id = Column(Integer, ForeignKey("questions.id"))

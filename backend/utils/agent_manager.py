@@ -1,15 +1,14 @@
 import ast
-
+from sqlalchemy import text
 from langchain_community.agent_toolkits.sql.base import create_sql_agent
 from langchain_openai import ChatOpenAI
-
 from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
+from services.chat_service import ChatService
 
 
 class AgentManager:
     _instance = None
-    print("test")
 
     def __new__(cls):
         if cls._instance is None:
@@ -18,7 +17,7 @@ class AgentManager:
             db_manager = DBManager()
             db = db_manager.get_connection()
 
-            api_key = EnvManager.get_api_key()
+            api_key = EnvManager.get_openai_api_key()
 
             llm = ChatOpenAI(
                 model="gpt-4o-mini", openai_api_key=api_key, temperature=0.5
@@ -28,6 +27,7 @@ class AgentManager:
         return cls._instance
 
     def _initialize(self, db, llm):
+        self.db = db
         self.agent_executor = create_sql_agent(
             llm=llm,
             db=db,
@@ -37,45 +37,38 @@ class AgentManager:
             top_k=1000,
         )
 
-    def query_nlp(self, query):
-        response = self.agent_executor.invoke({"input": query})
+    def query_nlp(self, query, chat_id=None):
+        context = ""
+        if chat_id:
+            messages = ChatService.get_chat_messages(chat_id, limit=10)
+            context = "\n".join([f"{m['type']}: {m['content']}" for m in messages])
+
+        prompt = f"{context}\nUser: {query}" if context else query
+
+        response = self.agent_executor.invoke({"input": prompt})
         intermediate_steps = response.get('intermediate_steps', [])
 
-        if len(intermediate_steps) > 3:
-            query = intermediate_steps[3][0].tool_input["query"]
-            query_output = intermediate_steps[3][1]
-        else:
-            intermediate_query = intermediate_steps[1][1].split("/*")
+        sql_query = None
+        for step in intermediate_steps:
+            tool_input = step[0].tool_input if hasattr(step[0], "tool_input") else {}
+            if isinstance(tool_input, dict) and "query" in tool_input:
+                sql_query = tool_input["query"]
+                break
 
-            query = intermediate_query[0]
-            query_output = intermediate_query[1][28:-3].replace("\t", ";").split("\n")
-
-        x_axis = []
-        y_axis = []
-
-        if (
-            isinstance(query_output, str)
-            and query_output.startswith("[")
-            and query_output.endswith("]")
-        ):
+        result_data = {}
+        if sql_query:
             try:
-                query_output = ast.literal_eval(query_output)
-            except (ValueError, SyntaxError):
-                pass
-
-        if isinstance(query_output, list):
-            for item in query_output:
-                if isinstance(item, (tuple, list)) and len(item) == 2:
-                    x_axis.append(str(item[0]))
-                    y_axis.append(item[1])
+                with self.db._engine.connect() as conn:
+                    result = conn.execute(text(sql_query))
+                    rows = result.fetchall()
+                    keys = result.keys()
+                    result_data = {key: [row[i] for row in rows] for i, key in enumerate(keys)}
+            except Exception as e:
+                result_data = {"error": str(e)}
 
         return {
-            "input": response.get("input", ""),
-            "output": response.get("output", ""),
-            "query": query,
-            "query_output": query_output,
-            "x_axis": x_axis,
-            "y_axis": y_axis,
+            "content": response.get("output", ""),
+            "query_result": result_data,
         }
 
     def query_nlp_text_only(self, prompt):

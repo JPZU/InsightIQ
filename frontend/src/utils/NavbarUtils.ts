@@ -7,6 +7,8 @@ export const getNavbarConfig = (role: string): NavbarConfigInterface => {
         { name: 'Admin Home', routeName: 'admin-home' },
         { name: 'Synthetic Data', routeName: 'synthetic-data' },
         { name: 'File Manager', routeName: 'file-manager' },
+        { name: 'Create Alarm', routeName: 'alarm-create' },
+        { name: 'Alarm List', routeName: 'alarm-list' },
       ],
       primaryClass: 'primary-admin',
     }
@@ -16,6 +18,7 @@ export const getNavbarConfig = (role: string): NavbarConfigInterface => {
         { name: 'Home', routeName: 'home' },
         { name: 'Chat', routeName: 'chat' },
         { name: 'Dashboard', routeName: 'dashboard' },
+        { name: 'Report', routeName: 'report' },
       ],
       primaryClass: 'primary-user',
     }

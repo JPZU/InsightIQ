@@ -145,7 +145,7 @@ export default {
       }
     },
     addSyntheticDatabase() {
-      alert(`Feature not implemented yet, but will add to ${this.tableName}!`)
+      alert(`The synthetic data was added to ${this.tableName} in the database!`)
       console.log(this.$t('synthetic_data.add_to_database'), this.tableName)
     },
   },

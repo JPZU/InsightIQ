@@ -1,19 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import LoginView from '@/views/LoginView.vue'
+
 import HomeView from '@/views/HomeView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ChatView from '@/views/ChatView.vue'
-import DetailReportView from '@/views/DetailReportView.vue'
+import ReportView from '@/views/ReportView.vue'
 
 import AdminHomeView from '@/views/admin/AdminHomeView.vue'
-import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
+import AlarmCreateView from '@/views/admin/AlarmCreateView.vue'
+import AlarmEditView from '@/views/admin/AlarmEditView.vue'
+import AlarmListView from '@/views/admin/AlarmListView.vue'
+import AlarmView from '@/views/admin/AlarmView.vue'
 import FileManagerView from '@/views/admin/FileManagerView.vue'
-// Si prefieres usar FileManagerView fuera del admin, cambia el import:
-// import FileManagerView from '@/views/FileManagerView.vue'
+import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      meta: {
+        title: 'Login',
+      },
+    },
     {
       path: '/',
       name: 'home',
@@ -36,6 +48,14 @@ const router = createRouter({
       component: DashboardView,
       meta: {
         title: 'Dashboard',
+      },
+    },
+    {
+      path: '/report',
+      name: 'report',
+      component: ReportView,
+      meta: {
+        title: ' Report',
       },
     },
     {
@@ -65,14 +85,47 @@ const router = createRouter({
             title: 'File Manager',
           },
         },
+        {
+          path: 'alarm',
+          name: 'alarm',
+          component: AlarmView,
+          meta: {
+            title: 'Alarms Manager',
+          },
+        },
+        {
+          path: 'alarm-create',
+          name: 'alarm-create',
+          component: AlarmCreateView,
+          meta: {
+            title: 'Create Alarm',
+          },
+        },
+        {
+          path: 'alarm-list',
+          name: 'alarm-list',
+          component: AlarmListView,
+          meta: {
+            title: 'List Alarms',
+          },
+        },
+        {
+          path: 'alarm-edit/:id',
+          name: 'alarm-edit',
+          component: AlarmEditView,
+          meta: {
+            title: 'Edit Alarm',
+          },
+          props: true,
+        },
       ],
     },
     {
-      path: '/detail-report',
-      name: 'detail-report',
-      component: DetailReportView,
+      path: '/report',
+      name: 'report',
+      component: ReportView,
       meta: {
-        title: 'Detailed Report',
+        title: 'Report',
       },
     },
   ],

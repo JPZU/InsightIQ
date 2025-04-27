@@ -16,5 +16,16 @@
   "synthetic_data_generate": "Generate Synthetic Data",
   "synthetic_data_desc": "Create custom synthetic datasets tailored to your needs.",
   "smart_manage": "Start Managing Your Data Smarter",
-  "smart_manage_desc": "Experience the power of AI-driven data insights today."
+  "smart_manage_desc": "Experience the power of AI-driven data insights today.",
+  "admin_home": "Admin Home",
+  "alarms_manager": "Alarms Manager",
+  "report": "Report",
+  "login": "Login",
+  "logout": "Logout",
+  "my_account": "My account",
+  "profile": "Profile",
+  "go_to_admin": "Go to Admin",
+  "go_to_home": "Go to Home",
+  "invalid_credentials": "Invalid credentials",
+  "login_error": "Login error"
 }
