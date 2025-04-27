@@ -22,14 +22,15 @@ const state = ref({
   loadingMessages: false,
   showNewChatModal: false,
   newChatName: '',
-  expandedMessages: {} // Nuevo estado para controlar qué mensajes tienen gráficas expandidas
+  expandedMessages: {}, // Nuevo estado para controlar qué mensajes tienen gráficas expandidas
 })
 
 const filteredChats = computed(() =>
   !state.value.searchQuery
     ? state.value.chats
-    : state.value.chats.filter(chat =>
-      chat.name.toLowerCase().includes(state.value.searchQuery.toLowerCase()))
+    : state.value.chats.filter((chat) =>
+        chat.name.toLowerCase().includes(state.value.searchQuery.toLowerCase()),
+      ),
 )
 
 const fetchChats = async () => {
@@ -70,21 +71,21 @@ const createChatWithName = async () => {
 }
 
 const processQueryResult = (result, content) => {
-  const parsed = typeof result === 'string' ? JSON.parse(result) : result;
+  const parsed = typeof result === 'string' ? JSON.parse(result) : result
 
   if (parsed && Object.keys(parsed).length > 0) {
-    const keys = Object.keys(parsed);
-    let x_axis = [];
-    let y_axis = [];
-    let chartTitle = '';
+    const keys = Object.keys(parsed)
+    let x_axis = []
+    let y_axis = []
+    let chartTitle = ''
 
     if (keys.length === 1) {
-      x_axis = parsed[keys[0]] || [];
-      chartTitle = `Distribución de ${keys[0]}`;
+      x_axis = parsed[keys[0]] || []
+      chartTitle = `Distribución de ${keys[0]}`
     } else if (keys.length >= 2) {
-      x_axis = parsed[keys[0]] || [];
-      y_axis = parsed[keys[1]] || [];
-      chartTitle = `${keys[1]} vs ${keys[0]}`;
+      x_axis = parsed[keys[0]] || []
+      y_axis = parsed[keys[1]] || []
+      chartTitle = `${keys[1]} vs ${keys[0]}`
     }
 
     return {
@@ -92,11 +93,11 @@ const processQueryResult = (result, content) => {
       query_result: parsed,
       x_axis,
       y_axis,
-      chartTitle
-    };
+      chartTitle,
+    }
   }
-  return null;
-};
+  return null
+}
 
 const submitQuestion = async () => {
   if (!state.value.question.trim()) return
@@ -109,7 +110,7 @@ const submitQuestion = async () => {
   state.value.messages.push({
     type: 'question',
     content: userQuestion,
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
   })
 
   // Desplazar hacia abajo después de agregar pregunta
@@ -125,13 +126,15 @@ const submitQuestion = async () => {
     }
 
     const msg = res.response
-    const processedResult = msg?.query_result ? processQueryResult(msg.query_result, msg.content) : null
+    const processedResult = msg?.query_result
+      ? processQueryResult(msg.query_result, msg.content)
+      : null
 
     const message = {
       type: 'response',
       content: msg?.content || 'No response content',
       created_at: new Date().toISOString(),
-      result: processedResult || {}
+      result: processedResult || {},
     }
 
     state.value.messages.push(message)
@@ -145,7 +148,7 @@ const submitQuestion = async () => {
       type: 'response',
       content: 'Ocurrió un error al procesar tu pregunta',
       created_at: new Date().toISOString(),
-      result: {}
+      result: {},
     })
   } finally {
     state.value.loading = false
@@ -167,7 +170,7 @@ const scrollToBottom = () => {
 const toggleMessageDetails = async (index) => {
   state.value.expandedMessages = {
     ...state.value.expandedMessages,
-    [index]: !state.value.expandedMessages[index]
+    [index]: !state.value.expandedMessages[index],
   }
 
   // Desplazar hacia abajo después de expandir/contraer
@@ -184,13 +187,23 @@ onMounted(() => {
   <div class="app-container">
     <div class="sidebar">
       <div class="sidebar-header">
-        <input v-model="state.searchQuery" :placeholder="$t('chat.search_placeholder')" class="search-input" />
-        <button @click="state.showNewChatModal = true" class="new-chat-btn">{{ $t('chat.new_chat') }}</button>
+        <input
+          v-model="state.searchQuery"
+          :placeholder="$t('chat.search_placeholder')"
+          class="search-input"
+        />
+        <button @click="state.showNewChatModal = true" class="new-chat-btn">
+          {{ $t('chat.new_chat') }}
+        </button>
       </div>
 
       <div class="chat-list">
-        <div v-for="chat in filteredChats" :key="chat.id" @click="fetchMessages(chat.id)"
-          :class="['chat-item', { active: chat.id === state.selectedChat }]">
+        <div
+          v-for="chat in filteredChats"
+          :key="chat.id"
+          @click="fetchMessages(chat.id)"
+          :class="['chat-item', { active: chat.id === state.selectedChat }]"
+        >
           {{ chat.name }}
         </div>
       </div>
@@ -211,19 +224,49 @@ onMounted(() => {
           </div>
 
           <div v-else>
-            <div v-for="(message, index) in state.messages" :key="index"
-              :class="['message', message.type === 'question' ? 'user-message' : 'ai-message']">
+            <div
+              v-for="(message, index) in state.messages"
+              :key="index"
+              :class="['message', message.type === 'question' ? 'user-message' : 'ai-message']"
+            >
               <div class="message-content">{{ message.content }}</div>
 
-              <div v-if="message.type === 'response' && state.expandedMessages[index] && message.result" class="message-graphs">
+              <div
+                v-if="
+                  message.type === 'response' && state.expandedMessages[index] && message.result
+                "
+                class="message-graphs"
+              >
                 <div class="btn-group mt-2 mb-2" role="group">
-                  <input type="radio" class="btn-check" name="viewToggle" :id="'viewGraphs' + index" autocomplete="off"
-                    v-model="state.viewMode" value="graphs" />
-                  <label :class="`btn btn-sm ${getButtonClass('graphs')}`" :for="'viewGraphs' + index">{{ $t('chat.graphs') }}</label>
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="viewToggle"
+                    :id="'viewGraphs' + index"
+                    autocomplete="off"
+                    v-model="state.viewMode"
+                    value="graphs"
+                  />
+                  <label
+                    :class="`btn btn-sm ${getButtonClass('graphs')}`"
+                    :for="'viewGraphs' + index"
+                    >{{ $t('chat.graphs') }}</label
+                  >
 
-                  <input type="radio" class="btn-check" name="viewToggle" :id="'viewTable' + index" autocomplete="off"
-                    v-model="state.viewMode" value="table" />
-                  <label :class="`btn btn-sm ${getButtonClass('table')}`" :for="'viewTable' + index">{{ $t('chat.table') }}</label>
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="viewToggle"
+                    :id="'viewTable' + index"
+                    autocomplete="off"
+                    v-model="state.viewMode"
+                    value="table"
+                  />
+                  <label
+                    :class="`btn btn-sm ${getButtonClass('table')}`"
+                    :for="'viewTable' + index"
+                    >{{ $t('chat.table') }}</label
+                  >
                 </div>
 
                 <div v-if="state.viewMode === 'graphs'">
@@ -234,12 +277,24 @@ onMounted(() => {
                   </select>
 
                   <div v-if="message.result.x_axis?.length && message.result.y_axis?.length">
-                    <BarChart v-if="state.chartType === 'bar'" :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || $t('chat.bar_chart')" />
-                    <PieChart v-else-if="state.chartType === 'pie'" :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || $t('chat.pie_chart')" />
-                    <LineChart v-else-if="state.chartType === 'line'" :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis" :chartTitle="message.result.chartTitle || $t('chat.line_chart')" />
+                    <BarChart
+                      v-if="state.chartType === 'bar'"
+                      :xAxis="message.result.x_axis"
+                      :yAxis="message.result.y_axis"
+                      :chartTitle="message.result.chartTitle || $t('chat.bar_chart')"
+                    />
+                    <PieChart
+                      v-else-if="state.chartType === 'pie'"
+                      :xAxis="message.result.x_axis"
+                      :yAxis="message.result.y_axis"
+                      :chartTitle="message.result.chartTitle || $t('chat.pie_chart')"
+                    />
+                    <LineChart
+                      v-else-if="state.chartType === 'line'"
+                      :xAxis="message.result.x_axis"
+                      :yAxis="message.result.y_axis"
+                      :chartTitle="message.result.chartTitle || $t('chat.line_chart')"
+                    />
                   </div>
                   <div v-else class="alert alert-info p-2">
                     {{ $t('chat.no_chart') }}
@@ -251,12 +306,18 @@ onMounted(() => {
                     <table class="table table-sm table-bordered">
                       <thead>
                         <tr>
-                          <th v-for="(value, key) in message.result.query_result" :key="key">{{ key }}</th>
+                          <th v-for="(value, key) in message.result.query_result" :key="key">
+                            {{ key }}
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="(_, i) in message.result.query_result[Object.keys(message.result.query_result)[0]]"
-                          :key="i">
+                        <tr
+                          v-for="(_, i) in message.result.query_result[
+                            Object.keys(message.result.query_result)[0]
+                          ]"
+                          :key="i"
+                        >
                           <td v-for="(values, key) in message.result.query_result" :key="key">
                             {{ values[i] }}
                           </td>
@@ -268,9 +329,20 @@ onMounted(() => {
               </div>
 
               <div class="message-footer">
-                <button v-if="message.type === 'response' && message.result && Object.keys(message.result).length > 0"
-                  @click="toggleMessageDetails(index)" class="details-btn">
-                  {{ state.expandedMessages[index] ? $t('chat.hide_details') : $t('chat.show_details') }}
+                <button
+                  v-if="
+                    message.type === 'response' &&
+                    message.result &&
+                    Object.keys(message.result).length > 0
+                  "
+                  @click="toggleMessageDetails(index)"
+                  class="details-btn"
+                >
+                  {{
+                    state.expandedMessages[index]
+                      ? $t('chat.hide_details')
+                      : $t('chat.show_details')
+                  }}
                 </button>
 
                 <div class="message-time">
@@ -279,12 +351,18 @@ onMounted(() => {
               </div>
             </div>
 
-            <div v-if="state.messages.length === 0" class="no-messages">{{ $t('chat.no_messages') }}</div>
+            <div v-if="state.messages.length === 0" class="no-messages">
+              {{ $t('chat.no_messages') }}
+            </div>
           </div>
         </div>
 
         <div class="message-input">
-          <input v-model="state.question" :placeholder="$t('chat.ask')" @keyup.enter="submitQuestion" />
+          <input
+            v-model="state.question"
+            :placeholder="$t('chat.ask')"
+            @keyup.enter="submitQuestion"
+          />
           <button @click="submitQuestion" :disabled="state.loading">
             <span v-if="state.loading">{{ $t('chat.sending') }}</span>
             <span v-else>{{ $t('chat.send') }}</span>
@@ -296,10 +374,16 @@ onMounted(() => {
     <div v-if="state.showNewChatModal" class="modal" @click.self="state.showNewChatModal = false">
       <div class="modal-content">
         <h3>{{ $t('chat.new_chat') }}</h3>
-        <input v-model="state.newChatName" :placeholder="$t('chat.chat_name')" @keyup.enter="createChatWithName" />
+        <input
+          v-model="state.newChatName"
+          :placeholder="$t('chat.chat_name')"
+          @keyup.enter="createChatWithName"
+        />
         <div class="modal-actions">
           <button @click="state.showNewChatModal = false">{{ $t('chat.cancel') }}</button>
-          <button @click="createChatWithName" :disabled="!state.newChatName.trim()">{{ $t('chat.create') }}</button>
+          <button @click="createChatWithName" :disabled="!state.newChatName.trim()">
+            {{ $t('chat.create') }}
+          </button>
         </div>
       </div>
     </div>

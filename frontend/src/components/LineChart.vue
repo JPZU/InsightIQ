@@ -61,11 +61,11 @@ const renderChart = () => {
         tooltip: {
           callbacks: {
             label: function (context) {
-              return `${context.dataset.label}: ${context.parsed.y}`;
-            }
-          }
-        }
-      }
+              return `${context.dataset.label}: ${context.parsed.y}`
+            },
+          },
+        },
+      },
     },
   })
 }
@@ -78,7 +78,7 @@ watch(() => [props.xAxis, props.yAxis], renderChart)
 
 <template>
   <div>
-    <div style="position: relative; height: 400px;">
+    <div style="position: relative; height: 400px">
       <canvas ref="chartCanvas"></canvas>
     </div>
     <div class="text-center mt-2">

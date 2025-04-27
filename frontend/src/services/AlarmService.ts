@@ -25,10 +25,9 @@ class AlarmService extends BaseService {
 
   static async checkAlarms() {
     return await axios.get(`${this.BASE_URL}/check_alarm`, {
-      params: { table_name: 'inventario' }
+      params: { table_name: 'inventario' },
     })
   }
-  
 }
 
 export default AlarmService
