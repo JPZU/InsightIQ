@@ -6,7 +6,9 @@
           <h1 class="text-xl text-center">{{ $t('synthetic_data.title') }}</h1>
           <label class="label">{{ $t('synthetic_data.select_table') }}</label>
           <select v-model="tableName" class="input" :disabled="tables.length === 0">
-            <option v-if="tables.length === 0" disabled>{{ $t('synthetic_data.loading_tables') }}</option>
+            <option v-if="tables.length === 0" disabled>
+              {{ $t('synthetic_data.loading_tables') }}
+            </option>
             <option v-for="table in tables" :key="table" :value="table">{{ table }}</option>
           </select>
         </div>
@@ -37,7 +39,9 @@
 
         <div v-if="response && response.synthetic_data && response.synthetic_data.length">
           <div class="response-box">
-            <h2 class="response-title">{{ $t('synthetic_data.generated') }} {{ response.table }}</h2>
+            <h2 class="response-title">
+              {{ $t('synthetic_data.generated') }} {{ response.table }}
+            </h2>
             <div v-if="parsedSyntheticData.length > 0">
               <table class="table">
                 <thead>
@@ -68,7 +72,7 @@
 </template>
 
 <script>
-import axios from "@/axios"
+import axios from '@/axios'
 
 export default {
   data() {
@@ -105,7 +109,7 @@ export default {
         const { data } = await axios.get('http://localhost:8000/api/synthetic_data/tables/')
         this.tables = data.tables
       } catch (error) {
-        console.error( this.$t('synthetic_data.error_tables'), error)
+        console.error(this.$t('synthetic_data.error_tables'), error)
       }
     },
     async generateData() {

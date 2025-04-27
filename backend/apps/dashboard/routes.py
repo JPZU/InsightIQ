@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from utils.i18n import _ 
 
 from apps.dashboard.service import DashboardService
+from utils.i18n import _
 
 router = APIRouter()
 
@@ -18,9 +18,8 @@ def get_schema():
         return DashboardService.get_schema()
     except Exception as e:
         raise HTTPException(
-        status_code=500, detail=_("error_schema") + f" {str(e)}"
-)
-
+            status_code=500, detail=_("error_schema") + f" {str(e)}"
+        )
 
 
 @router.get("/analysis")
@@ -30,6 +29,5 @@ def get_analysis():
         return DashboardService.calculate_some_analysis()
     except Exception as e:
         raise HTTPException(
-    status_code=500, detail=_("error_analysis") + f" {str(e)}"
-    )
-
+            status_code=500, detail=_("error_analysis") + f" {str(e)}"
+        )

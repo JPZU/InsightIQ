@@ -4,7 +4,8 @@ import pandas as pd
 from langchain_community.utilities import SQLDatabase
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-from utils.i18n import _ 
+
+from utils.i18n import _
 
 
 class DBManager:

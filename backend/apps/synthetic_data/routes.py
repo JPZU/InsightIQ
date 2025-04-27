@@ -2,8 +2,7 @@ from fastapi import APIRouter, Query
 
 from apps.synthetic_data.service import SyntheticDataService
 from utils.db_manager import DBManager
-from utils.i18n import _ 
-
+from utils.i18n import _
 
 router = APIRouter()
 

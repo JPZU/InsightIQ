@@ -1,12 +1,11 @@
 {
-    "title": "File Manager",
-    "change_language": "Change Language",
-    "instructions": "Upload CSV or Excel files to load data into the database.",
-    "upload": "Upload File",
-    "select_file": "Please select a file.",
-    "table_name": "Table Name",
-    "table_name_required": "Please enter a table name.",
-    "uploading": "Uploading file with table name:",
-    "error_uploading": "Error uploading file"
-  }
-  
+  "title": "File Manager",
+  "change_language": "Change Language",
+  "instructions": "Upload CSV or Excel files to load data into the database.",
+  "upload": "Upload File",
+  "select_file": "Please select a file.",
+  "table_name": "Table Name",
+  "table_name_required": "Please enter a table name.",
+  "uploading": "Uploading file with table name:",
+  "error_uploading": "Error uploading file"
+}

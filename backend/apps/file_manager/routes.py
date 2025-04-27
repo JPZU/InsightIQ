@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from utils.file_manager import FileManager
-from utils.i18n import _ 
+from utils.i18n import _
+
 from .service import FileManagerService
 
 router = APIRouter()

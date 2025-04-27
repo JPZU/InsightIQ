@@ -16,8 +16,8 @@ import {
   CategoryScale,
   LinearScale,
 } from 'chart.js'
-import type { I18n } from 'vue-i18n';
-import { useI18n } from 'vue-i18n';
+import type { I18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n'
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {

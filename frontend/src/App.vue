@@ -8,14 +8,14 @@
       >
         <!-- Título de la aplicación -->
         <div class="text-center mb-4">
-          <span v-if="!isCollapsed" class="fs-3 fw-bold">{{$t('app.title')}}</span>
+          <span v-if="!isCollapsed" class="fs-3 fw-bold">{{ $t('app.title') }}</span>
         </div>
 
         <!-- Menú de la sidebar -->
         <ul class="navbar-nav flex-column">
           <router-link to="/" @click="closeOffcanvas" class="nav-link mt-1" active-class="active">
             <i class="fas fa-fw fa-home"></i>
-            <span v-if="!isCollapsed">{{$t('app.home')}}</span>
+            <span v-if="!isCollapsed">{{ $t('app.home') }}</span>
           </router-link>
           <router-link
             to="/chat"
@@ -84,12 +84,12 @@
       <!-- Main Content -->
       <div id="content" class="flex-grow-1 p-4">
         <select
-  v-model="locale"
-  class="px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-white focus:ring focus:ring-blue-300 shadow-md transition"
->
-<option value="en">English (US)</option>
-<option value="es">Español (CO)</option>
-</select>
+          v-model="locale"
+          class="px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-white focus:ring focus:ring-blue-300 shadow-md transition"
+        >
+          <option value="en">English (US)</option>
+          <option value="es">Español (CO)</option>
+        </select>
 
         <Navbar />
         <router-view :key="route.fullPath" />
@@ -106,7 +106,7 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n';
+import { useI18n } from 'vue-i18n'
 import Navbar from './components/layouts/NavbarComponent.vue'
 
 const route = useRoute()
@@ -122,15 +122,14 @@ const closeOffcanvas = () => {
   // placeholder if needed
 }
 
-const { locale } = useI18n();
+const { locale } = useI18n()
 
-const savedLang = localStorage.getItem('userLang') || 'en';
-locale.value = savedLang;
+const savedLang = localStorage.getItem('userLang') || 'en'
+locale.value = savedLang
 
 watch(locale, (newLang) => {
-  localStorage.setItem('userLang', newLang);
-});
-
+  localStorage.setItem('userLang', newLang)
+})
 </script>
 
 <style scoped>
@@ -192,5 +191,4 @@ watch(locale, (newLang) => {
   color: white;
   text-align: center;
 }
-
 </style>

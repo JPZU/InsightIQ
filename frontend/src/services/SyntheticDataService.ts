@@ -7,15 +7,15 @@ class SyntheticDataService {
   static uploadDatabase(file: File) {
     const formData = new FormData()
     formData.append('file', file)
-    return ApiClient.post(`${this.BASE_URL}/upload/`, formData) 
+    return ApiClient.post(`${this.BASE_URL}/upload/`, formData)
   }
 
   static getSchema(tableName: string) {
-    return ApiClient.get(`${this.BASE_URL}/schema/${tableName}`) 
+    return ApiClient.get(`${this.BASE_URL}/schema/${tableName}`)
   }
 
   static generateSyntheticData(tableName: string, numRecords: number) {
-    return ApiClient.post(`${this.BASE_URL}/generate/`, { tableName, numRecords }) 
+    return ApiClient.post(`${this.BASE_URL}/generate/`, { tableName, numRecords })
   }
 }
 
