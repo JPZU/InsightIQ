@@ -63,9 +63,9 @@ const fetchAlarm = async () => {
     const allAlarms = await AlarmService.listAlarms()
     const found = allAlarms.find((a: any) => a.id === Number(route.params.id))
     if (found) {
-      alarm.value = { 
-        ...found, 
-        is_active: found.is_active === 1 // Convierte 1 a true y 0 a false
+      alarm.value = {
+        ...found,
+        is_active: found.is_active === 1, // Convierte 1 a true y 0 a false
       }
     } else {
       console.error('Alarm not found')

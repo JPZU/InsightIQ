@@ -5,8 +5,8 @@ import * as XLSX from 'xlsx'
 const props = defineProps({
   queryResult: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 
 const headers = computed(() => Object.keys(props.queryResult))
@@ -14,7 +14,7 @@ const headers = computed(() => Object.keys(props.queryResult))
 const rows = computed(() => {
   const keys = headers.value
   const length = props.queryResult[keys[0]]?.length || 0
-  return Array.from({ length }, (_, i) => keys.map(key => props.queryResult[key][i]))
+  return Array.from({ length }, (_, i) => keys.map((key) => props.queryResult[key][i]))
 })
 
 // Paginación
@@ -29,12 +29,12 @@ const paginatedRows = computed(() => {
 const totalPages = computed(() => Math.ceil(rows.value.length / rowsPerPage))
 
 // Formato de exportación
-const exportFormat = ref('csv')  // 'csv' or 'xlsx'
+const exportFormat = ref('csv') // 'csv' or 'xlsx'
 
 // Exportar la tabla en CSV
 const exportToCSV = () => {
   const csvRows = [headers.value.join(',')]
-  rows.value.forEach(row => csvRows.push(row.join(',')))
+  rows.value.forEach((row) => csvRows.push(row.join(',')))
   const csvContent = csvRows.join('\n')
   const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csvContent)
   const link = document.createElement('a')
@@ -47,7 +47,7 @@ const exportToCSV = () => {
 
 // Exportar la tabla en XLSX
 const exportToXLSX = () => {
-  const data = rows.value.map(row => {
+  const data = rows.value.map((row) => {
     const obj = {}
     row.forEach((cell, i) => {
       obj[headers.value[i]] = cell
@@ -81,7 +81,12 @@ const exportToXLSX = () => {
         <option value="csv">CSV</option>
         <option value="xlsx">XLSX</option>
       </select>
-      <button @click="exportFormat === 'csv' ? exportToCSV() : exportToXLSX()" class="btn btn-primary mt-2">Download Table</button>
+      <button
+        @click="exportFormat === 'csv' ? exportToCSV() : exportToXLSX()"
+        class="btn btn-primary mt-2"
+      >
+        Download Table
+      </button>
     </div>
 
     <!-- Paginación -->

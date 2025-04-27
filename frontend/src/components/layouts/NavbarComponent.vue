@@ -71,10 +71,7 @@ const handleLogin = async () => {
   loginForm.value.error = ''
 
   try {
-    const success = await AuthService.login(
-      loginForm.value.username,
-      loginForm.value.password
-    )
+    const success = await AuthService.login(loginForm.value.username, loginForm.value.password)
 
     if (success) {
       showLoginModal.value = false
@@ -109,19 +106,32 @@ const goToProfile = () => {
 <template>
   <nav class="navbar" style="height: 65px">
     <div class="container-fluid">
-      <router-link class="navbar-brand ms-4 mb-0 h1" style="font-size: 1.5rem" :to="{ name: 'home' }">
+      <router-link
+        class="navbar-brand ms-4 mb-0 h1"
+        style="font-size: 1.5rem"
+        :to="{ name: 'home' }"
+      >
         InsightIQ
       </router-link>
 
       <div class="d-flex align-items-center">
         <div class="dropdown me-3">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown"
-            data-bs-toggle="dropdown" aria-expanded="false">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle"
+            type="button"
+            id="languageDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
             {{ currentLanguage === 'es' ? 'Español' : 'English' }}
           </button>
           <ul class="dropdown-menu" aria-labelledby="languageDropdown">
             <li>
-              <a class="dropdown-item" href="#" @click.prevent="changeLanguage(currentLanguage === 'es' ? 'en' : 'es')">
+              <a
+                class="dropdown-item"
+                href="#"
+                @click.prevent="changeLanguage(currentLanguage === 'es' ? 'en' : 'es')"
+              >
                 {{ currentLanguage === 'es' ? 'English' : 'Español' }}
               </a>
             </li>
@@ -129,15 +139,25 @@ const goToProfile = () => {
         </div>
 
         <div v-if="!isLoggedIn">
-          <button type="button" class="btn btn-primary me-2" :class="navbarClass"
-            @click="router.push({ name: 'login' })">
+          <button
+            type="button"
+            class="btn btn-primary me-2"
+            :class="navbarClass"
+            @click="router.push({ name: 'login' })"
+          >
             {{ $t('app.login') }}
           </button>
         </div>
 
         <div v-else class="dropdown">
-          <button class="btn btn-outline-primary dropdown-toggle" :class="navbarClass" type="button"
-            id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <button
+            class="btn btn-outline-primary dropdown-toggle"
+            :class="navbarClass"
+            type="button"
+            id="userDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
             {{ $t('app.my_account') }}
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -167,11 +187,18 @@ const goToProfile = () => {
     </div>
   </nav>
 
-  <ul class="nav justify-content-center nav-underline d-flex align-items-center" :class="navbarClass"
-    style="height: 65px" v-if="isLoggedIn">
+  <ul
+    class="nav justify-content-center nav-underline d-flex align-items-center"
+    :class="navbarClass"
+    style="height: 65px"
+    v-if="isLoggedIn"
+  >
     <li v-for="tab in navbarTabs" :key="tab.name" class="nav-item mx-5">
-      <router-link class="nav-link text-white" :class="{ 'active fw-bold': route.name === tab.routeName }"
-        :to="{ name: tab.routeName }">
+      <router-link
+        class="nav-link text-white"
+        :class="{ 'active fw-bold': route.name === tab.routeName }"
+        :to="{ name: tab.routeName }"
+      >
         {{ currentLanguage === 'es' ? tab.name_es : tab.name }}
       </router-link>
     </li>
