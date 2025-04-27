@@ -1,9 +1,9 @@
-from sqlalchemy import Column, DateTime, Integer, String, Enum, func
-from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 
+from sqlalchemy import Column, DateTime, Enum, Integer, String, func
+from sqlalchemy.orm import relationship
+
 from database.models.base import Base
-from database.models.alert import Alert
 
 
 class RoleEnum(PyEnum):

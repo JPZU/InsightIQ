@@ -1,8 +1,7 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, func, Text, JSON
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, Text, func
 from sqlalchemy.orm import relationship
 
 from .base import Base
-from .question import Question
 
 
 class Response(Base):

@@ -1,7 +1,6 @@
 import os
-from dotenv import load_dotenv
 
-from utils.i18n import _
+from dotenv import load_dotenv
 
 
 class EnvManager:

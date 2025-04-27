@@ -3,8 +3,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
 from services.user_service import UserService
-from utils.base_schema import BaseResponse
 from utils.auth_manager import AuthManager
+from utils.base_schema import BaseResponse
 
 router = APIRouter()
 
