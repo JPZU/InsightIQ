@@ -1,5 +1,5 @@
-from typing import Any, Dict, Optional
 import logging
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
