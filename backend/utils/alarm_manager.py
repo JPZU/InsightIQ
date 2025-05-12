@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from langchain_openai import ChatOpenAI
+from sqlalchemy.sql import text
+
+from database.session import engine
 from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
-from sqlalchemy.sql import text
-from datetime import datetime
-from database.session import engine
+
 
 class AlarmManager:
     _instance = None
@@ -12,8 +15,8 @@ class AlarmManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(AlarmManager, cls).__new__(cls)
-            cls._instance.db_manager = DBManager() 
-            
+            cls._instance.db_manager = DBManager()
+
             api_key = EnvManager.get_api_key()
             cls._instance.llm = ChatOpenAI(
                 model="gpt-4o-mini",
@@ -68,9 +71,9 @@ class AlarmManager:
             INSERT INTO alerts (`condition`, `table_name`, `field`, `threshold`, `description`, createdAt, updatedAt, user_id, is_active)
             VALUES (:condition, :table_name, :field, :threshold, :description, :createdAt, :updatedAt, :user_id, :is_active)
         """)
-        
+
         is_active = alarm_details.get("is_active", True)  # By default, set to True
-        
+
         with engine.connect() as conn:
             conn.execute(query, {
                 "condition": alarm_details["condition"],
@@ -81,10 +84,10 @@ class AlarmManager:
                 "createdAt": alarm_details["createdAt"],
                 "updatedAt": alarm_details["updatedAt"],
                 "user_id": alarm_details["user_id"],
-                "is_active": is_active  
+                "is_active": is_active
             })
             conn.commit()
-            
+
     def evaluate_alarm(self, table_name: str):
         query = text("""
             SELECT * FROM alerts where table_name = :table_name AND is_active = 1
@@ -94,7 +97,7 @@ class AlarmManager:
         with engine.connect() as conn:
             result = conn.execute(query, {"table_name": table_name})
             alarms = result.mappings().all()
-            
+
             for alarm in alarms:
                 field = alarm["field"]
                 condition = alarm["condition"]
@@ -121,7 +124,7 @@ class AlarmManager:
                                 "triggered_data": dict(row)
                             })
         return results_triggered
-    
+
     def delete_alarm(self, alarm_id: int):
         query = text("DELETE FROM alerts WHERE id = :alarm_id")
         with engine.connect() as conn:
@@ -136,7 +139,7 @@ class AlarmManager:
 
     def edit_alarm(self, alarm_id: int, updated_details: dict):
         if not updated_details:
-            return  
+            return
 
         updated_details["updatedAt"] = datetime.utcnow().isoformat()
 
