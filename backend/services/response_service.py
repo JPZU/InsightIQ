@@ -1,5 +1,6 @@
 from database.models.response import Response
 from database.session import SessionLocal
+from typing import Optional
 
 
 class ResponseService:
@@ -9,7 +10,8 @@ class ResponseService:
         chat_id: int,
         question_id: int,
         content: str,
-        query_result: dict = None
+        query_result: dict = None,
+        rating: Optional[int] = None
     ) -> Response:
         with SessionLocal() as db:
             response = Response(
@@ -17,6 +19,7 @@ class ResponseService:
                 query_result=query_result,
                 chat_id=chat_id,
                 question_id=question_id,
+                rating=rating
             )
             db.add(response)
             db.commit()
