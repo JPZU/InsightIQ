@@ -1,7 +1,6 @@
 import json
-from datetime import datetime
-
 from utils.alarm_manager import AlarmManager
+from datetime import datetime
 
 
 def create_alarm_from_natural_language(user_input: str):
@@ -32,7 +31,7 @@ def create_alarm_from_natural_language(user_input: str):
         alarm_details = json.loads(response)
     except json.JSONDecodeError:
         raise ValueError("The AI response could not be parsed as JSON.")
-
+    
     alert_data = {
         "condition": alarm_details["condition"],
         "table_name": table_name,
@@ -41,7 +40,7 @@ def create_alarm_from_natural_language(user_input: str):
         "description": alarm_details["description"],
         "createdAt": datetime.now(),
         "updatedAt": datetime.now(),
-        "user_id": alarm_details.get("user_id", 1)
+        "user_id": alarm_details.get("user_id", 1) 
     }
 
     alarm_manager.insert_alarm(alert_data)
@@ -52,7 +51,6 @@ def create_alarm_from_natural_language(user_input: str):
         "alarm_details": alarm_details
     }
 
-
 def delete_alarm_by_id(alarm_id: int):
     alarm_manager = AlarmManager()
     alarm_manager.delete_alarm(alarm_id)
@@ -60,12 +58,10 @@ def delete_alarm_by_id(alarm_id: int):
         "message": f"Alarm with ID {alarm_id} deleted successfully."
     }
 
-
 def get_all_alarms():
     alarm_manager = AlarmManager()
     alarms = alarm_manager.get_all_alarms()
     return alarms
-
 
 def update_alarm_by_id(alarm_id: int, updated_details: dict):
     if not updated_details:
@@ -86,7 +82,6 @@ def update_alarm_by_id(alarm_id: int, updated_details: dict):
             "success": False,
             "message": f"Error updating alarm: {str(e)}"
         }
-
 
 def evaluate_alarm(table_name: str):
     alarm_manager = AlarmManager()
