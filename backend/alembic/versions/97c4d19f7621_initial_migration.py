@@ -23,8 +23,8 @@ def upgrade() -> None:
     op.create_table('datasets',
                     sa.Column('id', sa.Integer(), nullable=False),
                     sa.Column('file_path', sa.String(length=255), nullable=True),
-                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
-                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_index(op.f('ix_datasets_id'), 'datasets', ['id'], unique=False)
@@ -35,8 +35,8 @@ def upgrade() -> None:
                     sa.Column('email', sa.String(length=255), nullable=False),
                     sa.Column('password', sa.String(length=255), nullable=False),
                     sa.Column('role', sa.Enum('USER', 'ADMIN', name='roleenum'), nullable=False),
-                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
-                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
+                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=True),
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
@@ -49,8 +49,8 @@ def upgrade() -> None:
                     sa.Column('is_active', sa.Boolean(), nullable=False),
                     sa.Column('table_name', sa.String(length=255), nullable=True),
                     sa.Column('threshold', sa.Integer(), nullable=True),
-                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
-                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
                     sa.Column('user_id', sa.Integer(), nullable=True),
                     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
                     sa.PrimaryKeyConstraint('id')
@@ -59,8 +59,8 @@ def upgrade() -> None:
     op.create_table('chats',
                     sa.Column('id', sa.Integer(), nullable=False),
                     sa.Column('name', sa.String(length=255), nullable=True),
-                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
-                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
                     sa.Column('user_id', sa.Integer(), nullable=False),
                     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
                     sa.PrimaryKeyConstraint('id')
@@ -70,8 +70,8 @@ def upgrade() -> None:
     op.create_table('questions',
                     sa.Column('id', sa.Integer(), nullable=False),
                     sa.Column('content', sa.String(length=255), nullable=True),
-                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
-                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
                     sa.Column('chat_id', sa.Integer(), nullable=True),
                     sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ),
                     sa.PrimaryKeyConstraint('id')
@@ -81,8 +81,8 @@ def upgrade() -> None:
                     sa.Column('id', sa.Integer(), nullable=False),
                     sa.Column('content', sa.Text(), nullable=True),
                     sa.Column('query_result', sa.JSON(), nullable=True),
-                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
-                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+                    sa.Column('createdAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+                    sa.Column('updatedAt', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
                     sa.Column('chat_id', sa.Integer(), nullable=True),
                     sa.Column('question_id', sa.Integer(), nullable=True),
                     sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ),
