@@ -17,7 +17,7 @@ class AlarmManager:
             cls._instance = super(AlarmManager, cls).__new__(cls)
             cls._instance.db_manager = DBManager()
 
-            api_key = EnvManager.get_api_key()
+            api_key = EnvManager.get_openai_api_key()
             cls._instance.llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 openai_api_key=api_key,
