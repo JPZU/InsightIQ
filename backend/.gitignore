@@ -12,3 +12,6 @@ venv/
 
 # Test output
 test_results.txt
+
+# database
+*.db
