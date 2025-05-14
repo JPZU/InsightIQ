@@ -23,11 +23,11 @@
         </div>
 
         <!-- Alerts Card -->
-        <div class="col-md-6 col-lg-4" @click="$router.push('/admin/alarm-list')">
+        <div class="col-md-6 col-lg-4" @click="$router.push('/admin/alarm')">
           <div class="card shadow-sm h-100 feature-card">
             <div class="card-body text-center p-4">
-              <img src="/alerts.png" alt="Alerts" class="img-fluid mb-3" style="max-height: 120px">
-              <h4 class="mb-3">Alerts</h4>
+              <img src="/alerts.jpg" alt="Alerts" class="img-fluid mb-3" style="max-height: 120px">
+              <h4 class="mb-3">Alarms</h4>
               <ul class="text-start ps-4">
                 <li class="mb-2">Create alerts with natural language</li>
                 <li class="mb-2">View and manage active alerts</li>
@@ -39,10 +39,10 @@
         </div>
 
         <!-- Users Card -->
-        <div class="col-md-6 col-lg-4" @click="$router.push('/admin/users')">
+        <div class="col-md-6 col-lg-4" @click="$router.push('/admin/user-manager')">
           <div class="card shadow-sm h-100 feature-card">
             <div class="card-body text-center p-4">
-              <img src="/users.jpg" alt="Users" class="img-fluid mb-3" style="max-height: 120px">
+              <img src="/users.png" alt="Users" class="img-fluid mb-3" style="max-height: 120px">
               <h4 class="mb-3">Users</h4>
               <ul class="text-start ps-4">
                 <li class="mb-2">Manage user accounts and access</li>

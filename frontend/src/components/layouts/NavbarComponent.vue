@@ -283,7 +283,7 @@ watch(isLoggedIn, (newVal) => {
               </li>
               <li>
                 <a class="dropdown-item" href="#" @click.prevent="router.push('/admin')">
-                  {{ $t('app.admin') }}
+                  Admin
                 </a>
               </li>
               <li>
