@@ -50,7 +50,7 @@
             </div>
           </div>
           <div class="col-lg-6 mt-4 mt-lg-0">
-            <img src="/data-analysis.jpg" alt="Data Analysis" class="img-fluid" />
+            <img src="/data.jpg" alt="Data Analysis" class="img-fluid" />
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@
                 <h4 class="card-title">Intelligent Alerts</h4>
                 <p class="card-text">Set up customized alerts to notify you of important changes or anomalies in your
                   business data.</p>
-                <img src="/alerts.png" alt="Alert System" class="img-fluid mt-3 rounded" />
+                <img src="/alerts.jpg" alt="Alert System" class="img-fluid mt-3 rounded" />
               </div>
             </div>
           </div>
