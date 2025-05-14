@@ -107,16 +107,6 @@ class FileManager:
         file_extension = upload_file.filename.split(".")[-1]
         destination = os.path.join(data_folder, f"{table_name}.{file_extension}")
 
-        # Get the list of files in 'data' excluding 'titanic.csv'
-        existing_files = [
-            f for f in os.listdir(data_folder) if f not in [
-                "titanic.csv", "db.sqlite"]]
-
-        # If there is an existing file (other than 'titanic.csv'), delete it
-        for file in existing_files:
-            file_path = os.path.join(data_folder, file)
-            os.remove(file_path)
-
         with open(destination, "wb+") as file_object:
             file_object.write(upload_file.file.read())
 

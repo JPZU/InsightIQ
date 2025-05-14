@@ -7,9 +7,12 @@ from apps.dashboard.routes import router as dashboard_router
 from apps.detail_report.routes import router as detail_report_router
 from apps.file_manager.routes import router as file_manager_router
 from apps.synthetic_data.routes import router as synthetic_data_router
+from apps.user.admin_routes import router as admin_user_router
 from apps.user.routes import router as user_router
 
 router = APIRouter()
+
+router.include_router(admin_user_router, prefix="/admin/users", tags=["admin-users"])
 
 router.include_router(auth_router, prefix="/auth", tags=["auth"])
 router.include_router(alarm_management_router, prefix="/alarm_management", tags=["alarm_management"])

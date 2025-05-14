@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/AuthService'
@@ -20,16 +20,19 @@ const loginForm = ref({
 
 const isLoggedIn = computed(() => AuthService.isAuthenticated())
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
-const triggeredAlarms = ref<any[]>([])
+const triggeredAlarms = ref<Record<string, any[]>>({})
+const showAlarmsModal = ref(false)
+const alarmCheckInterval = ref<number | null>(null)
+const checkInterval = ref(30000) // 30 seconds by default
 
-// Configuración quemada de las tabs
+// Tab configuration
 const navbarTabs = computed(() => {
   if (isAdminRoute.value) {
     return [
       { name: 'Admin Home', name_es: 'Inicio Admin', routeName: 'admin-home' },
-      { name: 'Synthetic Data', name_es: 'Datos Sintéticos', routeName: 'synthetic-data' },
       { name: 'File Manager', name_es: 'Gestor de Archivos', routeName: 'file-manager' },
       { name: 'Alarm Manager', name_es: 'Gestor de Alarmas', routeName: 'alarm' },
+      { name: 'User Manager', name_es: 'Gestor de Usuarios', routeName: 'user-manager' },
     ]
   } else {
     return [
@@ -48,19 +51,59 @@ const navbarClass = computed(() => {
 const checkTriggeredAlarms = async () => {
   try {
     const response = await AlarmService.checkAlarms()
-    triggeredAlarms.value = response.data?.triggered_alarms || []
+    triggeredAlarms.value = response.data || {}
+
+    if (Object.keys(triggeredAlarms.value).length > 0) {
+      showAlarmsModal.value = true
+      stopAlarmCheckInterval() // Stop checking when modal is shown
+    }
   } catch (error) {
     console.error('Error checking alarms:', error)
   }
 }
 
-const closeModal = () => {
-  triggeredAlarms.value = []
+const startAlarmCheckInterval = () => {
+  if (showAlarmsModal.value) return // Don't start if modal is open
+
+  stopAlarmCheckInterval()
+  checkTriggeredAlarms()
+  alarmCheckInterval.value = window.setInterval(checkTriggeredAlarms, checkInterval.value)
 }
 
-onMounted(() => {
-  checkTriggeredAlarms()
+const stopAlarmCheckInterval = () => {
+  if (alarmCheckInterval.value !== null) {
+    window.clearInterval(alarmCheckInterval.value)
+    alarmCheckInterval.value = null
+  }
+}
+
+const closeModal = () => {
+  showAlarmsModal.value = false
+  triggeredAlarms.value = {}
+  startAlarmCheckInterval() // Restart checking when modal is closed
+}
+
+// Watch for modal state changes
+watch(showAlarmsModal, (newVal) => {
+  if (newVal) {
+    stopAlarmCheckInterval()
+  } else {
+    startAlarmCheckInterval()
+  }
 })
+
+onMounted(() => {
+  startAlarmCheckInterval()
+})
+
+onUnmounted(() => {
+  stopAlarmCheckInterval()
+})
+
+const updateCheckInterval = (newInterval: number) => {
+  checkInterval.value = newInterval
+  startAlarmCheckInterval()
+}
 
 const changeLanguage = (lang: string) => {
   locale.value = lang
@@ -101,6 +144,22 @@ const handleLogout = async () => {
 const goToProfile = () => {
   router.push({ name: 'profile' })
 }
+
+const hasAlarms = computed(() => {
+  return Object.keys(triggeredAlarms.value).length > 0
+})
+
+watch(
+  isLoggedIn,
+  (newVal) => {
+    if (newVal) {
+      startAlarmCheckInterval()
+    } else {
+      stopAlarmCheckInterval()
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -204,30 +263,75 @@ const goToProfile = () => {
     </li>
   </ul>
 
-  <!-- Modal para alarmas activadas -->
-  <div v-if="triggeredAlarms.length" class="modal">
+  <!-- Alarm Notification Badge -->
+  <div
+    v-if="hasAlarms && !showAlarmsModal"
+    class="alarm-notification"
+    @click="showAlarmsModal = true"
+  >
+    <span class="badge bg-danger">{{ Object.values(triggeredAlarms).flat().length }}</span>
+    <span>{{ $t('app.new_alarms') }}</span>
+  </div>
+
+  <!-- Alarm Modal -->
+  <div v-if="showAlarmsModal" class="modal" @click.self="closeModal">
     <div class="modal-content">
       <span class="close" @click="closeModal">&times;</span>
-      <h3>Triggered Alarms</h3>
-      <ul>
-        <li v-for="(alarm, index) in triggeredAlarms" :key="index">
-          <p>
-            <strong>The alarm with ID {{ alarm.alarm_id }} was triggered:</strong>
-          </p>
-          <p><strong>Description:</strong> {{ alarm.description }}</p>
-          <p><strong>Triggered Data:</strong></p>
-          <ul>
-            <li v-for="(value, key) in alarm.triggered_data" :key="key">
-              <strong>{{ key.replace(/_/g, ' ') }}:</strong> {{ value || 'N/A' }}
-            </li>
-          </ul>
-        </li>
-      </ul>
+      <h3 class="modal-title">{{ $t('app.triggered_alarms') }}</h3>
+
+      <div class="alarm-container">
+        <div v-for="(alarms, tableName) in triggeredAlarms" :key="tableName" class="table-alarms">
+          <h4 class="table-name">{{ tableName }}</h4>
+
+          <div
+            v-for="(alarm, index) in alarms"
+            :key="index"
+            class="alarm-card"
+            :class="{
+              critical: alarm.severity === 'critical',
+              warning: alarm.severity === 'warning',
+            }"
+          >
+            <div class="alarm-header">
+              <h5>{{ alarm.description }}</h5>
+              <span class="alarm-id">#{{ alarm.alarm_id }}</span>
+            </div>
+
+            <div class="alarm-details">
+              <div class="detail-row">
+                <span class="detail-label">{{ $t('app.condition') }}:</span>
+                <span class="detail-value">{{ alarm.condition }} {{ alarm.threshold }}</span>
+              </div>
+
+              <div class="triggered-data">
+                <h6>{{ $t('app.triggered_data') }}</h6>
+                <div class="data-grid">
+                  <div v-for="(value, key) in alarm.triggered_data" :key="key" class="data-item">
+                    <span class="data-key">{{ String(key).replace(/_/g, ' ') }}:</span>
+                    <span class="data-value">{{ value || 'N/A' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alarm-timestamp">
+              {{ new Date(alarm.timestamp).toLocaleString() }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" @click="closeModal">
+          {{ $t('app.close') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
+/* Base modal styles */
 .modal {
   position: fixed;
   top: 0;
@@ -238,29 +342,188 @@ const goToProfile = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 1050;
 }
 
 .modal-content {
   background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 500px;
+  padding: 25px;
+  border-radius: 12px;
   width: 90%;
-  text-align: left;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   position: relative;
 }
 
 .close {
-  font-size: 30px;
-  font-weight: bold;
-  cursor: pointer;
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-/* Estilos para las tabs */
+.close:hover {
+  color: #333;
+}
+
+.modal-title {
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Alarm notification badge */
+.alarm-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 0.2s;
+}
+
+.alarm-notification:hover {
+  transform: translateY(-2px);
+}
+
+.alarm-notification .badge {
+  font-size: 14px;
+  padding: 5px 8px;
+}
+
+/* Alarm container styles */
+.alarm-container {
+  margin-top: 15px;
+}
+
+.table-alarms {
+  margin-bottom: 25px;
+}
+
+.table-name {
+  color: #444;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.alarm-card {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-left: 4px solid #ddd;
+}
+
+.alarm-card.critical {
+  border-left-color: #dc3545;
+  background-color: #fff5f5;
+}
+
+.alarm-card.warning {
+  border-left-color: #ffc107;
+  background-color: #fffdf5;
+}
+
+.alarm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.alarm-header h5 {
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.alarm-id {
+  background: #eee;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  color: #666;
+}
+
+.alarm-details {
+  margin-bottom: 10px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.detail-label {
+  font-weight: 500;
+  margin-right: 5px;
+  color: #555;
+}
+
+.detail-value {
+  color: #333;
+}
+
+.triggered-data {
+  margin-top: 10px;
+}
+
+.triggered-data h6 {
+  margin: 10px 0 5px 0;
+  color: #555;
+  font-weight: 500;
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.data-item {
+  background: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.data-key {
+  font-weight: 500;
+  color: #555;
+  margin-right: 5px;
+}
+
+.data-value {
+  color: #333;
+}
+
+.alarm-timestamp {
+  font-size: 0.8em;
+  color: #777;
+  text-align: right;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  text-align: right;
+}
+
+/* Navbar styles (existing) */
 .nav-underline .nav-link {
   color: rgba(255, 255, 255, 0.75);
   border-bottom: 2px solid transparent;
@@ -277,7 +540,6 @@ const goToProfile = () => {
   border-bottom-color: white;
 }
 
-/* Colores para admin/user */
 .bg-danger {
   background-color: #c73659 !important;
 }
