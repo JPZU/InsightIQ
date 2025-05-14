@@ -1,8 +1,8 @@
 import json
 from datetime import datetime
-from utils.db_manager import DBManager
 
 from utils.alarm_manager import AlarmManager
+from utils.db_manager import DBManager
 
 
 def create_alarm_from_natural_language(user_input: str):

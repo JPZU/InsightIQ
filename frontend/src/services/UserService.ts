@@ -31,33 +31,19 @@ class UserService extends BaseService {
   private static readonly BASE_URL = `${import.meta.env.VITE_API_URL}/users`
 
   async register(userData: UserCreate): Promise<BaseResponse<User>> {
-    return (await this.makeRequest(
-      UserService.BASE_URL,
-      'post',
-      userData
-    )) as BaseResponse<User>
+    return (await this.makeRequest(UserService.BASE_URL, 'post', userData)) as BaseResponse<User>
   }
 
   async getMyProfile(): Promise<BaseResponse<User>> {
-    return (await this.makeRequest(
-      `${UserService.BASE_URL}/me`,
-      'get'
-    )) as BaseResponse<User>
+    return (await this.makeRequest(`${UserService.BASE_URL}/me`, 'get')) as BaseResponse<User>
   }
 
   async updateProfile(userData: UserUpdate): Promise<BaseResponse> {
-    return (await this.makeRequest(
-      `${UserService.BASE_URL}/me`,
-      'put',
-      userData
-    )) as BaseResponse
+    return (await this.makeRequest(`${UserService.BASE_URL}/me`, 'put', userData)) as BaseResponse
   }
 
   async deleteAccount(): Promise<BaseResponse> {
-    return (await this.makeRequest(
-      `${UserService.BASE_URL}/me`,
-      'delete'
-    )) as BaseResponse
+    return (await this.makeRequest(`${UserService.BASE_URL}/me`, 'delete')) as BaseResponse
   }
 }
 

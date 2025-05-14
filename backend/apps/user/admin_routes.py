@@ -2,7 +2,6 @@ from typing import Optional, Any
 from enum import Enum
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from datetime import datetime
 
 from services.user_service import UserService
 from utils.auth_manager import AuthManager
@@ -13,6 +12,7 @@ router = APIRouter()
 class RoleEnum(str, Enum):
     USER = "user"
     ADMIN = "admin"
+
 
 class AdminUserUpdate(BaseModel):
     full_name: Optional[str] = None
@@ -101,7 +101,7 @@ def admin_delete_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Cannot delete your own account"
         )
-    
+
     success = UserService.delete_user(user_id)
     if not success:
         raise HTTPException(

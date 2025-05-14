@@ -3,9 +3,10 @@ from typing import Optional, Dict, Any
 from sqlalchemy import func
 
 from passlib.context import CryptContext
+from sqlalchemy import func
 
-from database.models.user import User
 from database.models.chat import Chat
+from database.models.user import User
 from database.session import SessionLocal
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -152,7 +153,7 @@ class UserService:
                 .group_by(User.id)
                 .all()
             )
-            
+
             total_users = db.query(User).count()
             total_admins = db.query(User).filter(User.role == "admin").count()
             total_questions = db.query(func.count(Chat.id)).scalar() or 0

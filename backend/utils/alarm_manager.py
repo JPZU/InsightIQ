@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Dict, List, Set, Tuple
-import json
 
 from langchain_openai import ChatOpenAI
 from sqlalchemy.sql import text
@@ -41,7 +40,7 @@ class AlarmManager:
         """Filter out alarms that are already in history."""
         history_key = self._get_history_key(table_name, alarm_id)
         existing_alarms = self._alarm_history.get(history_key, set())
-        
+
         new_alarms = []
         for row in triggered_rows:
             data_key = self._get_triggered_data_key(row['triggered_data'])
@@ -54,7 +53,7 @@ class AlarmManager:
         history_key = self._get_history_key(table_name, alarm_id)
         if history_key not in self._alarm_history:
             self._alarm_history[history_key] = set()
-        
+
         for row in triggered_rows:
             data_key = self._get_triggered_data_key(row['triggered_data'])
             self._alarm_history[history_key].add(data_key)
@@ -125,11 +124,11 @@ class AlarmManager:
     def evaluate_alarm(self, table_name: str, only_new: bool = True) -> List[dict]:
         """
         Evaluate alarms for a table and return triggered alarms.
-        
+
         Args:
             table_name: Name of the table to evaluate
             only_new: If True, only return alarms not in history
-            
+
         Returns:
             List of triggered alarms with their details
         """
@@ -170,7 +169,7 @@ class AlarmManager:
 
                         if only_new:
                             triggered_rows = self._filter_new_alarms(table_name, alarm_id, triggered_rows)
-                        
+
                         if triggered_rows:
                             results_triggered.extend(triggered_rows)
                             self._update_history(table_name, alarm_id, triggered_rows)
@@ -184,8 +183,8 @@ class AlarmManager:
         else:
             keys_to_remove = [
                 key for key in self._alarm_history.keys()
-                if (table_name is None or key[0] == table_name) and 
-                   (alarm_id is None or key[1] == alarm_id)
+                if (table_name is None or key[0] == table_name)
+                and (alarm_id is None or key[1] == alarm_id)
             ]
             for key in keys_to_remove:
                 del self._alarm_history[key]

@@ -1,9 +1,10 @@
 import os
+from typing import Any, Dict, List
+
 import pandas as pd
-from sqlalchemy.exc import SQLAlchemyError
+from fastapi import HTTPException, UploadFile
 from sqlalchemy import inspect, text
-from fastapi import UploadFile, HTTPException
-from typing import List, Dict, Any
+from sqlalchemy.exc import SQLAlchemyError
 
 from utils.db_manager import DBManager
 
@@ -17,7 +18,7 @@ class FileManagerService:
             df = pd.read_csv(file_location)
             with self.db_manager.engine.connect() as conn:
                 df.to_sql(table_name, conn, if_exists='replace', index=False)
-            
+
             row_count = len(df)
             return {
                 "success": True,
@@ -39,7 +40,7 @@ class FileManagerService:
             df = pd.read_excel(file_location, sheet_name=0)
             with self.db_manager.engine.connect() as conn:
                 df.to_sql(table_name, conn, if_exists='replace', index=False)
-            
+
             row_count = len(df)
             return {
                 "success": True,
@@ -62,7 +63,7 @@ class FileManagerService:
     def get_table_info(self, table_name: str) -> Dict[str, Any]:
         try:
             schema = self.db_manager.get_table_schema(table_name)
-            
+
             if not schema:
                 raise HTTPException(status_code=404, detail=f"Table '{table_name}' does not exist.")
 
@@ -82,10 +83,10 @@ class FileManagerService:
             inspector = inspect(self.db_manager.engine)
             if table_name not in inspector.get_table_names():
                 return False
-                
+
             with self.db_manager.engine.begin() as connection:
                 connection.execute(text(f'DROP TABLE "{table_name}"'))
-                
+
             return True
         except SQLAlchemyError as e:
             print(f"Error deleting table {table_name}: {str(e)}")  # For debugging
@@ -99,12 +100,12 @@ class FileManagerService:
                     "success": False,
                     "message": f"Table '{table_name}' does not exist. Use replace=True to create it."
                 }
-            
+
             df = pd.read_csv(file_location)
             with self.db_manager.engine.connect() as conn:
                 if_exists = 'replace' if replace else 'append'
                 df.to_sql(table_name, conn, if_exists=if_exists, index=False)
-            
+
             return {
                 "success": True,
                 "message": f"Table '{table_name}' {'replaced' if replace else 'updated'} successfully with {len(df)} rows",
@@ -125,13 +126,13 @@ class FileManagerService:
                     "success": False,
                     "message": f"Table '{table_name}' does not exist. Use replace=True to create it."
                 }
-            
+
             # Always load the first sheet
             df = pd.read_excel(file_location, sheet_name=0)
             with self.db_manager.engine.connect() as conn:
                 if_exists = 'replace' if replace else 'append'
                 df.to_sql(table_name, conn, if_exists=if_exists, index=False)
-            
+
             return {
                 "success": True,
                 "message": f"Table '{table_name}' {'replaced' if replace else 'updated'} successfully with {len(df)} rows",

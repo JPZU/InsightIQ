@@ -25,7 +25,7 @@ const state = reactive({
   uploadType: '', // 'excel' or 'csv'
   showUpdateModal: false,
   replaceData: false,
-  showSyntheticDataModal: false // New state for synthetic data modal
+  showSyntheticDataModal: false, // New state for synthetic data modal
 })
 
 // Synthetic data state
@@ -34,13 +34,13 @@ const syntheticData = reactive({
   details: '',
   response: null,
   loading: false,
-  tableSchema: []
+  tableSchema: [],
 })
 
 const filteredTables = computed(() => {
   if (!state.searchQuery) return state.tables
-  return state.tables.filter(table => 
-    table.toLowerCase().includes(state.searchQuery.toLowerCase())
+  return state.tables.filter((table) =>
+    table.toLowerCase().includes(state.searchQuery.toLowerCase()),
   )
 })
 
@@ -60,7 +60,7 @@ const uploadFile = async () => {
 
   state.loading = true
   state.message = ''
-  
+
   try {
     let response
     if (state.uploadType === 'excel') {
@@ -68,7 +68,7 @@ const uploadFile = async () => {
     } else {
       response = await FileManagerService.uploadCSV(state.selectedFile, state.tableName)
     }
-    
+
     state.message = t('file_manager.upload_success')
     await fetchTables()
     state.showFileUpload = false
@@ -90,14 +90,14 @@ const updateTable = async () => {
 
   state.loading = true
   state.message = ''
-  
+
   try {
     const response = await FileManagerService.updateTable(
-      state.currentTable, 
+      state.currentTable,
       state.selectedFile,
-      state.replaceData
+      state.replaceData,
     )
-    
+
     state.message = t('file_manager.update_success')
     await fetchTableData(state.currentTable)
     state.showUpdateModal = false
@@ -137,7 +137,7 @@ const fetchTableData = async (tableName) => {
 
 const deleteTable = async () => {
   if (!state.tableToDelete) return
-  
+
   try {
     await FileManagerService.deleteTable(state.tableToDelete)
     state.message = t('file_manager.table_deleted', { table: state.tableToDelete })
@@ -192,17 +192,13 @@ const generateSyntheticData = async () => {
   syntheticData.loading = true
   syntheticData.response = null
   try {
-    const { data } = await axios.post(
-      'http://localhost:8000/api/synthetic_data/generate/',
-      null,
-      {
-        params: {
-          details: syntheticData.details,
-          table_name: state.currentTable,
-          num_records: syntheticData.numRecords,
-        },
+    const { data } = await axios.post('http://localhost:8000/api/synthetic_data/generate/', null, {
+      params: {
+        details: syntheticData.details,
+        table_name: state.currentTable,
+        num_records: syntheticData.numRecords,
       },
-    )
+    })
     syntheticData.response = data
     syntheticData.tableSchema = syntheticData.response.schema
   } catch (error) {
@@ -215,68 +211,73 @@ const generateSyntheticData = async () => {
 
 const addSyntheticDatabase = async () => {
   try {
-    state.loading = true;
-    
-    // Get the data and schema
-    const data = syntheticData.response.synthetic_data;
-    const schema = syntheticData.tableSchema;
-    
-    if (!data || !data.length || !schema || !schema.length) {
-      throw new Error('No synthetic data available');
-    }
-    
-    // Extract column names from schema
-    const headers = schema.map(col => col.column_name);
-    
-    // Convert data to CSV format
-    let csvContent = headers.join(',') + '\n';
-    
-    // Add each row to CSV
-    data.forEach(row => {
-      const csvRow = headers.map(header => {
-        // Handle cases where the value might contain commas or quotes
-        let value = row[header] || '';
-        
-        // Convert values to strings and handle special cases
-        if (value === null || value === undefined) {
-          return '';
-        } else if (typeof value === 'string') {
-          // Escape quotes and wrap in quotes if contains comma or quote
-          if (value.includes(',') || value.includes('"')) {
-            value = value.replace(/"/g, '""');
-            return `"${value}"`;
-          }
-          return value;
-        } else {
-          return String(value);
-        }
-      }).join(',');
-      
-      csvContent += csvRow + '\n';
-    });
-    
-    // Convert CSV string to a file
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const csvFile = new File([blob], `${state.currentTable}_synthetic_data.csv`, { type: 'text/csv' });
-    
-    // Send to the updateTable service with replace=false (append mode)
-    await FileManagerService.updateTable(state.currentTable, csvFile, false);
-    
-    // Update table data to show the changes
-    await fetchTableData(state.currentTable);
-    
-    // Close modal and show success message
-    state.showSyntheticDataModal = false;
-    state.message = `${data.length} synthetic records were added to ${state.currentTable}`;
-    
-    // Show notification with success message
-    showSuccessNotification(`${data.length} synthetic records were successfully added to ${state.currentTable}`);
+    state.loading = true
 
+    // Get the data and schema
+    const data = syntheticData.response.synthetic_data
+    const schema = syntheticData.tableSchema
+
+    if (!data || !data.length || !schema || !schema.length) {
+      throw new Error('No synthetic data available')
+    }
+
+    // Extract column names from schema
+    const headers = schema.map((col) => col.column_name)
+
+    // Convert data to CSV format
+    let csvContent = headers.join(',') + '\n'
+
+    // Add each row to CSV
+    data.forEach((row) => {
+      const csvRow = headers
+        .map((header) => {
+          // Handle cases where the value might contain commas or quotes
+          let value = row[header] || ''
+
+          // Convert values to strings and handle special cases
+          if (value === null || value === undefined) {
+            return ''
+          } else if (typeof value === 'string') {
+            // Escape quotes and wrap in quotes if contains comma or quote
+            if (value.includes(',') || value.includes('"')) {
+              value = value.replace(/"/g, '""')
+              return `"${value}"`
+            }
+            return value
+          } else {
+            return String(value)
+          }
+        })
+        .join(',')
+
+      csvContent += csvRow + '\n'
+    })
+
+    // Convert CSV string to a file
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const csvFile = new File([blob], `${state.currentTable}_synthetic_data.csv`, {
+      type: 'text/csv',
+    })
+
+    // Send to the updateTable service with replace=false (append mode)
+    await FileManagerService.updateTable(state.currentTable, csvFile, false)
+
+    // Update table data to show the changes
+    await fetchTableData(state.currentTable)
+
+    // Close modal and show success message
+    state.showSyntheticDataModal = false
+    state.message = `${data.length} synthetic records were added to ${state.currentTable}`
+
+    // Show notification with success message
+    showSuccessNotification(
+      `${data.length} synthetic records were successfully added to ${state.currentTable}`,
+    )
   } catch (error) {
-    console.error('Error adding synthetic data:', error);
-    state.message = `Error adding synthetic data to table: ${error.message || 'Unknown error'}`;
+    console.error('Error adding synthetic data:', error)
+    state.message = `Error adding synthetic data to table: ${error.message || 'Unknown error'}`
   } finally {
-    state.loading = false;
+    state.loading = false
   }
 }
 
@@ -299,7 +300,7 @@ const parsedSyntheticData = computed(() => {
     const rows = rawData.slice(1).map((item) => item.null)
     return [headers, ...rows]
   }
-  
+
   return rawData
 })
 
@@ -313,18 +314,14 @@ fetchTables()
     <div class="sidebar">
       <div class="sidebar-header">
         <input v-model="state.searchQuery" placeholder="Search tables..." class="search-input" />
-        <button @click="state.showNewTableModal = true" class="new-alarm-btn">
-          + New Table
-        </button>
+        <button @click="state.showNewTableModal = true" class="new-alarm-btn">+ New Table</button>
       </div>
 
       <div class="alarm-list">
         <div v-if="state.loadingTables" class="loading-spinner">
           <div class="spinner"></div>
         </div>
-        <div v-else-if="state.tables.length === 0" class="empty-list">
-          No tables found
-        </div>
+        <div v-else-if="state.tables.length === 0" class="empty-list">No tables found</div>
         <div
           v-for="table in filteredTables"
           :key="table"
@@ -332,8 +329,11 @@ fetchTables()
           :class="['alarm-item', { active: table === state.currentTable }]"
         >
           <div class="alarm-item-title">{{ table }}</div>
-          <button 
-            @click.stop="state.tableToDelete = table; state.showDeleteConfirmation = true"
+          <button
+            @click.stop="
+              state.tableToDelete = table
+              state.showDeleteConfirmation = true
+            "
             class="delete-btn"
           >
             <i class="fa-solid fa-trash"></i>
@@ -368,15 +368,16 @@ fetchTables()
 
           <div>
             <label class="label">Select File</label>
-            <input type="file" @change="onFileSelected" 
-                   :accept="state.uploadType === 'excel' ? '.xls,.xlsx' : '.csv'" 
-                   class="input" />
+            <input
+              type="file"
+              @change="onFileSelected"
+              :accept="state.uploadType === 'excel' ? '.xls,.xlsx' : '.csv'"
+              class="input"
+            />
           </div>
 
           <div class="form-buttons">
-            <button type="button" class="btn-cancel" @click="cancelFileUpload">
-              Cancel
-            </button>
+            <button type="button" class="btn-cancel" @click="cancelFileUpload">Cancel</button>
             <button type="submit" class="btn-save" :disabled="state.loading">
               {{ state.loading ? 'Uploading...' : 'Upload' }}
             </button>
@@ -391,12 +392,8 @@ fetchTables()
         <div class="table-header">
           <h2 class="text-2xl font-bold">{{ state.currentTable }}</h2>
           <div class="table-actions">
-            <button @click="goToSyntheticData" class="btn-create">
-              + Add Synthetic Data
-            </button>
-            <button @click="startUpdateTable" class="btn-save">
-              Update Data
-            </button>
+            <button @click="goToSyntheticData" class="btn-create">+ Add Synthetic Data</button>
+            <button @click="startUpdateTable" class="btn-save">Update Data</button>
           </div>
         </div>
 
@@ -408,7 +405,7 @@ fetchTables()
             <div class="schema-header">Data Type</div>
             <div class="schema-header">Nullable</div>
             <div class="schema-header">Primary Key</div>
-            
+
             <template v-for="column in state.tableInfo.schema" :key="column.column_name">
               <div class="schema-cell">{{ column.column_name }}</div>
               <div class="schema-cell">{{ column.data_type }}</div>
@@ -449,15 +446,9 @@ fetchTables()
         <h3>New Table</h3>
         <p>How would you like to create the table?</p>
         <div class="modal-actions">
-          <button @click="startFileUpload('excel')">
-            From Excel
-          </button>
-          <button @click="startFileUpload('csv')">
-            From CSV
-          </button>
-          <button @click="state.showNewTableModal = false" class="btn-cancel-modal">
-            Cancel
-          </button>
+          <button @click="startFileUpload('excel')">From Excel</button>
+          <button @click="startFileUpload('csv')">From CSV</button>
+          <button @click="state.showNewTableModal = false" class="btn-cancel-modal">Cancel</button>
         </div>
       </div>
     </div>
@@ -469,9 +460,7 @@ fetchTables()
         <form @submit.prevent="updateTable" class="space-y-4">
           <div>
             <label class="label">Select File</label>
-            <input type="file" @change="onFileSelected" 
-                   accept=".csv,.xls,.xlsx" 
-                   class="input" />
+            <input type="file" @change="onFileSelected" accept=".csv,.xls,.xlsx" class="input" />
           </div>
           <div class="checkbox-group">
             <input type="checkbox" id="replaceData" v-model="state.replaceData" />
@@ -491,7 +480,11 @@ fetchTables()
     </div>
 
     <!-- Delete confirmation modal -->
-    <div v-if="state.showDeleteConfirmation" class="modal" @click.self="state.showDeleteConfirmation = false">
+    <div
+      v-if="state.showDeleteConfirmation"
+      class="modal"
+      @click.self="state.showDeleteConfirmation = false"
+    >
       <div class="modal-content">
         <span class="close" @click="state.showDeleteConfirmation = false">&times;</span>
         <h3>Confirm Deletion</h3>
@@ -500,9 +493,7 @@ fetchTables()
           <button @click="state.showDeleteConfirmation = false" class="btn-cancel-modal">
             Cancel
           </button>
-          <button @click="deleteTable" class="btn-delete">
-            Delete
-          </button>
+          <button @click="deleteTable" class="btn-delete">Delete</button>
         </div>
       </div>
     </div>
@@ -512,7 +503,7 @@ fetchTables()
       <div class="modal-content synthetic-modal">
         <span class="close" @click="closeSyntheticDataModal">&times;</span>
         <h3 class="synthetic-title">{{ $t('synthetic_data.title', 'Generate Synthetic Data') }}</h3>
-        
+
         <div class="form-group">
           <label class="label">{{ $t('synthetic_data.table_name', 'Table') }}</label>
           <div class="selected-table">{{ state.currentTable }}</div>
@@ -520,7 +511,12 @@ fetchTables()
 
         <div class="form-group">
           <label class="label">{{ $t('synthetic_data.records', 'Number of Records') }}</label>
-          <input v-model.number="syntheticData.numRecords" type="number" class="input small-input" min="1" />
+          <input
+            v-model.number="syntheticData.numRecords"
+            type="number"
+            class="input small-input"
+            min="1"
+          />
         </div>
 
         <div class="form-group">
@@ -534,20 +530,36 @@ fetchTables()
             class="input textarea"
             rows="4"
             maxlength="500"
-            :placeholder="$t('synthetic_data.request_example', 'Example: Generate realistic customer data with names, ages between 18-65, and purchases reflecting seasonal trends.')"
+            :placeholder="
+              $t(
+                'synthetic_data.request_example',
+                'Example: Generate realistic customer data with names, ages between 18-65, and purchases reflecting seasonal trends.',
+              )
+            "
           ></textarea>
         </div>
 
         <button @click="generateSyntheticData" class="btn" :disabled="syntheticData.loading">
-          {{ syntheticData.loading ? $t('synthetic_data.generating', 'Generating...') : $t('synthetic_data.generate', 'Generate Data') }}
+          {{
+            syntheticData.loading
+              ? $t('synthetic_data.generating', 'Generating...')
+              : $t('synthetic_data.generate', 'Generate Data')
+          }}
         </button>
 
         <!-- Generated Data Display -->
-        <div v-if="syntheticData.response && syntheticData.response.synthetic_data && syntheticData.response.synthetic_data.length" class="response-box">
+        <div
+          v-if="
+            syntheticData.response &&
+            syntheticData.response.synthetic_data &&
+            syntheticData.response.synthetic_data.length
+          "
+          class="response-box"
+        >
           <h2 class="response-title">
             {{ $t('synthetic_data.generated', 'Generated Data for') }} {{ state.currentTable }}
           </h2>
-          
+
           <div class="table-container">
             <table class="table">
               <thead>
@@ -558,7 +570,10 @@ fetchTables()
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(row, rowIndex) in syntheticData.response.synthetic_data" :key="rowIndex">
+                <tr
+                  v-for="(row, rowIndex) in syntheticData.response.synthetic_data"
+                  :key="rowIndex"
+                >
                   <td v-for="column in syntheticData.tableSchema" :key="column.column_name">
                     {{ row[column.column_name] || '' }}
                   </td>
@@ -931,7 +946,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   padding: 0.75rem;
   border: 1px solid #ddd;
   text-align: left;
@@ -1081,7 +1097,7 @@ th {
   .synthetic-modal {
     width: 95%;
   }
-  
+
   .table-container {
     max-height: 250px;
   }

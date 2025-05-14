@@ -30,7 +30,7 @@ async function handleRegister() {
       full_name: fullName.value,
       username: username.value,
       email: email.value,
-      password: password.value
+      password: password.value,
     })
 
     console.log('Registration response:', registerResponse)
@@ -39,14 +39,15 @@ async function handleRegister() {
       // If registration is successful, automatically log the user in
       try {
         const loginSuccess = await AuthService.login(username.value, password.value)
-        
+
         if (loginSuccess) {
           // Redirect to home page after successful login
           router.push('/')
         } else {
           // If login fails for some reason, still show registration success but redirect to login
           console.warn('Registration successful but automatic login failed')
-          errorMessage.value = 'Account created successfully, but login failed. Please try logging in manually.'
+          errorMessage.value =
+            'Account created successfully, but login failed. Please try logging in manually.'
           setTimeout(() => {
             router.push('/login')
           }, 3000) // Give user time to read the message before redirecting
@@ -54,7 +55,8 @@ async function handleRegister() {
       } catch (loginError) {
         // Handle login error
         console.error('Auto-login error after registration:', loginError)
-        errorMessage.value = 'Account created successfully, but automatic login failed. Please try logging in manually.'
+        errorMessage.value =
+          'Account created successfully, but automatic login failed. Please try logging in manually.'
         setTimeout(() => {
           router.push('/login')
         }, 3000) // Give user time to read the message before redirecting
@@ -78,35 +80,17 @@ async function handleRegister() {
 
       <div class="form-group">
         <label for="fullName">Full Name</label>
-        <input
-          type="text"
-          id="fullName"
-          v-model="fullName"
-          required
-          autocomplete="name"
-        />
+        <input type="text" id="fullName" v-model="fullName" required autocomplete="name" />
       </div>
 
       <div class="form-group">
         <label for="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          v-model="username"
-          required
-          autocomplete="username"
-        />
+        <input type="text" id="username" v-model="username" required autocomplete="username" />
       </div>
 
       <div class="form-group">
         <label for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          v-model="email"
-          required
-          autocomplete="email"
-        />
+        <input type="email" id="email" v-model="email" required autocomplete="email" />
       </div>
 
       <div class="form-group">
