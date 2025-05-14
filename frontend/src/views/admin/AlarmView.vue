@@ -183,18 +183,14 @@ onMounted(() => {
     <div class="sidebar">
       <div class="sidebar-header">
         <input v-model="state.searchQuery" placeholder="Search alarms..." class="search-input" />
-        <button @click="state.showNewAlarmModal = true" class="new-alarm-btn">
-          + New Alarm
-        </button>
+        <button @click="state.showNewAlarmModal = true" class="new-alarm-btn">+ New Alarm</button>
       </div>
 
       <div class="alarm-list">
         <div v-if="state.loadingAlarms" class="loading-spinner">
           <div class="spinner"></div>
         </div>
-        <div v-else-if="state.alarms.length === 0" class="empty-list">
-          No alarms registered
-        </div>
+        <div v-else-if="state.alarms.length === 0" class="empty-list">No alarms registered</div>
         <div
           v-for="alarm in filteredAlarms"
           :key="alarm.id"
@@ -301,9 +297,7 @@ onMounted(() => {
         <div class="modal-actions">
           <button @click="startNaturalLanguageCreate">Natural Language Description</button>
           <button @click="startManualCreate">Create Manually</button>
-          <button @click="state.showNewAlarmModal = false" class="btn-cancel-modal">
-            Cancel
-          </button>
+          <button @click="state.showNewAlarmModal = false" class="btn-cancel-modal">Cancel</button>
         </div>
       </div>
     </div>

@@ -3,13 +3,25 @@
     <!-- Hero Section -->
     <section class="hero-section text-center">
       <div class="container py-5">
-        <h1 class="display-4 fw-bold mb-3" style="color: #0395ff">Transform Your Data into Insights</h1>
-        <p class="lead mb-4">AI-powered data analytics that saves you time and unveils hidden opportunities</p>
+        <h1 class="display-4 fw-bold mb-3" style="color: #0395ff">
+          Transform Your Data into Insights
+        </h1>
+        <p class="lead mb-4">
+          AI-powered data analytics that saves you time and unveils hidden opportunities
+        </p>
         <div class="d-flex justify-content-center gap-3 mb-5">
-          <button @click="$router.push('/chat')" class="btn btn-primary btn-lg px-4">Chat with Demo</button>
-          <button @click="$router.push('/plans')" class="btn btn-outline-secondary btn-lg px-4">See Plans</button>
+          <button @click="$router.push('/chat')" class="btn btn-primary btn-lg px-4">
+            Chat with Demo
+          </button>
+          <button @click="$router.push('/plans')" class="btn btn-outline-secondary btn-lg px-4">
+            See Plans
+          </button>
         </div>
-        <img src="/dashboard.png" alt="InsightIQ Dashboard" class="img-fluid rounded shadow hero-image" />
+        <img
+          src="/dashboard.png"
+          alt="InsightIQ Dashboard"
+          class="img-fluid rounded shadow hero-image"
+        />
       </div>
     </section>
 
@@ -17,10 +29,14 @@
       <div class="container">
         <div class="row align-items-center">
           <div class="col-lg-6">
-            <h2 class="fw-bold mb-4" style="color: #0395ff">Focus on Strategy, Let AI Handle the Analysis</h2>
-            <p class="mb-4">InsightIQ is a powerful data analytics automation tool that transforms how you interact with
-              your business data. Upload Excel files, CSV documents, or sync directly with Google Sheets – then let our
-              AI do the work.</p>
+            <h2 class="fw-bold mb-4" style="color: #0395ff">
+              Focus on Strategy, Let AI Handle the Analysis
+            </h2>
+            <p class="mb-4">
+              InsightIQ is a powerful data analytics automation tool that transforms how you
+              interact with your business data. Upload Excel files, CSV documents, or sync directly
+              with Google Sheets – then let our AI do the work.
+            </p>
             <div class="d-flex align-items-center mb-3">
               <div class="feature-icon bg-primary rounded-circle p-3 me-3">
                 <i class="fa-solid fa-clock text-white fs-4"></i>
@@ -77,19 +93,21 @@
               </div>
               <div class="data-source-item text-center">
                 <div class="icon-container mb-2">
-                  <i class="fa-brands fa-google-drive fs-1" style="color: #4285F4"></i>
+                  <i class="fa-brands fa-google-drive fs-1" style="color: #4285f4"></i>
                 </div>
                 <p>Google Sheets</p>
               </div>
               <div class="data-source-item text-center">
                 <div class="icon-container mb-2">
-                  <i class="fa-solid fa-database fs-1" style="color: #6C757D"></i>
+                  <i class="fa-solid fa-database fs-1" style="color: #6c757d"></i>
                 </div>
                 <p>SQL Databases</p>
               </div>
             </div>
-            <p class="text-center">Easily import data from multiple sources or connect directly to your existing
-              platforms.</p>
+            <p class="text-center">
+              Easily import data from multiple sources or connect directly to your existing
+              platforms.
+            </p>
           </div>
         </div>
       </div>
@@ -98,7 +116,9 @@
     <!-- Key Features -->
     <section class="features py-5">
       <div class="container">
-        <h2 class="text-center fw-bold mb-5" style="color: #0395ff">Powerful Features at Your Fingertips</h2>
+        <h2 class="text-center fw-bold mb-5" style="color: #0395ff">
+          Powerful Features at Your Fingertips
+        </h2>
 
         <div class="row g-4">
           <div class="col-md-4" @click="$router.push('/chat')">
@@ -108,8 +128,10 @@
                   <i class="fa-solid fa-comments fs-1" style="color: #00a6a6"></i>
                 </div>
                 <h4 class="card-title">Ask Your Data</h4>
-                <p class="card-text">Interact naturally with your data through our AI assistant. Ask questions in plain
-                  language and get instant insights.</p>
+                <p class="card-text">
+                  Interact naturally with your data through our AI assistant. Ask questions in plain
+                  language and get instant insights.
+                </p>
                 <img src="/nlp.jpg" alt="Chat Interface" class="img-fluid mt-3 rounded" />
               </div>
             </div>
@@ -122,8 +144,10 @@
                   <i class="fa-solid fa-chart-bar fs-1" style="color: #00a6a6"></i>
                 </div>
                 <h4 class="card-title">Smart Reports</h4>
-                <p class="card-text">Access beautiful, automatically generated reports and visualizations that highlight
-                  key metrics and trends.</p>
+                <p class="card-text">
+                  Access beautiful, automatically generated reports and visualizations that
+                  highlight key metrics and trends.
+                </p>
                 <img src="/reports.png" alt="Reports Dashboard" class="img-fluid mt-3 rounded" />
               </div>
             </div>
@@ -136,8 +160,10 @@
                   <i class="fa-solid fa-bell fs-1" style="color: #00a6a6"></i>
                 </div>
                 <h4 class="card-title">Intelligent Alerts</h4>
-                <p class="card-text">Set up customized alerts to notify you of important changes or anomalies in your
-                  business data.</p>
+                <p class="card-text">
+                  Set up customized alerts to notify you of important changes or anomalies in your
+                  business data.
+                </p>
                 <img src="/alerts.jpg" alt="Alert System" class="img-fluid mt-3 rounded" />
               </div>
             </div>
@@ -150,14 +176,19 @@
     <section class="cta py-5 bg-primary text-white text-center">
       <div class="container py-3">
         <h2 class="fw-bold mb-4">Ready to Transform Your Data Strategy?</h2>
-        <p class="lead mb-4">Join thousands of businesses using InsightIQ to make smarter, data-driven decisions</p>
+        <p class="lead mb-4">
+          Join thousands of businesses using InsightIQ to make smarter, data-driven decisions
+        </p>
         <div class="d-flex justify-content-center gap-3">
-          <button @click="$router.push('/chat')" class="btn btn-light btn-lg px-4">Chat with Demo</button>
-          <button @click="$router.push('/plans')" class="btn btn-light btn-lg px-4">See Plans</button>
+          <button @click="$router.push('/chat')" class="btn btn-light btn-lg px-4">
+            Chat with Demo
+          </button>
+          <button @click="$router.push('/plans')" class="btn btn-light btn-lg px-4">
+            See Plans
+          </button>
         </div>
       </div>
     </section>
-
   </div>
 </template>
 
@@ -185,7 +216,9 @@
 }
 
 .feature-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   cursor: pointer;
   border: none;
   border-radius: 10px;

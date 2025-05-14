@@ -102,7 +102,7 @@ const startGoogleSheetsUpdateInterval = () => {
   updateGoogleSheets() // Run immediately first
   googleSheetsUpdateInterval.value = window.setInterval(
     updateGoogleSheets,
-    googleSheetsUpdateCheckInterval.value
+    googleSheetsUpdateCheckInterval.value,
   )
 }
 
@@ -137,7 +137,7 @@ const checkAuthStatus = () => {
 const handleAuthStateChange = (event: CustomEvent) => {
   const isAuthenticated = event.detail.isAuthenticated
   authStatus.value = isAuthenticated
-  
+
   if (isAuthenticated) {
     startAlarmCheckInterval()
     startGoogleSheetsUpdateInterval()
@@ -150,13 +150,13 @@ const handleAuthStateChange = (event: CustomEvent) => {
 // Lifecycle hooks
 onMounted(() => {
   checkAuthStatus()
-  
+
   // Set up regular auth status checking
   window.setInterval(checkAuthStatus, 5000)
-  
+
   // Listen for auth state changes
   window.addEventListener('auth-state-changed', handleAuthStateChange as EventListener)
-  
+
   // Start intervals if authenticated
   if (authStatus.value) {
     startAlarmCheckInterval()
@@ -230,15 +230,19 @@ const shouldShowNavbarTabs = computed(() => {
 })
 
 // Watchers
-watch(isLoggedIn, (newVal) => {
-  if (newVal) {
-    startAlarmCheckInterval()
-    startGoogleSheetsUpdateInterval()
-  } else {
-    stopAlarmCheckInterval()
-    stopGoogleSheetsUpdateInterval()
-  }
-}, { immediate: true })
+watch(
+  isLoggedIn,
+  (newVal) => {
+    if (newVal) {
+      startAlarmCheckInterval()
+      startGoogleSheetsUpdateInterval()
+    } else {
+      stopAlarmCheckInterval()
+      stopGoogleSheetsUpdateInterval()
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -246,7 +250,11 @@ watch(isLoggedIn, (newVal) => {
     <div class="container-fluid">
       <!-- Only use router-link when logged in -->
       <template v-if="isLoggedIn">
-        <router-link class="navbar-brand ms-4 mb-0 h1" style="font-size: 1.5rem" :to="{ name: 'home' }">
+        <router-link
+          class="navbar-brand ms-4 mb-0 h1"
+          style="font-size: 1.5rem"
+          :to="{ name: 'home' }"
+        >
           InsightIQ
         </router-link>
       </template>
@@ -256,13 +264,22 @@ watch(isLoggedIn, (newVal) => {
 
       <div class="d-flex align-items-center">
         <div class="dropdown me-3">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown"
-            data-bs-toggle="dropdown" aria-expanded="false">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle"
+            type="button"
+            id="languageDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
             {{ currentLanguage === 'es' ? 'Español' : 'English' }}
           </button>
           <ul class="dropdown-menu" aria-labelledby="languageDropdown">
             <li>
-              <a class="dropdown-item" href="#" @click.prevent="changeLanguage(currentLanguage === 'es' ? 'en' : 'es')">
+              <a
+                class="dropdown-item"
+                href="#"
+                @click.prevent="changeLanguage(currentLanguage === 'es' ? 'en' : 'es')"
+              >
                 {{ currentLanguage === 'es' ? 'English' : 'Español' }}
               </a>
             </li>
@@ -270,8 +287,14 @@ watch(isLoggedIn, (newVal) => {
         </div>
 
         <div class="dropdown">
-          <button class="btn btn-outline-primary dropdown-toggle" :class="navbarClass" type="button" id="userDropdown"
-            data-bs-toggle="dropdown" aria-expanded="false">
+          <button
+            class="btn btn-outline-primary dropdown-toggle"
+            :class="navbarClass"
+            type="button"
+            id="userDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
             {{ $t('app.my_account') }}
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -282,9 +305,7 @@ watch(isLoggedIn, (newVal) => {
                 </a>
               </li>
               <li>
-                <a class="dropdown-item" href="#" @click.prevent="router.push('/admin')">
-                  Admin
-                </a>
+                <a class="dropdown-item" href="#" @click.prevent="router.push('/admin')"> Admin </a>
               </li>
               <li>
                 <a class="dropdown-item" href="#" @click.prevent="handleLogout">
@@ -300,7 +321,11 @@ watch(isLoggedIn, (newVal) => {
                 </a>
               </li>
               <li>
-                <a class="dropdown-item" href="#" @click.prevent="router.push({ name: 'register' })">
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  @click.prevent="router.push({ name: 'register' })"
+                >
                   {{ $t('app.register') }}
                 </a>
               </li>
@@ -312,20 +337,29 @@ watch(isLoggedIn, (newVal) => {
   </nav>
 
   <!-- Only show tabs when logged in AND not on login route -->
-  <ul v-if="shouldShowNavbarTabs" 
-      class="nav justify-content-center nav-underline d-flex align-items-center" 
-      :class="navbarClass"
-      style="height: 65px">
+  <ul
+    v-if="shouldShowNavbarTabs"
+    class="nav justify-content-center nav-underline d-flex align-items-center"
+    :class="navbarClass"
+    style="height: 65px"
+  >
     <li v-for="tab in navbarTabs" :key="tab.name" class="nav-item mx-5">
-      <router-link class="nav-link text-white" :class="{ 'active fw-bold': route.name === tab.routeName }"
-        :to="{ name: tab.routeName }">
+      <router-link
+        class="nav-link text-white"
+        :class="{ 'active fw-bold': route.name === tab.routeName }"
+        :to="{ name: tab.routeName }"
+      >
         {{ currentLanguage === 'es' ? tab.name_es : tab.name }}
       </router-link>
     </li>
   </ul>
 
   <!-- Alarm Notification Badge -->
-  <div v-if="hasAlarms && !showAlarmsModal" class="alarm-notification" @click="showAlarmsModal = true">
+  <div
+    v-if="hasAlarms && !showAlarmsModal"
+    class="alarm-notification"
+    @click="showAlarmsModal = true"
+  >
     <span class="badge bg-danger">{{ Object.values(triggeredAlarms).flat().length }}</span>
     <span>{{ $t('app.new_alarms') }}</span>
   </div>
@@ -340,10 +374,15 @@ watch(isLoggedIn, (newVal) => {
         <div v-for="(alarms, tableName) in triggeredAlarms" :key="tableName" class="table-alarms">
           <h4 class="table-name">{{ tableName }}</h4>
 
-          <div v-for="(alarm, index) in alarms" :key="index" class="alarm-card" :class="{
-            critical: alarm.severity === 'critical',
-            warning: alarm.severity === 'warning',
-          }">
+          <div
+            v-for="(alarm, index) in alarms"
+            :key="index"
+            class="alarm-card"
+            :class="{
+              critical: alarm.severity === 'critical',
+              warning: alarm.severity === 'warning',
+            }"
+          >
             <div class="alarm-header">
               <h5>{{ alarm.description }}</h5>
               <span class="alarm-id">#{{ alarm.alarm_id }}</span>
