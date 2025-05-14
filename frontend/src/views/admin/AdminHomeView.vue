@@ -1,69 +1,105 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="d-flex flex-column min-vh-100">
-    <section
-      class="text-center pb-1 bg-light d-flex flex-column align-items-center justify-content-center"
-    >
-      <h1 class="display-6 fw-bold mt-3 mb-3" style="color: #183446">Admin Dashboard</h1>
-      <p class="text-muted mt-2 mb-4">Manage system configurations and datasets.</p>
-      <div class="row g-3">
-        <div class="col-md-4" @click="$router.push('/admin/synthetic-data')">
-          <div class="card shadow-sm p-3 card-hover h-100 text-center">
-            <i class="bi bi-database h2" style="color: #183446"></i>
-            <h5>Generate Synthetic Data</h5>
-            <p class="text-muted">Create custom synthetic datasets tailored to your needs.</p>
-            <img
-              src="/synthetic-data.png"
-              alt="Synthetic Data Icon"
-              class="img-fluid"
-              style="max-height: 220px"
-            />
+  <div class="admin-dashboard min-vh-100 bg-light">
+    <!-- Main Cards -->
+    <main class="container py-5">
+      <div class="row g-4 justify-content-center">
+        <!-- Files Card -->
+        <div class="col-md-6 col-lg-4" @click="$router.push('/admin/file-manager')">
+          <div class="card shadow-sm h-100 feature-card">
+            <div class="card-body text-center p-4">
+              <img
+                src="/file-manager.png"
+                alt="Files"
+                class="img-fluid mb-3"
+                style="max-height: 120px"
+              />
+              <h4 class="mb-3">Files</h4>
+              <ul class="text-start ps-4">
+                <li class="mb-2">Manage all system files and datasets</li>
+                <li class="mb-2">Upload and organize data sources</li>
+                <li class="mb-2">Generate synthetic test data</li>
+                <li class="mb-2">Monitor data quality and integrity</li>
+              </ul>
+            </div>
           </div>
         </div>
-        <div class="col-md-4" @click="$router.push('/admin/file-manager')">
-          <div class="card shadow-sm p-3 card-hover h-100 text-center">
-            <i class="bi bi-folder h2" style="color: #183446"></i>
-            <h5>File Manager</h5>
-            <p class="text-muted">Manage and organize your project files.</p>
-            <img
-              src="/file-manager.png"
-              alt="File Manager Icon"
-              class="img-fluid"
-              style="max-height: 220px"
-            />
+
+        <!-- Alerts Card -->
+        <div class="col-md-6 col-lg-4" @click="$router.push('/admin/alarm')">
+          <div class="card shadow-sm h-100 feature-card">
+            <div class="card-body text-center p-4">
+              <img
+                src="/alerts.jpg"
+                alt="Alerts"
+                class="img-fluid mb-3"
+                style="max-height: 120px"
+              />
+              <h4 class="mb-3">Alarms</h4>
+              <ul class="text-start ps-4">
+                <li class="mb-2">Create alerts with natural language</li>
+                <li class="mb-2">View and manage active alerts</li>
+                <li class="mb-2">Review alert history and patterns</li>
+                <li class="mb-2">Configure notification settings</li>
+              </ul>
+            </div>
           </div>
         </div>
-        <div class="col-md-4" @click="$router.push('/admin/alarm-create')">
-          <div class="card shadow-sm p-3 card-hover h-100 text-center">
-            <i class="bi bi-bell-plus h2" style="color: #183446"></i>
-            <h5>Create Alarm</h5>
-            <p class="text-muted">
-              Describe in natural language the condition for generating an alarm..
-            </p>
-          </div>
-        </div>
-        <div class="col-md-4" @click="$router.push('/admin/alarm-list')">
-          <div class="card shadow-sm p-3 card-hover h-100 text-center">
-            <i class="bi bi-list-check h2" style="color: #183446"></i>
-            <h5>Alarms List</h5>
-            <p class="text-muted">Review and delete existing alarms configured in the system.</p>
+
+        <!-- Users Card -->
+        <div class="col-md-6 col-lg-4" @click="$router.push('/admin/user-manager')">
+          <div class="card shadow-sm h-100 feature-card">
+            <div class="card-body text-center p-4">
+              <img src="/users.png" alt="Users" class="img-fluid mb-3" style="max-height: 120px" />
+              <h4 class="mb-3">Users</h4>
+              <ul class="text-start ps-4">
+                <li class="mb-2">Manage user accounts and access</li>
+                <li class="mb-2">Configure roles and permissions</li>
+                <li class="mb-2">Monitor user activity and usage</li>
+                <li class="mb-2">View audit logs and changes</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </section>
+    </main>
   </div>
 </template>
 
 <style scoped>
-.card-hover {
-  transition:
-    transform 0.3s ease-in-out,
-    box-shadow 0.3s ease-in-out;
-  cursor: pointer;
+.admin-dashboard {
+  min-height: 100vh;
 }
-.card-hover:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+
+.dashboard-header {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.feature-card {
+  transition: all 0.2s ease;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(24, 52, 70, 0.2);
+}
+
+.card-body ul {
+  list-style-type: none;
+  padding-left: 1rem;
+}
+
+.card-body li::before {
+  content: '•';
+  color: #0395ff;
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
 }
 </style>

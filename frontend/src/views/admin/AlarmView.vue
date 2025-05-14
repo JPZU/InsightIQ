@@ -179,22 +179,18 @@ onMounted(() => {
 
 <template>
   <div class="app-container">
-    <!-- Sidebar para listar alarmas -->
+    <!-- Sidebar to list alarms -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <input v-model="state.searchQuery" placeholder="Buscar alarmas..." class="search-input" />
-        <button @click="state.showNewAlarmModal = true" class="new-alarm-btn">
-          + Nueva Alarma
-        </button>
+        <input v-model="state.searchQuery" placeholder="Search alarms..." class="search-input" />
+        <button @click="state.showNewAlarmModal = true" class="new-alarm-btn">+ New Alarm</button>
       </div>
 
       <div class="alarm-list">
         <div v-if="state.loadingAlarms" class="loading-spinner">
           <div class="spinner"></div>
         </div>
-        <div v-else-if="state.alarms.length === 0" class="empty-list">
-          No hay alarmas registradas
-        </div>
+        <div v-else-if="state.alarms.length === 0" class="empty-list">No alarms registered</div>
         <div
           v-for="alarm in filteredAlarms"
           :key="alarm.id"
@@ -207,48 +203,48 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Área principal para editar o crear alarmas -->
+    <!-- Main area to edit or create alarms -->
     <div class="main-area">
-      <!-- Estado vacío cuando no hay alarma seleccionada -->
+      <!-- Empty state when no alarm is selected -->
       <div v-if="!state.selectedAlarm && !state.creatingNewAlarm" class="empty-state">
         <div class="empty-content">
           <i class="bi bi-bell"></i>
-          <h3>Selecciona una alarma o crea una nueva</h3>
+          <h3>Select an alarm or create a new one</h3>
         </div>
       </div>
 
-      <!-- Formulario para editar alarma existente -->
+      <!-- Form to edit existing alarm -->
       <div v-else-if="state.selectedAlarm && !state.creatingNewAlarm" class="alarm-form">
         <div class="form-header">
-          <h2 class="text-2xl font-bold mb-4">Editar Alarma</h2>
+          <h2 class="text-2xl font-bold mb-4">Edit Alarm</h2>
           <div class="form-actions">
-            <button @click="deleteSelectedAlarm" class="btn-delete">Eliminar</button>
+            <button @click="deleteSelectedAlarm" class="btn-delete">Delete</button>
           </div>
         </div>
 
         <form @submit.prevent="updateAlarm" class="space-y-4">
           <div>
-            <label class="label">Nombre de Tabla</label>
+            <label class="label">Table Name</label>
             <input v-model="state.selectedAlarm.table_name" class="input" />
           </div>
 
           <div>
-            <label class="label">Campo</label>
+            <label class="label">Field</label>
             <input v-model="state.selectedAlarm.field" class="input" />
           </div>
 
           <div>
-            <label class="label">Condición</label>
+            <label class="label">Condition</label>
             <input v-model="state.selectedAlarm.condition" class="input" />
           </div>
 
           <div>
-            <label class="label">Umbral</label>
+            <label class="label">Threshold</label>
             <input v-model="state.selectedAlarm.threshold" class="input" />
           </div>
 
           <div>
-            <label class="label">Descripción</label>
+            <label class="label">Description</label>
             <textarea
               v-model="state.selectedAlarm.description"
               rows="3"
@@ -257,33 +253,33 @@ onMounted(() => {
           </div>
 
           <div class="form-buttons">
-            <button type="button" class="btn-cancel" @click="cancelEdit">Cancelar</button>
+            <button type="button" class="btn-cancel" @click="cancelEdit">Cancel</button>
             <button type="submit" class="btn-save" :disabled="state.loading">
-              {{ state.loading ? 'Guardando...' : 'Guardar Cambios' }}
+              {{ state.loading ? 'Saving...' : 'Save Changes' }}
             </button>
           </div>
         </form>
       </div>
 
-      <!-- Formulario para crear nueva alarma -->
+      <!-- Form to create new alarm -->
       <div v-else-if="state.creatingNewAlarm" class="alarm-form">
         <div class="form-header">
-          <h2 class="text-2xl font-bold mb-4">Crear Alarma</h2>
+          <h2 class="text-2xl font-bold mb-4">Create Alarm</h2>
         </div>
 
         <form @submit.prevent="createAlarm" class="space-y-4">
-          <label class="label">Descripción en Lenguaje Natural</label>
+          <label class="label">Natural Language Description</label>
           <textarea
             v-model="state.newAlarmInput"
-            placeholder="Describe la alarma en lenguaje natural..."
+            placeholder="Describe the alarm in natural language..."
             rows="4"
             class="input textarea"
           ></textarea>
 
           <div class="form-buttons">
-            <button type="button" class="btn-cancel" @click="cancelCreate">Cancelar</button>
+            <button type="button" class="btn-cancel" @click="cancelCreate">Cancel</button>
             <button type="submit" class="btn-create" :disabled="state.loading">
-              {{ state.loading ? 'Creando...' : 'Crear Alarma' }}
+              {{ state.loading ? 'Creating...' : 'Create Alarm' }}
             </button>
           </div>
 
@@ -293,17 +289,15 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Modal para confirmar la creación de una nueva alarma -->
+    <!-- Modal to confirm new alarm creation -->
     <div v-if="state.showNewAlarmModal" class="modal" @click.self="state.showNewAlarmModal = false">
       <div class="modal-content">
-        <h3>Nueva Alarma</h3>
-        <p>¿Cómo deseas crear la nueva alarma?</p>
+        <h3>New Alarm</h3>
+        <p>How would you like to create the new alarm?</p>
         <div class="modal-actions">
-          <button @click="startNaturalLanguageCreate">Descripción en Lenguaje Natural</button>
-          <button @click="startManualCreate">Crear Manualmente</button>
-          <button @click="state.showNewAlarmModal = false" class="btn-cancel-modal">
-            Cancelar
-          </button>
+          <button @click="startNaturalLanguageCreate">Natural Language Description</button>
+          <button @click="startManualCreate">Create Manually</button>
+          <button @click="state.showNewAlarmModal = false" class="btn-cancel-modal">Cancel</button>
         </div>
       </div>
     </div>
@@ -313,7 +307,7 @@ onMounted(() => {
 <style scoped>
 .app-container {
   display: flex;
-  height: 100vh;
+  height: 84vh;
 }
 
 .sidebar {

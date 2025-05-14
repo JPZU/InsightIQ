@@ -32,6 +32,30 @@ class DBManager:
 
         return [dict(row._mapping) for row in result] if result else None
 
+    def get_sample_data_in_rows(self, table_name: str, limit: int):
+        query = text(f"SELECT * FROM {table_name} ORDER BY RANDOM() LIMIT {limit}")
+        with self.engine.connect() as conn:
+            result = conn.execute(query).fetchall()
+
+        if result:
+            columns = [col['column_name'] for col in self.get_table_schema(table_name)]
+
+            column_data = {column: [] for column in columns}
+
+            for row in result:
+                for i, column in enumerate(columns):
+                    column_data[column].append(row[i])
+
+            return column_data
+        else:
+            return None
+
+    def delete_table(self, table_name: str) -> bool:
+        with self.db_manager.engine.connect() as conn:
+            conn.execute(f"DROP TABLE IF EXISTS {table_name}")
+            conn.commit()
+        return True
+
     def get_table_schema(self, table_name: str):
         query = text(f"PRAGMA table_info({table_name})")
         with self.engine.connect() as conn:
