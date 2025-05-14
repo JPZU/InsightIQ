@@ -29,9 +29,9 @@ const showAlarmsModal = ref(false)
 
 // Interval references
 const alarmCheckInterval = ref<number | null>(null)
-const checkInterval = ref(30000) // 30 seconds by default
+const checkInterval = ref(15000) // 15 seconds by default
 const googleSheetsUpdateInterval = ref<number | null>(null)
-const googleSheetsUpdateCheckInterval = ref(30000) // 30 seconds by default
+const googleSheetsUpdateCheckInterval = ref(15000) // 15 seconds by default
 
 // Tab configuration
 const navbarTabs = computed(() => {
