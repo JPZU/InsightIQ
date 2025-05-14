@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 
+from apps.user.admin_routes import router as admin_user_router
+
 from apps.alarm_management.routes import router as alarm_management_router
 from apps.auth.routes import router as auth_router
 from apps.chat.routes import router as chat_router
@@ -10,6 +12,8 @@ from apps.synthetic_data.routes import router as synthetic_data_router
 from apps.user.routes import router as user_router
 
 router = APIRouter()
+
+router.include_router(admin_user_router, prefix="/admin/users", tags=["admin-users"])
 
 router.include_router(auth_router, prefix="/auth", tags=["auth"])
 router.include_router(alarm_management_router, prefix="/alarm_management", tags=["alarm_management"])

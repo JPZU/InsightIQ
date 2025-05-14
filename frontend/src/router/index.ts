@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 import HomeView from '@/views/HomeView.vue'
 import DashboardView from '@/views/DashboardView.vue'
@@ -14,6 +15,7 @@ import AlarmListView from '@/views/admin/AlarmListView.vue'
 import AlarmView from '@/views/admin/AlarmView.vue'
 import FileManagerView from '@/views/admin/FileManagerView.vue'
 import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
+import UserManagerView from '@/views/admin/UserManagerView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +26,14 @@ const router = createRouter({
       component: LoginView,
       meta: {
         title: 'Login',
+      },
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
+      meta: {
+        title: 'Register',
       },
     },
     {
@@ -118,6 +128,14 @@ const router = createRouter({
           },
           props: true,
         },
+        {
+          path: 'user-manager',
+          name: 'user-manager',
+          component: UserManagerView,
+          meta: {
+            title: 'User Manager',
+          },
+        }
       ],
     },
     {

@@ -1,9 +1,11 @@
 from datetime import datetime
 from typing import Optional
+from sqlalchemy import func
 
 from passlib.context import CryptContext
 
 from database.models.user import User
+from database.models.chat import Chat
 from database.session import SessionLocal
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -97,3 +99,39 @@ class UserService:
         if not user or not UserService.verify_password(password, user.password):
             return None
         return user
+
+    @staticmethod
+    def get_users_info():
+        with SessionLocal() as db:
+            users_info = (
+                db.query(
+                    User.full_name,
+                    User.email,
+                    User.role,
+                    func.count(Chat.id).label("questions_asked")
+                )
+                .outerjoin(Chat, User.id == Chat.user_id)
+                .group_by(User.id)
+                .all()
+            )
+            
+            total_users = db.query(User).count()
+            total_admins = db.query(User).filter(User.role == "admin").count()
+            total_questions = db.query(func.count(Chat.id)).scalar()
+
+            return {
+                "general_metrics": {
+                    "total_users": total_users,
+                    "total_admins": total_admins,
+                    "total_questions_asked": total_questions
+                },
+                "users_info": [
+                    {
+                        "name": user.full_name,
+                        "email": user.email,
+                        "role": user.role.value,
+                        "questions_asked": user.questions_asked
+                    }
+                    for user in users_info
+                ]
+            }

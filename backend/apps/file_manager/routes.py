@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException, Path
+from typing import List
 
 from utils.file_manager import FileManager
-
-from .service import FileManagerService
+from services.file_manager_service import FileManagerService
 
 router = APIRouter()
 
@@ -17,20 +17,97 @@ async def upload_csv(
     table_name: str = Form("default_table"),
     file_manager_service: FileManagerService = Depends(get_file_manager_service),
 ):
-    # Save the uploaded file to a temporary location
     file_location = FileManager.save_upload_file(file, table_name)
-    # Upload the CSV file to the database
-    return file_manager_service.upload_csv(file, file_location, table_name)
+    response = file_manager_service.upload_csv(file, file_location, table_name)
 
+    return {"info": response["info"]}
 
 @router.post("/upload/excel/")
 async def upload_excel(
     table_name: str = Form(...),
-    sheet_name: int = Form(0),
     file: UploadFile = File(...),
     file_manager_service: FileManagerService = Depends(get_file_manager_service),
 ):
-    # Save the uploaded file to a temporary location
     file_location = FileManager.save_upload_file(file, table_name)
-    # Upload the Excel file to the database
-    return file_manager_service.upload_excel(file, file_location, table_name, sheet_name)
+    response = file_manager_service.upload_excel(file, file_location, table_name)
+
+    return {"info": response["info"]}
+
+
+@router.get("/tables/", response_model=List[str])
+async def get_tables(
+    file_manager_service: FileManagerService = Depends(get_file_manager_service),
+):
+    return file_manager_service.get_tables()
+
+
+@router.get("/tables/{table_name}/data")
+async def get_all_table_data(
+    table_name: str = Path(..., description="Name of the table to get data for"),
+    file_manager_service: FileManagerService = Depends(get_file_manager_service),
+):
+    data = file_manager_service.get_all_data(table_name)
+    if not data:
+        raise HTTPException(status_code=404, detail=f"Table {table_name} not found or empty")
+    
+    return {
+        "table_name": table_name,
+        "data": data
+    }
+
+
+@router.delete("/tables/{table_name}")
+async def delete_table(
+    table_name: str = Path(..., description="Name of the table to delete"),
+    file_manager_service: FileManagerService = Depends(get_file_manager_service),
+):
+    try:
+        success = file_manager_service.delete_table(table_name)
+        if not success:
+            tables = file_manager_service.get_tables()
+            if table_name not in tables:
+                raise HTTPException(
+                    status_code=404, 
+                    detail=f"Table {table_name} not found. Available tables: {tables}"
+                )
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Could not delete table {table_name} (unknown error)"
+            )
+        
+        return {"message": f"Table {table_name} deleted successfully"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error deleting table: {str(e)}"
+        )
+
+
+@router.put("/tables/{table_name}")
+async def update_table(
+    table_name: str = Path(..., description="Name of the table to update"),
+    file: UploadFile = File(...),
+    replace: bool = Form(False),
+    file_manager_service: FileManagerService = Depends(get_file_manager_service),
+):
+    file_location = FileManager.save_upload_file(file, table_name)
+
+    if file.filename.endswith(".csv"):
+        response = file_manager_service.update_table_from_csv(table_name, file_location, replace)
+    elif file.filename.endswith((".xlsx", ".xls")):
+        response = file_manager_service.update_table_from_excel(table_name, file_location, replace)
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported file format")
+
+    return {"message": "Successfully updated table"}
+
+@router.get("/tables/{table_name}/info")
+async def get_table_info(
+    table_name: str = Path(..., description="Name of the table to get info for"),
+    file_manager_service: FileManagerService = Depends(get_file_manager_service),
+):
+    table_info = file_manager_service.get_table_info(table_name)
+    if not table_info:
+        raise HTTPException(status_code=404, detail=f"Table {table_name} not found")
+    
+    return table_info

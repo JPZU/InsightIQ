@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from utils.db_manager import DBManager
 
 from utils.alarm_manager import AlarmManager
 
@@ -88,9 +89,17 @@ def update_alarm_by_id(alarm_id: int, updated_details: dict):
         }
 
 
-def evaluate_alarm(table_name: str):
+def evaluate_alarms_for_all_tables(only_new_alarms: bool = True):
+    db_manager = DBManager()
     alarm_manager = AlarmManager()
-    triggered_alarms = alarm_manager.evaluate_alarm(table_name)
-    return {
-        "triggered_alarms": triggered_alarms
-    }
+
+    alarms_by_table = {}
+    table_names = db_manager.get_table_names()
+
+    for table_name in table_names:
+        triggered_alarms = alarm_manager.evaluate_alarm(table_name, only_new=only_new_alarms)
+
+        if triggered_alarms:
+            alarms_by_table[table_name] = triggered_alarms
+
+    return alarms_by_table

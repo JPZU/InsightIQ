@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Path, Query
 
 from apps.alarm_management.service import (create_alarm_from_natural_language,
-                                           delete_alarm_by_id, evaluate_alarm,
+                                           delete_alarm_by_id, evaluate_alarms_for_all_tables,
                                            get_all_alarms, update_alarm_by_id)
 from schemas.alarm import AlarmUpdateRequest
 
@@ -58,16 +58,9 @@ def update_alarm(
 
 
 @router.get("/check_alarm")
-def check_alarm(
-    table_name: str = Query(..., description="Name of the table to check alarms for"),
-):
-    """
-    Check if any alarms are triggered based on the provided parameters.
-    """
-    # This function should be implemented in the service layer
-    # For now, we will just return a placeholder response
+def check_alarm():
     try:
-        result = evaluate_alarm(table_name)
+        result = evaluate_alarms_for_all_tables()
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,0 +1,144 @@
+from typing import Optional
+from enum import Enum
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
+from datetime import datetime
+
+from services.user_service import UserService
+from utils.auth_manager import AuthManager
+from utils.base_schema import BaseResponse
+
+router = APIRouter(prefix="/admin/users", tags=["admin-users"])
+
+class RoleEnum(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
+
+class AdminUserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    is_active: Optional[bool] = None
+    role: Optional[RoleEnum] = None
+
+class UserResponse(BaseModel):
+    id: int
+    full_name: str
+    username: str
+    email: str
+    role: RoleEnum
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+def verify_admin(current_user_id: int):
+    """Verify if the current user is an admin"""
+    current_user = UserService.get_user_by_id(current_user_id)
+    if not current_user or current_user.role != RoleEnum.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin privileges required"
+        )
+
+@router.get("", response_model=BaseResponse[list[UserResponse]])
+def list_all_users(current_user: int = Depends(AuthManager.get_current_user)):
+    verify_admin(current_user)
+    users = UserService.get_all_users()
+    return BaseResponse(
+        success=True,
+        response=[{
+            "id": user.id,
+            "full_name": user.full_name,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role,
+            "is_active": user.is_active,
+            "created_at": user.createdAt,
+            "updated_at": user.updatedAt
+        } for user in users]
+    )
+
+@router.get("/{user_id}", response_model=BaseResponse[UserResponse])
+def get_user_details(
+    user_id: int,
+    current_user: int = Depends(AuthManager.get_current_user)
+):
+    verify_admin(current_user)
+    user = UserService.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    return BaseResponse(
+        success=True,
+        response={
+            "id": user.id,
+            "full_name": user.full_name,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role,
+            "is_active": user.is_active,
+            "created_at": user.createdAt,
+            "updated_at": user.updatedAt
+        }
+    )
+
+@router.put("/{user_id}", response_model=BaseResponse)
+def admin_update_user(
+    user_id: int,
+    user_data: AdminUserUpdate,
+    current_user: int = Depends(AuthManager.get_current_user)
+):
+    verify_admin(current_user)
+    try:
+        success = UserService.admin_update_user(
+            user_id=user_id,
+            full_name=user_data.full_name,
+            username=user_data.username,
+            email=user_data.email,
+            password=user_data.password,
+            is_active=user_data.is_active,
+            role=user_data.role.value if user_data.role else None
+        )
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        return BaseResponse(
+            success=True,
+            message="User updated successfully"
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+@router.delete("/{user_id}", response_model=BaseResponse)
+def admin_delete_user(
+    user_id: int,
+    current_user: int = Depends(AuthManager.get_current_user)
+):
+    verify_admin(current_user)
+    if user_id == current_user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cannot delete your own account"
+        )
+    
+    success = UserService.delete_user(user_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    return BaseResponse(
+        success=True,
+        message="User deleted successfully"
+    )

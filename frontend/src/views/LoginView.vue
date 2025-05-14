@@ -68,7 +68,7 @@ async function handleLogin() {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 80vh;
   padding: 1rem;
 }
 
@@ -110,7 +110,7 @@ button {
   margin-top: 1rem;
   border: none;
   border-radius: 4px;
-  background-color: #4f46e5;
+  background-color: #43a3e7;
   color: white;
   font-size: 1rem;
   cursor: pointer;
