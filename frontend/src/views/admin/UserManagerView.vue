@@ -1,11 +1,16 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
-import UserService from '@/services/UserService'
+import AdminUserService from '@/services/admin/AdminUserService'
 
 const state = reactive({
   loading: true,
   error: null,
-  userData: null,
+  users: [],
+  metrics: {
+    total_users: 0,
+    total_admins: 0,
+    total_questions_asked: 0
+  },
   searchQuery: '',
   sortBy: 'name',
   sortDirection: 'asc'
@@ -16,33 +21,62 @@ const fetchUserData = async () => {
   state.error = null
   
   try {
-    const response = await UserService.getUsersInfo()
-    if (response.success) {
-      state.userData = response.response
+    const response = await AdminUserService.listAllUsers()
+    if (response?.response) {
+      state.users = Array.isArray(response.response.users_info) ? response.response.users_info : []
+      state.metrics = {
+        total_users: response.response.general_metrics?.total_users || 0,
+        total_admins: response.response.general_metrics?.total_admins || 0,
+        total_questions_asked: response.response.general_metrics?.total_questions_asked || 0
+      }
     } else {
-      state.error = response.message || 'Failed to load user data. Please try again later.'
+      state.error = 'Failed to load user data. Please try again later.'
     }
   } catch (error) {
     console.error('Error fetching user data:', error)
     state.error = 'Failed to load user data. Please try again later.'
+    state.users = []
+    state.metrics = {
+      total_users: 0,
+      total_admins: 0,
+      total_questions_asked: 0
+    }
   } finally {
     state.loading = false
   }
 }
 
-const sortUsers = (field) => {
-  if (state.sortBy === field) {
+const deleteUser = async (userId) => {
+  try {
+    await AdminUserService.deleteUser(userId)
+    await fetchUserData() // Refresh the user list
+  } catch (error) {
+    console.error('Error deleting user:', error)
+    state.error = 'Failed to delete user. Please try again.'
+  }
+}
+
+const promoteToAdmin = async (userId) => {
+  try {
+    await AdminUserService.promoteToAdmin(userId)
+    await fetchUserData() // Refresh the user list
+  } catch (error) {
+    console.error('Error promoting user:', error)
+    state.error = 'Failed to promote user. Please try again.'
+  }
+}
+
+const sortUsers = (column) => {
+  if (state.sortBy === column) {
     state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc'
   } else {
-    state.sortBy = field
+    state.sortBy = column
     state.sortDirection = 'asc'
   }
 }
 
 const filteredUsers = computed(() => {
-  if (!state.userData) return []
-  
-  let users = [...state.userData.users_info]
+  let users = [...state.users]
   
   if (state.searchQuery) {
     const query = state.searchQuery.toLowerCase()
@@ -86,22 +120,22 @@ onMounted(fetchUserData)
       </div>
       
       <!-- User data display -->
-      <div v-else-if="state.userData" class="user-data-container">
+      <div v-else class="user-data-container">
         <!-- Metrics Cards -->
         <div class="metrics-grid">
           <div class="metric-card">
-            <div class="metric-value">{{ state.userData.general_metrics.total_users }}</div>
+            <div class="metric-value">{{ state.metrics.total_users }}/15</div>
             <div class="metric-label">Total Users</div>
           </div>
           
           <div class="metric-card">
-            <div class="metric-value">{{ state.userData.general_metrics.total_admins }}</div>
+            <div class="metric-value">{{ state.metrics.total_admins }}</div>
             <div class="metric-label">Admin Users</div>
           </div>
           
           <div class="metric-card">
-            <div class="metric-value">{{ state.userData.general_metrics.total_questions_asked }}/100</div>
-            <div class="metric-label">Questions Asked</div>
+            <div class="metric-value">{{ state.metrics.total_questions_asked }}/1000</div>
+            <div class="metric-label">Total Questions Asked</div>
           </div>
         </div>
         
@@ -115,9 +149,6 @@ onMounted(fetchUserData)
                 placeholder="Search users..." 
                 class="search-input"
               />
-              <button class="btn-create">
-                + Add User
-              </button>
             </div>
           </div>
           
@@ -166,15 +197,24 @@ onMounted(fetchUserData)
                   <td>{{ user.email }}</td>
                   <td>
                     <span class="role-badge" :class="user.role">
-                      {{ user.role.charAt(0).toUpperCase() + user.role.slice(1) }}
+                      {{ user.role === 'admin' ? 'Admin' : 'User' }}
                     </span>
                   </td>
                   <td>{{ user.questions_asked }}</td>
                   <td class="actions-cell">
-                    <button class="action-btn edit-btn" title="Edit User">
-                      <i class="fa-solid fa-pen-to-square"></i>
+                    <button 
+                      v-if="user.role !== 'admin'" 
+                      class="action-btn promote-btn" 
+                      title="Promote to Admin"
+                      @click="promoteToAdmin(user.id)"
+                    >
+                      <i class="fa-solid fa-user-shield"></i>
                     </button>
-                    <button class="action-btn delete-btn" title="Delete User">
+                    <button 
+                      class="action-btn delete-btn" 
+                      title="Delete User"
+                      @click="deleteUser(user.id)"
+                    >
                       <i class="fa-solid fa-trash"></i>
                     </button>
                   </td>
@@ -224,6 +264,19 @@ onMounted(fetchUserData)
   border-top: 3px solid #3498db;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+}
+
+.promote-btn {
+  color: #28a745;
+  margin-right: 5px;
+}
+
+.promote-btn:hover {
+  color: #218838;
+}
+
+.delete-btn:hover {
+  color: #c82333;
 }
 
 @keyframes spin {

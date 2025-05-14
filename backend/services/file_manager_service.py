@@ -116,9 +116,6 @@ class FileManagerService:
                 "success": False,
                 "message": f"Error updating table from CSV: {str(e)}"
             }
-        finally:
-            if os.path.exists(file_location):
-                os.remove(file_location)
 
     def update_table_from_excel(self, table_name: str, file_location: str, replace: bool = False) -> Dict[str, Any]:
         try:
@@ -146,6 +143,3 @@ class FileManagerService:
                 "success": False,
                 "message": f"Error updating table from Excel: {str(e)}"
             }
-        finally:
-            if os.path.exists(file_location):
-                os.remove(file_location)

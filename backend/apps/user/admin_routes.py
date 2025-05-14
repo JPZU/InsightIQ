@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 from enum import Enum
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
@@ -8,7 +8,7 @@ from services.user_service import UserService
 from utils.auth_manager import AuthManager
 from utils.base_schema import BaseResponse
 
-router = APIRouter(prefix="/admin/users", tags=["admin-users"])
+router = APIRouter()
 
 class RoleEnum(str, Enum):
     USER = "user"
@@ -22,44 +22,23 @@ class AdminUserUpdate(BaseModel):
     is_active: Optional[bool] = None
     role: Optional[RoleEnum] = None
 
-class UserResponse(BaseModel):
-    id: int
-    full_name: str
-    username: str
-    email: str
-    role: RoleEnum
-    is_active: bool
-    created_at: datetime
-    updated_at: datetime
-
 def verify_admin(current_user_id: int):
-    """Verify if the current user is an admin"""
     current_user = UserService.get_user_by_id(current_user_id)
-    if not current_user or current_user.role != RoleEnum.ADMIN:
+    print(f"Current user: {current_user.role.value}")
+    print(RoleEnum.ADMIN.value)
+    if not current_user or current_user.role.value != RoleEnum.ADMIN.value:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin privileges required"
         )
 
-@router.get("", response_model=BaseResponse[list[UserResponse]])
+@router.get("")
 def list_all_users(current_user: int = Depends(AuthManager.get_current_user)):
     verify_admin(current_user)
-    users = UserService.get_all_users()
-    return BaseResponse(
-        success=True,
-        response=[{
-            "id": user.id,
-            "full_name": user.full_name,
-            "username": user.username,
-            "email": user.email,
-            "role": user.role,
-            "is_active": user.is_active,
-            "created_at": user.createdAt,
-            "updated_at": user.updatedAt
-        } for user in users]
-    )
+    users = UserService.get_users_info()
+    return {"response": users}
 
-@router.get("/{user_id}", response_model=BaseResponse[UserResponse])
+@router.get("/{user_id}")
 def get_user_details(
     user_id: int,
     current_user: int = Depends(AuthManager.get_current_user)
@@ -72,21 +51,17 @@ def get_user_details(
             detail="User not found"
         )
     
-    return BaseResponse(
-        success=True,
-        response={
-            "id": user.id,
-            "full_name": user.full_name,
-            "username": user.username,
-            "email": user.email,
-            "role": user.role,
-            "is_active": user.is_active,
-            "created_at": user.createdAt,
-            "updated_at": user.updatedAt
-        }
-    )
+    return {
+        "id": user.id,
+        "full_name": user.full_name,
+        "username": user.username,
+        "email": user.email,
+        "role": user.role.value,
+        "created_at": user.createdAt.isoformat(),
+        "updated_at": user.updatedAt.isoformat()
+    }
 
-@router.put("/{user_id}", response_model=BaseResponse)
+@router.put("/{user_id}")
 def admin_update_user(
     user_id: int,
     user_data: AdminUserUpdate,
@@ -100,7 +75,6 @@ def admin_update_user(
             username=user_data.username,
             email=user_data.email,
             password=user_data.password,
-            is_active=user_data.is_active,
             role=user_data.role.value if user_data.role else None
         )
         if not success:
@@ -109,17 +83,14 @@ def admin_update_user(
                 detail="User not found"
             )
 
-        return BaseResponse(
-            success=True,
-            message="User updated successfully"
-        )
+        return {"message": "User updated successfully"}
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
 
-@router.delete("/{user_id}", response_model=BaseResponse)
+@router.delete("/{user_id}")
 def admin_delete_user(
     user_id: int,
     current_user: int = Depends(AuthManager.get_current_user)
@@ -138,7 +109,4 @@ def admin_delete_user(
             detail="User not found"
         )
 
-    return BaseResponse(
-        success=True,
-        message="User deleted successfully"
-    )
+    return {"message": "User deleted successfully"}
