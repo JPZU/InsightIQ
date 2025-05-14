@@ -168,14 +168,14 @@ class RatingRequest(BaseModel):
 @router.post("/responses/{response_id}/rate")
 def rate_response(
     response_id: int,
-    request: RatingRequest,
+    request: RatingRequest,  # Pydantic model con campo `rating: conint(ge=0, le=1)`
     current_user: int = Depends(AuthManager.get_current_user)
 ):
     try:
         ResponseService.rate_response(response_id, request.rating)
-        return BaseResponse(success=True, message="Rating saved")
+        return BaseResponse(success=True, message="Rating submitted successfully")
     except HTTPException as he:
         raise he
     except Exception as e:
-        logger.error(f"Error in rate_response: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        logger.error(f"Unexpected error rating response: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")

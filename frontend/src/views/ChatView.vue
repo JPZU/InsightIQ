@@ -135,6 +135,8 @@ const submitQuestion = async () => {
       content: msg?.content || 'No response content',
       created_at: new Date().toISOString(),
       result: processedResult || {},
+      response_id: msg.response_id,
+      rating: null,
     }
 
     state.value.messages.push(message)
@@ -152,6 +154,19 @@ const submitQuestion = async () => {
     })
   } finally {
     state.value.loading = false
+  }
+}
+
+const rateResponse = async (index, rating) => {
+  const message = state.value.messages[index]
+  if (message.rating !== null) return // ya fue calificado
+
+  try {
+    await ChatService.rateResponse(message.response_id, rating)
+    message.rating = rating
+  } catch (err) {
+    console.error('Error al calificar respuesta:', err)
+    alert('Ocurrió un error al calificar la respuesta.')
   }
 }
 
@@ -347,6 +362,26 @@ onMounted(() => {
 
                 <div class="message-time">
                   {{ new Date(message.created_at).toLocaleTimeString() }}
+                </div>
+                <!-- Botones de rating -->
+                <div
+                  v-if="message.type === 'response' && message.response_id"
+                  class="rating-buttons"
+                >
+                  <button
+                    @click="rateResponse(index, 1)"
+                    :disabled="message.rating !== null"
+                    :class="{ active: message.rating === 1 }"
+                  >
+                    👍
+                  </button>
+                  <button
+                    @click="rateResponse(index, 0)"
+                    :disabled="message.rating !== null"
+                    :class="{ active: message.rating === 0 }"
+                  >
+                    👎
+                  </button>
                 </div>
               </div>
             </div>
@@ -717,5 +752,27 @@ onMounted(() => {
 .form-control-sm {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
+}
+
+.rating-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.rating-buttons button {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.rating-buttons button.active {
+  color: green;
+}
+
+.rating-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
