@@ -8,13 +8,13 @@ const state = reactive({
   userData: null,
   searchQuery: '',
   sortBy: 'name',
-  sortDirection: 'asc'
+  sortDirection: 'asc',
 })
 
 const fetchUserData = async () => {
   state.loading = true
   state.error = null
-  
+
   try {
     const response = await UserService.getUsersInfo()
     if (response.success) {
@@ -41,31 +41,30 @@ const sortUsers = (field) => {
 
 const filteredUsers = computed(() => {
   if (!state.userData) return []
-  
+
   let users = [...state.userData.users_info]
-  
+
   if (state.searchQuery) {
     const query = state.searchQuery.toLowerCase()
-    users = users.filter(user => 
-      user.name.toLowerCase().includes(query) || 
-      user.email.toLowerCase().includes(query)
+    users = users.filter(
+      (user) => user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query),
     )
   }
-  
+
   users.sort((a, b) => {
     let valA = a[state.sortBy]
     let valB = b[state.sortBy]
-    
+
     if (typeof valA === 'string') {
       valA = valA.toLowerCase()
       valB = valB.toLowerCase()
     }
-    
+
     if (valA < valB) return state.sortDirection === 'asc' ? -1 : 1
     if (valA > valB) return state.sortDirection === 'asc' ? 1 : -1
     return 0
   })
-  
+
   return users
 })
 
@@ -79,12 +78,12 @@ onMounted(fetchUserData)
       <div v-if="state.loading" class="loading-spinner">
         <div class="spinner"></div>
       </div>
-      
+
       <!-- Error state -->
       <div v-else-if="state.error" class="error-message">
         {{ state.error }}
       </div>
-      
+
       <!-- User data display -->
       <div v-else-if="state.userData" class="user-data-container">
         <!-- Metrics Cards -->
@@ -93,69 +92,81 @@ onMounted(fetchUserData)
             <div class="metric-value">{{ state.userData.general_metrics.total_users }}</div>
             <div class="metric-label">Total Users</div>
           </div>
-          
+
           <div class="metric-card">
             <div class="metric-value">{{ state.userData.general_metrics.total_admins }}</div>
             <div class="metric-label">Admin Users</div>
           </div>
-          
+
           <div class="metric-card">
-            <div class="metric-value">{{ state.userData.general_metrics.total_questions_asked }}/100</div>
+            <div class="metric-value">
+              {{ state.userData.general_metrics.total_questions_asked }}/100
+            </div>
             <div class="metric-label">Questions Asked</div>
           </div>
         </div>
-        
+
         <!-- Users Table -->
         <div class="table-section">
           <div class="table-header">
             <h2>User List</h2>
             <div class="table-actions">
-              <input 
-                v-model="state.searchQuery" 
-                placeholder="Search users..." 
+              <input
+                v-model="state.searchQuery"
+                placeholder="Search users..."
                 class="search-input"
               />
-              <button class="btn-create">
-                + Add User
-              </button>
+              <button class="btn-create">+ Add User</button>
             </div>
           </div>
-          
+
           <div class="table-container">
             <table>
               <thead>
                 <tr>
                   <th @click="sortUsers('name')">
                     Name
-                    <i class="sort-icon" :class="{
-                      'active': state.sortBy === 'name',
-                      'asc': state.sortBy === 'name' && state.sortDirection === 'asc',
-                      'desc': state.sortBy === 'name' && state.sortDirection === 'desc'
-                    }"></i>
+                    <i
+                      class="sort-icon"
+                      :class="{
+                        active: state.sortBy === 'name',
+                        asc: state.sortBy === 'name' && state.sortDirection === 'asc',
+                        desc: state.sortBy === 'name' && state.sortDirection === 'desc',
+                      }"
+                    ></i>
                   </th>
                   <th @click="sortUsers('email')">
                     Email
-                    <i class="sort-icon" :class="{
-                      'active': state.sortBy === 'email',
-                      'asc': state.sortBy === 'email' && state.sortDirection === 'asc',
-                      'desc': state.sortBy === 'email' && state.sortDirection === 'desc'
-                    }"></i>
+                    <i
+                      class="sort-icon"
+                      :class="{
+                        active: state.sortBy === 'email',
+                        asc: state.sortBy === 'email' && state.sortDirection === 'asc',
+                        desc: state.sortBy === 'email' && state.sortDirection === 'desc',
+                      }"
+                    ></i>
                   </th>
                   <th @click="sortUsers('role')">
                     Role
-                    <i class="sort-icon" :class="{
-                      'active': state.sortBy === 'role',
-                      'asc': state.sortBy === 'role' && state.sortDirection === 'asc',
-                      'desc': state.sortBy === 'role' && state.sortDirection === 'desc'
-                    }"></i>
+                    <i
+                      class="sort-icon"
+                      :class="{
+                        active: state.sortBy === 'role',
+                        asc: state.sortBy === 'role' && state.sortDirection === 'asc',
+                        desc: state.sortBy === 'role' && state.sortDirection === 'desc',
+                      }"
+                    ></i>
                   </th>
                   <th @click="sortUsers('questions_asked')">
                     Questions
-                    <i class="sort-icon" :class="{
-                      'active': state.sortBy === 'questions_asked',
-                      'asc': state.sortBy === 'questions_asked' && state.sortDirection === 'asc',
-                      'desc': state.sortBy === 'questions_asked' && state.sortDirection === 'desc'
-                    }"></i>
+                    <i
+                      class="sort-icon"
+                      :class="{
+                        active: state.sortBy === 'questions_asked',
+                        asc: state.sortBy === 'questions_asked' && state.sortDirection === 'asc',
+                        desc: state.sortBy === 'questions_asked' && state.sortDirection === 'desc',
+                      }"
+                    ></i>
                   </th>
                   <th>Actions</th>
                 </tr>
@@ -227,8 +238,12 @@ onMounted(fetchUserData)
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-message {
@@ -448,22 +463,22 @@ th {
   .metrics-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .table-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .table-actions {
     width: 100%;
     flex-direction: column;
   }
-  
+
   .search-input {
     width: 100%;
   }
-  
+
   .btn-create {
     width: 100%;
   }

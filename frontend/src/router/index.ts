@@ -135,7 +135,7 @@ const router = createRouter({
           meta: {
             title: 'User Manager',
           },
-        }
+        },
       ],
     },
     {

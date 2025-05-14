@@ -52,7 +52,7 @@ const checkTriggeredAlarms = async () => {
   try {
     const response = await AlarmService.checkAlarms()
     triggeredAlarms.value = response.data || {}
-    
+
     if (Object.keys(triggeredAlarms.value).length > 0) {
       showAlarmsModal.value = true
       stopAlarmCheckInterval() // Stop checking when modal is shown
@@ -64,7 +64,7 @@ const checkTriggeredAlarms = async () => {
 
 const startAlarmCheckInterval = () => {
   if (showAlarmsModal.value) return // Don't start if modal is open
-  
+
   stopAlarmCheckInterval()
   checkTriggeredAlarms()
   alarmCheckInterval.value = window.setInterval(checkTriggeredAlarms, checkInterval.value)
@@ -149,13 +149,17 @@ const hasAlarms = computed(() => {
   return Object.keys(triggeredAlarms.value).length > 0
 })
 
-watch(isLoggedIn, (newVal) => {
-  if (newVal) {
-    startAlarmCheckInterval()
-  } else {
-    stopAlarmCheckInterval()
-  }
-}, { immediate: true })
+watch(
+  isLoggedIn,
+  (newVal) => {
+    if (newVal) {
+      startAlarmCheckInterval()
+    } else {
+      stopAlarmCheckInterval()
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -260,7 +264,11 @@ watch(isLoggedIn, (newVal) => {
   </ul>
 
   <!-- Alarm Notification Badge -->
-  <div v-if="hasAlarms && !showAlarmsModal" class="alarm-notification" @click="showAlarmsModal = true">
+  <div
+    v-if="hasAlarms && !showAlarmsModal"
+    class="alarm-notification"
+    @click="showAlarmsModal = true"
+  >
     <span class="badge bg-danger">{{ Object.values(triggeredAlarms).flat().length }}</span>
     <span>{{ $t('app.new_alarms') }}</span>
   </div>
@@ -270,23 +278,31 @@ watch(isLoggedIn, (newVal) => {
     <div class="modal-content">
       <span class="close" @click="closeModal">&times;</span>
       <h3 class="modal-title">{{ $t('app.triggered_alarms') }}</h3>
-      
+
       <div class="alarm-container">
         <div v-for="(alarms, tableName) in triggeredAlarms" :key="tableName" class="table-alarms">
           <h4 class="table-name">{{ tableName }}</h4>
-          
-          <div v-for="(alarm, index) in alarms" :key="index" class="alarm-card" :class="{'critical': alarm.severity === 'critical', 'warning': alarm.severity === 'warning'}">
+
+          <div
+            v-for="(alarm, index) in alarms"
+            :key="index"
+            class="alarm-card"
+            :class="{
+              critical: alarm.severity === 'critical',
+              warning: alarm.severity === 'warning',
+            }"
+          >
             <div class="alarm-header">
               <h5>{{ alarm.description }}</h5>
               <span class="alarm-id">#{{ alarm.alarm_id }}</span>
             </div>
-            
+
             <div class="alarm-details">
               <div class="detail-row">
                 <span class="detail-label">{{ $t('app.condition') }}:</span>
                 <span class="detail-value">{{ alarm.condition }} {{ alarm.threshold }}</span>
               </div>
-              
+
               <div class="triggered-data">
                 <h6>{{ $t('app.triggered_data') }}</h6>
                 <div class="data-grid">
@@ -297,14 +313,14 @@ watch(isLoggedIn, (newVal) => {
                 </div>
               </div>
             </div>
-            
+
             <div class="alarm-timestamp">
               {{ new Date(alarm.timestamp).toLocaleString() }}
             </div>
           </div>
         </div>
       </div>
-      
+
       <div class="modal-actions">
         <button class="btn btn-primary" @click="closeModal">
           {{ $t('app.close') }}

@@ -45,23 +45,23 @@ export abstract class BaseService {
         if (error.response) {
           // The server responded with a status code outside of the 2xx range
           console.log('Server error:', error.response.status, error.response.data)
-          
+
           if (error.response.status === 401) {
             console.log('Authentication error - redirecting to login')
             localStorage.removeItem('access_token')
             window.location.href = '/login'
             throw new Error('Authentication failed. Please log in again.')
           }
-          
+
           // Return the error response from the server if available
           return {
             success: false,
-            message: error.response.data?.message || `Error: ${error.response.status}`
+            message: error.response.data?.message || `Error: ${error.response.status}`,
           }
         } else if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
           return {
             success: false,
-            message: 'Server not available. Please try again later.'
+            message: 'Server not available. Please try again later.',
           }
         }
       }
@@ -69,7 +69,7 @@ export abstract class BaseService {
       // For any other errors, return a generic error response
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'An unexpected error occurred'
+        message: error instanceof Error ? error.message : 'An unexpected error occurred',
       }
     }
   }
