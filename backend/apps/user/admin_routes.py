@@ -1,8 +1,9 @@
-from typing import Optional
+from datetime import datetime
 from enum import Enum
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from datetime import datetime
 
 from services.user_service import UserService
 from utils.auth_manager import AuthManager
@@ -10,9 +11,11 @@ from utils.base_schema import BaseResponse
 
 router = APIRouter(prefix="/admin/users", tags=["admin-users"])
 
+
 class RoleEnum(str, Enum):
     USER = "user"
     ADMIN = "admin"
+
 
 class AdminUserUpdate(BaseModel):
     full_name: Optional[str] = None
@@ -21,6 +24,7 @@ class AdminUserUpdate(BaseModel):
     password: Optional[str] = None
     is_active: Optional[bool] = None
     role: Optional[RoleEnum] = None
+
 
 class UserResponse(BaseModel):
     id: int
@@ -32,6 +36,7 @@ class UserResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 def verify_admin(current_user_id: int):
     """Verify if the current user is an admin"""
     current_user = UserService.get_user_by_id(current_user_id)
@@ -40,6 +45,7 @@ def verify_admin(current_user_id: int):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin privileges required"
         )
+
 
 @router.get("", response_model=BaseResponse[list[UserResponse]])
 def list_all_users(current_user: int = Depends(AuthManager.get_current_user)):
@@ -59,6 +65,7 @@ def list_all_users(current_user: int = Depends(AuthManager.get_current_user)):
         } for user in users]
     )
 
+
 @router.get("/{user_id}", response_model=BaseResponse[UserResponse])
 def get_user_details(
     user_id: int,
@@ -71,7 +78,7 @@ def get_user_details(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    
+
     return BaseResponse(
         success=True,
         response={
@@ -85,6 +92,7 @@ def get_user_details(
             "updated_at": user.updatedAt
         }
     )
+
 
 @router.put("/{user_id}", response_model=BaseResponse)
 def admin_update_user(
@@ -119,6 +127,7 @@ def admin_update_user(
             detail=str(e)
         )
 
+
 @router.delete("/{user_id}", response_model=BaseResponse)
 def admin_delete_user(
     user_id: int,
@@ -130,7 +139,7 @@ def admin_delete_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Cannot delete your own account"
         )
-    
+
     success = UserService.delete_user(user_id)
     if not success:
         raise HTTPException(

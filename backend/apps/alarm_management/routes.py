@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, Path, Query
 
 from apps.alarm_management.service import (create_alarm_from_natural_language,
-                                           delete_alarm_by_id, evaluate_alarms_for_all_tables,
+                                           delete_alarm_by_id,
+                                           evaluate_alarms_for_all_tables,
                                            get_all_alarms, update_alarm_by_id)
 from schemas.alarm import AlarmUpdateRequest
 

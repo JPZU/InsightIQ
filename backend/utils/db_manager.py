@@ -41,11 +41,11 @@ class DBManager:
             columns = [col['column_name'] for col in self.get_table_schema(table_name)]
 
             column_data = {column: [] for column in columns}
-            
+
             for row in result:
                 for i, column in enumerate(columns):
                     column_data[column].append(row[i])
-            
+
             return column_data
         else:
             return None
