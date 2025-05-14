@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/AuthService'
 import AlarmService from '@/services/AlarmService'
+import FileManagerService from '@/services/FileManagerService'
 
 const { locale, t } = useI18n()
 const route = useRoute()
@@ -18,12 +19,19 @@ const loginForm = ref({
   error: '',
 })
 
-const isLoggedIn = computed(() => AuthService.isAuthenticated())
+// Use reactive reference to ensure up-to-date authentication status
+const authStatus = ref(AuthService.isAuthenticated())
+const isLoggedIn = computed(() => authStatus.value)
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
+const isLoginRoute = computed(() => route.name === 'login' || route.path === '/login')
 const triggeredAlarms = ref<Record<string, any[]>>({})
 const showAlarmsModal = ref(false)
+
+// Interval references
 const alarmCheckInterval = ref<number | null>(null)
 const checkInterval = ref(30000) // 30 seconds by default
+const googleSheetsUpdateInterval = ref<number | null>(null)
+const googleSheetsUpdateCheckInterval = ref(30000) // 30 seconds by default
 
 // Tab configuration
 const navbarTabs = computed(() => {
@@ -48,6 +56,7 @@ const navbarClass = computed(() => {
   return isAdminRoute.value ? 'bg-danger' : 'bg-primary'
 })
 
+// Alarm functions
 const checkTriggeredAlarms = async () => {
   try {
     const response = await AlarmService.checkAlarms()
@@ -77,6 +86,34 @@ const stopAlarmCheckInterval = () => {
   }
 }
 
+// Google Sheets functions
+const updateGoogleSheets = async () => {
+  try {
+    await FileManagerService.updateGoogleSheets()
+    console.log('Google Sheets updated successfully.')
+  } catch (error) {
+    console.error('Error updating Google Sheets:', error)
+  }
+}
+
+const startGoogleSheetsUpdateInterval = () => {
+  if (googleSheetsUpdateInterval.value !== null) return
+
+  updateGoogleSheets() // Run immediately first
+  googleSheetsUpdateInterval.value = window.setInterval(
+    updateGoogleSheets,
+    googleSheetsUpdateCheckInterval.value,
+  )
+}
+
+const stopGoogleSheetsUpdateInterval = () => {
+  if (googleSheetsUpdateInterval.value !== null) {
+    window.clearInterval(googleSheetsUpdateInterval.value)
+    googleSheetsUpdateInterval.value = null
+  }
+}
+
+// Modal functions
 const closeModal = () => {
   showAlarmsModal.value = false
   triggeredAlarms.value = {}
@@ -92,14 +129,48 @@ watch(showAlarmsModal, (newVal) => {
   }
 })
 
+// Auth functions
+const checkAuthStatus = () => {
+  authStatus.value = AuthService.isAuthenticated()
+}
+
+const handleAuthStateChange = (event: CustomEvent) => {
+  const isAuthenticated = event.detail.isAuthenticated
+  authStatus.value = isAuthenticated
+
+  if (isAuthenticated) {
+    startAlarmCheckInterval()
+    startGoogleSheetsUpdateInterval()
+  } else {
+    stopAlarmCheckInterval()
+    stopGoogleSheetsUpdateInterval()
+  }
+}
+
+// Lifecycle hooks
 onMounted(() => {
-  startAlarmCheckInterval()
+  checkAuthStatus()
+
+  // Set up regular auth status checking
+  window.setInterval(checkAuthStatus, 5000)
+
+  // Listen for auth state changes
+  window.addEventListener('auth-state-changed', handleAuthStateChange as EventListener)
+
+  // Start intervals if authenticated
+  if (authStatus.value) {
+    startAlarmCheckInterval()
+    startGoogleSheetsUpdateInterval()
+  }
 })
 
 onUnmounted(() => {
   stopAlarmCheckInterval()
+  stopGoogleSheetsUpdateInterval()
+  window.removeEventListener('auth-state-changed', handleAuthStateChange as EventListener)
 })
 
+// Utility functions
 const updateCheckInterval = (newInterval: number) => {
   checkInterval.value = newInterval
   startAlarmCheckInterval()
@@ -120,6 +191,7 @@ const handleLogin = async () => {
       showLoginModal.value = false
       loginForm.value.username = ''
       loginForm.value.password = ''
+      authStatus.value = true
       router.push({ name: 'home' })
     } else {
       loginForm.value.error = t('auth.invalid_credentials')
@@ -135,9 +207,12 @@ const handleLogin = async () => {
 const handleLogout = async () => {
   try {
     await AuthService.logout()
+    authStatus.value = false
     router.push({ name: 'login' })
   } catch (error) {
     console.error('Logout error:', error)
+    authStatus.value = false
+    router.push({ name: 'login' })
   }
 }
 
@@ -145,17 +220,25 @@ const goToProfile = () => {
   router.push({ name: 'profile' })
 }
 
+// Computed properties
 const hasAlarms = computed(() => {
   return Object.keys(triggeredAlarms.value).length > 0
 })
 
+const shouldShowNavbarTabs = computed(() => {
+  return isLoggedIn.value && !isLoginRoute.value
+})
+
+// Watchers
 watch(
   isLoggedIn,
   (newVal) => {
     if (newVal) {
       startAlarmCheckInterval()
+      startGoogleSheetsUpdateInterval()
     } else {
       stopAlarmCheckInterval()
+      stopGoogleSheetsUpdateInterval()
     }
   },
   { immediate: true },
@@ -165,13 +248,19 @@ watch(
 <template>
   <nav class="navbar" style="height: 65px">
     <div class="container-fluid">
-      <router-link
-        class="navbar-brand ms-4 mb-0 h1"
-        style="font-size: 1.5rem"
-        :to="{ name: 'home' }"
-      >
-        InsightIQ
-      </router-link>
+      <!-- Only use router-link when logged in -->
+      <template v-if="isLoggedIn">
+        <router-link
+          class="navbar-brand ms-4 mb-0 h1"
+          style="font-size: 1.5rem"
+          :to="{ name: 'home' }"
+        >
+          InsightIQ
+        </router-link>
+      </template>
+      <template v-else>
+        <span class="navbar-brand ms-4 mb-0 h1" style="font-size: 1.5rem">InsightIQ</span>
+      </template>
 
       <div class="d-flex align-items-center">
         <div class="dropdown me-3">
@@ -197,18 +286,7 @@ watch(
           </ul>
         </div>
 
-        <div v-if="!isLoggedIn">
-          <button
-            type="button"
-            class="btn btn-primary me-2"
-            :class="navbarClass"
-            @click="router.push({ name: 'login' })"
-          >
-            {{ $t('app.login') }}
-          </button>
-        </div>
-
-        <div v-else class="dropdown">
+        <div class="dropdown">
           <button
             class="btn btn-outline-primary dropdown-toggle"
             :class="navbarClass"
@@ -220,37 +298,50 @@ watch(
             {{ $t('app.my_account') }}
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li>
-              <a class="dropdown-item" href="#" @click.prevent="goToProfile">
-                {{ $t('app.profile') }}
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" @click.prevent="handleLogout">
-                {{ $t('app.logout') }}
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" @click.prevent="router.push('/admin')">
-                {{ $t('app.go_to_admin') }}
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" @click.prevent="router.push('/')">
-                {{ $t('app.go_to_home') }}
-              </a>
-            </li>
+            <template v-if="isLoggedIn">
+              <li>
+                <a class="dropdown-item" href="#" @click.prevent="router.push('/')">
+                  {{ $t('app.home') }}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" @click.prevent="router.push('/admin')"> Admin </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" @click.prevent="handleLogout">
+                  {{ $t('app.logout') }}
+                </a>
+              </li>
+            </template>
+
+            <template v-else>
+              <li>
+                <a class="dropdown-item" href="#" @click.prevent="router.push({ name: 'login' })">
+                  {{ $t('app.login') }}
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  @click.prevent="router.push({ name: 'register' })"
+                >
+                  {{ $t('app.register') }}
+                </a>
+              </li>
+            </template>
           </ul>
         </div>
       </div>
     </div>
   </nav>
 
+  <!-- Only show tabs when logged in AND not on login route -->
   <ul
+    v-if="shouldShowNavbarTabs"
     class="nav justify-content-center nav-underline d-flex align-items-center"
     :class="navbarClass"
     style="height: 65px"
-    v-if="isLoggedIn"
   >
     <li v-for="tab in navbarTabs" :key="tab.name" class="nav-item mx-5">
       <router-link

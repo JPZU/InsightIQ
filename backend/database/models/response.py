@@ -1,7 +1,7 @@
 from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, Text, func
 from sqlalchemy.orm import relationship
 
-from .base import Base
+from database.models.base import Base
 
 
 class Response(Base):

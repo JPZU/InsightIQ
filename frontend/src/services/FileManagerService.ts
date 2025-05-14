@@ -28,6 +28,24 @@ class FileManagerService extends BaseService {
     })
   }
 
+  static uploadGoogleSheets(url: string, tableName: string) {
+    console.log('Uploading Google Sheets:', url, tableName)
+
+    const formData = new FormData()
+    formData.append('table_name', tableName)
+    formData.append('url', url)
+
+    return ApiClient.post(`${this.BASE_URL}/upload/google-sheet/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  }
+
+  static updateGoogleSheets() {
+    return ApiClient.post(`${this.BASE_URL}/update/google-sheets`)
+  }
+
   static getTables() {
     return ApiClient.get(`${this.BASE_URL}/tables/`)
   }

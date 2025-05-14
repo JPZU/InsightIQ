@@ -37,7 +37,7 @@ async function handleLogin() {
       <h2>Login</h2>
 
       <div class="form-group">
-        <label for="username">Username or Email</label>
+        <label for="username">Username</label>
         <input type="text" id="username" v-model="username" required autocomplete="username" />
       </div>
 

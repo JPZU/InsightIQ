@@ -41,8 +41,18 @@ async function handleRegister() {
         const loginSuccess = await AuthService.login(username.value, password.value)
 
         if (loginSuccess) {
-          // Redirect to home page after successful login
-          router.push('/')
+          // Before redirecting, ensure we have a short delay for state to update
+          setTimeout(() => {
+            // Explicitly dispatch an auth state change event
+            window.dispatchEvent(
+              new CustomEvent('auth-state-changed', {
+                detail: { isAuthenticated: true },
+              }),
+            )
+
+            // Then redirect to home page
+            router.push('/')
+          }, 100)
         } else {
           // If login fails for some reason, still show registration success but redirect to login
           console.warn('Registration successful but automatic login failed')
