@@ -23,7 +23,7 @@ const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 const triggeredAlarms = ref<Record<string, any[]>>({})
 const showAlarmsModal = ref(false)
 const alarmCheckInterval = ref<number | null>(null)
-const checkInterval = ref(10000) // 10 seconds by default
+const checkInterval = ref(30000) // 30 seconds by default
 
 // Tab configuration
 const navbarTabs = computed(() => {
