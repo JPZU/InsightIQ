@@ -144,3 +144,27 @@ class FileManagerService:
                 "success": False,
                 "message": f"Error updating table from Excel: {str(e)}"
             }
+
+    def upload_google_sheet(self, df: pd.DataFrame, table_name: str) -> Dict[str, Any]:
+        try:
+            if not isinstance(df, pd.DataFrame):
+                return {
+                    "success": False,
+                    "message": "Invalid data format - expected pandas DataFrame"
+                }
+
+            with self.db_manager.engine.connect() as conn:
+                df.to_sql(table_name, conn, if_exists='replace', index=False)
+
+            return {
+                "success": True,
+                "message": f"Google Sheet uploaded successfully as '{table_name}' with {len(df)} rows",
+                "table_name": table_name,
+                "row_count": len(df),
+                "columns": df.columns.tolist()
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Error uploading Google Sheet: {str(e)}"
+            }

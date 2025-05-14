@@ -1,5 +1,5 @@
 from typing import List
-
+import pandas as pd
 from fastapi import (APIRouter, Depends, File, Form, HTTPException, Path,
                      UploadFile)
 
@@ -35,6 +35,26 @@ async def upload_excel(
     response = file_manager_service.upload_excel(file, file_location, table_name)
 
     return {"info": response["info"]}
+
+
+@router.post("/upload/google-sheet/")
+async def upload_google_sheet(
+    table_name: str,
+    url: str,
+    file_manager_service: FileManagerService = Depends(get_file_manager_service),
+):
+    try:
+        export_url = url.replace("edit?usp=sharing", "export?format=csv")      
+        df = pd.read_csv(export_url)
+        result = file_manager_service.upload_google_sheet(df, table_name)
+            
+        return result
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing Google Sheet: {str(e)}"
+        )
 
 
 @router.get("/tables/", response_model=List[str])

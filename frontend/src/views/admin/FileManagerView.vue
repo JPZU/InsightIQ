@@ -331,7 +331,7 @@ fetchTables()
           <div class="alarm-item-title">{{ table }}</div>
           <button
             @click.stop="
-              state.tableToDelete = table
+              state.tableToDelete = table,
               state.showDeleteConfirmation = true
             "
             class="delete-btn"
