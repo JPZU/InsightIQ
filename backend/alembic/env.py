@@ -7,6 +7,13 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 from database.models.base import Base
 
+from database.models.alert import Alert
+from database.models.chat import Chat
+from database.models.dataset import DataSet
+from database.models.question import Question
+from database.models.response import Response
+from database.models.user import User
+
 load_dotenv()
 
 # this is the Alembic Config object, which provides

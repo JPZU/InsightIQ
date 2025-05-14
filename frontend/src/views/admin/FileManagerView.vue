@@ -26,6 +26,9 @@ const state = reactive({
   showUpdateModal: false,
   replaceData: false,
   showSyntheticDataModal: false, // New state for synthetic data modal
+  showGoogleSheetsModal: false, // New state for Google Sheets modal
+  googleSheetsUrl: '',
+  googleSheetsTableName: '',
 })
 
 // Synthetic data state
@@ -81,6 +84,43 @@ const uploadFile = async () => {
     state.loading = false
   }
 }
+
+const openGoogleSheetsModal = () => {
+  state.showGoogleSheetsModal = true
+  state.googleSheetsUrl = ''
+  state.googleSheetsTableName = ''
+}
+
+const closeGoogleSheetsModal = () => {
+  state.showGoogleSheetsModal = false
+}
+
+const uploadGoogleSheet = async () => {
+  if (!state.googleSheetsUrl || !state.googleSheetsTableName) {
+    state.message = t('file_manager.url_and_name_required')
+    return
+  }
+
+  state.loading = true
+  state.message = ''
+
+  try {
+    await FileManagerService.uploadGoogleSheets(
+      state.googleSheetsUrl,
+      state.googleSheetsTableName
+    )
+    
+    state.message = t('file_manager.google_sheet_upload_success')
+    await fetchTables()
+    state.showGoogleSheetsModal = false
+  } catch (error) {
+    console.error(t('file_manager.error_uploading_google_sheet'), error)
+    state.message = t('file_manager.error_uploading_google_sheet')
+  } finally {
+    state.loading = false
+  }
+}
+
 
 const updateTable = async () => {
   if (!state.selectedFile) {
@@ -448,8 +488,50 @@ fetchTables()
         <div class="modal-actions">
           <button @click="startFileUpload('excel')">From Excel</button>
           <button @click="startFileUpload('csv')">From CSV</button>
+          <button @click="openGoogleSheetsModal">From Google Sheet</button>
           <button @click="state.showNewTableModal = false" class="btn-cancel-modal">Cancel</button>
         </div>
+      </div>
+    </div>
+
+    <div v-if="state.showGoogleSheetsModal" class="modal" @click.self="closeGoogleSheetsModal">
+      <div class="modal-content">
+        <h3>Import from Google Sheets</h3>
+        <form @submit.prevent="uploadGoogleSheet" class="space-y-4">
+          <div>
+            <label class="label">Table Name</label>
+            <input 
+              v-model="state.googleSheetsTableName" 
+              class="input" 
+              placeholder="Enter table name" 
+              required
+            />
+          </div>
+
+          <div>
+            <label class="label">Google Sheet URL</label>
+            <input
+              v-model="state.googleSheetsUrl"
+              class="input"
+              placeholder="https://docs.google.com/spreadsheets/d/..."
+              required
+            />
+            <p class="helper-text">
+              Make sure the sheet is publicly accessible or shared with your service account
+            </p>
+          </div>
+
+          <div class="form-buttons">
+            <button type="button" class="btn-cancel" @click="closeGoogleSheetsModal">
+              Cancel
+            </button>
+            <button type="submit" class="btn-save" :disabled="state.loading">
+              {{ state.loading ? 'Importing...' : 'Import Sheet' }}
+            </button>
+          </div>
+
+          <p v-if="state.message" class="text-error">{{ state.message }}</p>
+        </form>
       </div>
     </div>
 
@@ -833,7 +915,7 @@ fetchTables()
 
 .btn-delete {
   padding: 0.5rem 1rem;
-  background-color: #dc3545;
+  background-color: #dc3545 !important;
   color: white;
   border: none;
   border-radius: 4px;
@@ -841,7 +923,7 @@ fetchTables()
 }
 
 .btn-delete:hover {
-  background-color: #c82333;
+  background-color: #c82333 !important;
 }
 
 .modal {
@@ -892,6 +974,11 @@ fetchTables()
 
 .modal-actions button:nth-child(2) {
   background: #28a745;
+  color: white;
+}
+
+.modal-actions button:nth-child(3) {
+  background: #8e28a7;
   color: white;
 }
 

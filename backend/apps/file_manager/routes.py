@@ -33,20 +33,19 @@ async def upload_excel(
 ):
     file_location = FileManager.save_upload_file(file, table_name)
     response = file_manager_service.upload_excel(file, file_location, table_name)
-
-    return {"info": response["info"]}
+    return response
 
 
 @router.post("/upload/google-sheet/")
 async def upload_google_sheet(
-    table_name: str,
-    url: str,
+    table_name: str = Form(...),  # Add Form() here
+    url: str = Form(...),        # Add Form() here
     file_manager_service: FileManagerService = Depends(get_file_manager_service),
 ):
     try:
         export_url = url.replace("edit?usp=sharing", "export?format=csv")      
         df = pd.read_csv(export_url)
-        result = file_manager_service.upload_google_sheet(df, table_name)
+        result = file_manager_service.upload_google_sheet(df, table_name, url)
             
         return result
 
@@ -135,3 +134,18 @@ async def get_table_info(
         raise HTTPException(status_code=404, detail=f"Table {table_name} not found")
 
     return table_info
+
+@router.post("/update/google-sheets/")
+async def update_google_sheets(
+    file_manager_service: FileManagerService = Depends(get_file_manager_service),
+):
+    try:
+        result = file_manager_service.fetch_and_update_google_sheets()
+        
+        if result.get("success"):
+            return {"message": "Google Sheets updated successfully", "updated_tables": result.get("updated_tables")}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update Google Sheets")
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating Google Sheets: {str(e)}")
