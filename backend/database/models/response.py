@@ -12,6 +12,7 @@ class Response(Base):
     query_result = Column(JSON)
     createdAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now())
     updatedAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now(), onupdate=func.now())
+    rating = Column(Integer, nullable=True)
 
     chat = relationship("Chat", back_populates="responses")
     chat_id = Column(Integer, ForeignKey("chats.id"))
