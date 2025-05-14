@@ -968,12 +968,12 @@ fetchTables()
 }
 
 .modal-actions button:first-child {
-  background: #007bff;
+  background: #28a745;
   color: white;
 }
 
 .modal-actions button:nth-child(2) {
-  background: #28a745;
+  background: #007bff;
   color: white;
 }
 
