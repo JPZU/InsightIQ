@@ -2,7 +2,6 @@ from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import relationship
 
 from database.models.base import Base
-from database.models.response import Response
 
 
 class Question(Base):

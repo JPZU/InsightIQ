@@ -104,10 +104,17 @@
           <div class="card shadow-sm">
             <div class="card-body">
               <h3 class="mb-4" style="color: #0395ff">How we calculate our pricing</h3>
-              
-              <p>Our pricing is based on the computational resources required to process your queries and maintain your data. The Base Plan covers essential business needs, while the Premium Plan offers enhanced capabilities for growing teams.</p>
-              
-              <p>All plans include secure data storage, regular backups, and our standard service level agreement.</p>
+
+              <p>
+                Our pricing is based on the computational resources required to process your queries
+                and maintain your data. The Base Plan covers essential business needs, while the
+                Premium Plan offers enhanced capabilities for growing teams.
+              </p>
+
+              <p>
+                All plans include secure data storage, regular backups, and our standard service
+                level agreement.
+              </p>
             </div>
           </div>
         </div>
@@ -117,43 +124,67 @@
       <div class="row justify-content-center mt-5">
         <div class="col-lg-8">
           <h3 class="text-center mb-4" style="color: #0395ff">Frequently Asked Questions</h3>
-          
+
           <div class="accordion" id="faqAccordion">
             <div class="accordion-item">
               <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                <button
+                  class="accordion-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#faq1"
+                >
                   What counts as a query?
                 </button>
               </h2>
-              <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+              <div
+                id="faq1"
+                class="accordion-collapse collapse show"
+                data-bs-parent="#faqAccordion"
+              >
                 <div class="accordion-body">
-                  A query is counted each time you interact with our AI assistant, whether you're asking a question about your data, requesting a visualization, or generating a report. Each conversation turn counts as one query.
+                  A query is counted each time you interact with our AI assistant, whether you're
+                  asking a question about your data, requesting a visualization, or generating a
+                  report. Each conversation turn counts as one query.
                 </div>
               </div>
             </div>
-            
+
             <div class="accordion-item">
               <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#faq2"
+                >
                   Can I add more users to my plan?
                 </button>
               </h2>
               <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                 <div class="accordion-body">
-                  Yes! You can add additional users to any plan for a small monthly fee per user. Contact our sales team for enterprise pricing if you need more than 15 users.
+                  Yes! You can add additional users to any plan for a small monthly fee per user.
+                  Contact our sales team for enterprise pricing if you need more than 15 users.
                 </div>
               </div>
             </div>
-            
+
             <div class="accordion-item">
               <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#faq3"
+                >
                   What happens if I exceed my query limit?
                 </button>
               </h2>
               <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                 <div class="accordion-body">
-                  If you exceed your monthly query limit, you'll have the option to purchase additional query packs or upgrade your plan. We'll notify you when you're approaching your limit so you can make adjustments.
+                  If you exceed your monthly query limit, you'll have the option to purchase
+                  additional query packs or upgrade your plan. We'll notify you when you're
+                  approaching your limit so you can make adjustments.
                 </div>
               </div>
             </div>
@@ -166,7 +197,7 @@
 
 <script>
 export default {
-  name: 'PlansView'
+  name: 'PlansView',
 }
 </script>
 
@@ -179,12 +210,12 @@ export default {
 .card {
   border-radius: 10px;
   transition: transform 0.3s ease;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
@@ -209,7 +240,7 @@ export default {
 
 .list-unstyled li {
   padding: 8px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .display-4 {

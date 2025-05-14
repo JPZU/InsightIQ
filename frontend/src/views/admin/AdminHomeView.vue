@@ -2,7 +2,6 @@
 
 <template>
   <div class="admin-dashboard min-vh-100 bg-light">
-
     <!-- Main Cards -->
     <main class="container py-5">
       <div class="row g-4 justify-content-center">
@@ -10,7 +9,12 @@
         <div class="col-md-6 col-lg-4" @click="$router.push('/admin/file-manager')">
           <div class="card shadow-sm h-100 feature-card">
             <div class="card-body text-center p-4">
-              <img src="/file-manager.png" alt="Files" class="img-fluid mb-3" style="max-height: 120px">
+              <img
+                src="/file-manager.png"
+                alt="Files"
+                class="img-fluid mb-3"
+                style="max-height: 120px"
+              />
               <h4 class="mb-3">Files</h4>
               <ul class="text-start ps-4">
                 <li class="mb-2">Manage all system files and datasets</li>
@@ -26,7 +30,12 @@
         <div class="col-md-6 col-lg-4" @click="$router.push('/admin/alarm')">
           <div class="card shadow-sm h-100 feature-card">
             <div class="card-body text-center p-4">
-              <img src="/alerts.jpg" alt="Alerts" class="img-fluid mb-3" style="max-height: 120px">
+              <img
+                src="/alerts.jpg"
+                alt="Alerts"
+                class="img-fluid mb-3"
+                style="max-height: 120px"
+              />
               <h4 class="mb-3">Alarms</h4>
               <ul class="text-start ps-4">
                 <li class="mb-2">Create alerts with natural language</li>
@@ -42,7 +51,7 @@
         <div class="col-md-6 col-lg-4" @click="$router.push('/admin/user-manager')">
           <div class="card shadow-sm h-100 feature-card">
             <div class="card-body text-center p-4">
-              <img src="/users.png" alt="Users" class="img-fluid mb-3" style="max-height: 120px">
+              <img src="/users.png" alt="Users" class="img-fluid mb-3" style="max-height: 120px" />
               <h4 class="mb-3">Users</h4>
               <ul class="text-start ps-4">
                 <li class="mb-2">Manage user accounts and access</li>
@@ -86,10 +95,10 @@
 }
 
 .card-body li::before {
-  content: "•";
+  content: '•';
   color: #0395ff;
   font-weight: bold;
-  display: inline-block; 
+  display: inline-block;
   width: 1em;
   margin-left: -1em;
 }

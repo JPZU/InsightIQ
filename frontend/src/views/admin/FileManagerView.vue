@@ -105,11 +105,8 @@ const uploadGoogleSheet = async () => {
   state.message = ''
 
   try {
-    await FileManagerService.uploadGoogleSheets(
-      state.googleSheetsUrl,
-      state.googleSheetsTableName
-    )
-    
+    await FileManagerService.uploadGoogleSheets(state.googleSheetsUrl, state.googleSheetsTableName)
+
     state.message = t('file_manager.google_sheet_upload_success')
     await fetchTables()
     state.showGoogleSheetsModal = false
@@ -120,7 +117,6 @@ const uploadGoogleSheet = async () => {
     state.loading = false
   }
 }
-
 
 const updateTable = async () => {
   if (!state.selectedFile) {
@@ -370,10 +366,7 @@ fetchTables()
         >
           <div class="alarm-item-title">{{ table }}</div>
           <button
-            @click.stop="
-              state.tableToDelete = table,
-              state.showDeleteConfirmation = true
-            "
+            @click.stop="((state.tableToDelete = table), (state.showDeleteConfirmation = true))"
             class="delete-btn"
           >
             <i class="fa-solid fa-trash"></i>
@@ -500,10 +493,10 @@ fetchTables()
         <form @submit.prevent="uploadGoogleSheet" class="space-y-4">
           <div>
             <label class="label">Table Name</label>
-            <input 
-              v-model="state.googleSheetsTableName" 
-              class="input" 
-              placeholder="Enter table name" 
+            <input
+              v-model="state.googleSheetsTableName"
+              class="input"
+              placeholder="Enter table name"
               required
             />
           </div>
@@ -522,9 +515,7 @@ fetchTables()
           </div>
 
           <div class="form-buttons">
-            <button type="button" class="btn-cancel" @click="closeGoogleSheetsModal">
-              Cancel
-            </button>
+            <button type="button" class="btn-cancel" @click="closeGoogleSheetsModal">Cancel</button>
             <button type="submit" class="btn-save" :disabled="state.loading">
               {{ state.loading ? 'Importing...' : 'Import Sheet' }}
             </button>

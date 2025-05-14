@@ -1,13 +1,16 @@
-from database.session import SessionLocal
+import os
 from datetime import datetime
+from typing import Any, Dict, List
+
+import pandas as pd
 from fastapi import HTTPException, UploadFile
-from database.models.dataset import DataSet
 from sqlalchemy import inspect, text
 from sqlalchemy.exc import SQLAlchemyError
-from typing import Any, Dict, List
+
+from database.models.dataset import DataSet
+from database.session import SessionLocal
 from utils.db_manager import DBManager
-import os
-import pandas as pd
+
 
 class FileManagerService:
     def __init__(self):
@@ -112,7 +115,6 @@ class FileManagerService:
                 updated_tables.append(dataset.table_name)
 
         return {"success": True, "updated_tables": updated_tables}
-
 
     def get_tables(self) -> List[str]:
         return self.db_manager.get_table_names()
