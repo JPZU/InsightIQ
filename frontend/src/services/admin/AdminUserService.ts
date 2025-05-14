@@ -42,34 +42,28 @@ class AdminUserService extends BaseService {
   private static readonly BASE_URL = `${import.meta.env.VITE_API_URL}/admin/users`
 
   async listAllUsers(): Promise<BaseResponse<UserInfo>> {
-    return (await this.makeRequest(
-      AdminUserService.BASE_URL,
-      'get'
-    )) as BaseResponse<UserInfo>
+    return (await this.makeRequest(AdminUserService.BASE_URL, 'get')) as BaseResponse<UserInfo>
   }
 
   async getUserDetails(userId: number): Promise<BaseResponse<UserDetails>> {
     return (await this.makeRequest(
       `${AdminUserService.BASE_URL}/${userId}`,
-      'get'
+      'get',
     )) as BaseResponse<UserDetails>
   }
 
-  async updateUser(
-    userId: number,
-    userData: AdminUserUpdate
-  ): Promise<BaseResponse> {
+  async updateUser(userId: number, userData: AdminUserUpdate): Promise<BaseResponse> {
     return (await this.makeRequest(
       `${AdminUserService.BASE_URL}/${userId}`,
       'put',
-      userData
+      userData,
     )) as BaseResponse
   }
 
   async deleteUser(userId: number): Promise<BaseResponse> {
     return (await this.makeRequest(
       `${AdminUserService.BASE_URL}/${userId}`,
-      'delete'
+      'delete',
     )) as BaseResponse
   }
 

@@ -9,7 +9,7 @@ const state = reactive({
   metrics: {
     total_users: 0,
     total_admins: 0,
-    total_questions_asked: 0
+    total_questions_asked: 0,
   },
   searchQuery: '',
   sortBy: 'name',
@@ -27,7 +27,7 @@ const fetchUserData = async () => {
       state.metrics = {
         total_users: response.response.general_metrics?.total_users || 0,
         total_admins: response.response.general_metrics?.total_admins || 0,
-        total_questions_asked: response.response.general_metrics?.total_questions_asked || 0
+        total_questions_asked: response.response.general_metrics?.total_questions_asked || 0,
       }
     } else {
       state.error = 'Failed to load user data. Please try again later.'
@@ -39,7 +39,7 @@ const fetchUserData = async () => {
     state.metrics = {
       total_users: 0,
       total_admins: 0,
-      total_questions_asked: 0
+      total_questions_asked: 0,
     }
   } finally {
     state.loading = false
@@ -77,7 +77,7 @@ const sortUsers = (column) => {
 
 const filteredUsers = computed(() => {
   let users = [...state.users]
-  
+
   if (state.searchQuery) {
     const query = state.searchQuery.toLowerCase()
     users = users.filter(
@@ -213,16 +213,16 @@ onMounted(fetchUserData)
                   </td>
                   <td>{{ user.questions_asked }}</td>
                   <td class="actions-cell">
-                    <button 
-                      v-if="user.role !== 'admin'" 
-                      class="action-btn promote-btn" 
+                    <button
+                      v-if="user.role !== 'admin'"
+                      class="action-btn promote-btn"
                       title="Promote to Admin"
                       @click="promoteToAdmin(user.id)"
                     >
                       <i class="fa-solid fa-user-shield"></i>
                     </button>
-                    <button 
-                      class="action-btn delete-btn" 
+                    <button
+                      class="action-btn delete-btn"
                       title="Delete User"
                       @click="deleteUser(user.id)"
                     >
