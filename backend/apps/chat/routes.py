@@ -10,6 +10,7 @@ from services.response_service import ResponseService
 from utils.agent_manager import AgentManager
 from utils.auth_manager import AuthManager
 from utils.base_schema import BaseResponse
+from pydantic import BaseModel, conint
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -109,7 +110,8 @@ def ask_chat(
         success=True,
         response={
             "content": content,
-            "query_result": query_result
+            "query_result": query_result,
+            "response_id": response.id  # <- esto es CLAVE
         }
     )
 
@@ -157,3 +159,23 @@ def clear_chat(chat_id: int, current_user: int = Depends(AuthManager.get_current
     except Exception as e:
         logger.error(f"Error in clear_chat: {str(e)}")
         return BaseResponse(success=False, message=f"Failed to clear chat messages: {str(e)}")
+
+
+class RatingRequest(BaseModel):
+    rating: conint(ge=0, le=1)
+
+
+@router.post("/responses/{response_id}/rate")
+def rate_response(
+    response_id: int,
+    request: RatingRequest,
+    current_user: int = Depends(AuthManager.get_current_user)
+):
+    try:
+        ResponseService.rate_response(response_id, request.rating)
+        return BaseResponse(success=True, message="Rating saved")
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error in rate_response: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")

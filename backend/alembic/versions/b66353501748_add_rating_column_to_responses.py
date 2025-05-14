@@ -19,7 +19,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column('responses', sa.Column('rating', sa.Integer(), sa.CheckConstraint('rating >= 0 AND rating <= 5'), nullable=True))
+    op.add_column('responses', sa.Column('rating', sa.Integer(), sa.CheckConstraint('rating >= 0 AND rating <= 1'), nullable=True))
 
 
 def downgrade() -> None:
