@@ -1,23 +1,39 @@
-import os
-from typing import Any, Dict, List
-
-import pandas as pd
+from database.session import SessionLocal
+from datetime import datetime
 from fastapi import HTTPException, UploadFile
+from database.models.dataset import DataSet
 from sqlalchemy import inspect, text
 from sqlalchemy.exc import SQLAlchemyError
-
+from typing import Any, Dict, List
 from utils.db_manager import DBManager
-
+import os
+import pandas as pd
 
 class FileManagerService:
     def __init__(self):
         self.db_manager = DBManager()
+        self.session = SessionLocal()
+
+    def __del__(self):
+        self.session.close()
+
+    def _store_dataset_info(self, table_name: str, file_path: str) -> None:
+        dataset = DataSet(
+            table_name=table_name,
+            file_path=file_path,
+            createdAt=datetime.now(),
+            updatedAt=datetime.now()
+        )
+        self.session.add(dataset)
+        self.session.commit()
 
     def upload_csv(self, file: UploadFile, file_location: str, table_name: str) -> Dict[str, Any]:
         try:
             df = pd.read_csv(file_location)
             with self.db_manager.engine.connect() as conn:
                 df.to_sql(table_name, conn, if_exists='replace', index=False)
+
+            self._store_dataset_info(table_name, file_location)
 
             row_count = len(df)
             return {
@@ -41,6 +57,8 @@ class FileManagerService:
             with self.db_manager.engine.connect() as conn:
                 df.to_sql(table_name, conn, if_exists='replace', index=False)
 
+            self._store_dataset_info(table_name, file_location)
+
             row_count = len(df)
             return {
                 "success": True,
@@ -56,6 +74,55 @@ class FileManagerService:
         finally:
             if os.path.exists(file_location):
                 os.remove(file_location)
+
+    def upload_google_sheet(self, df: pd.DataFrame, table_name: str, url: str) -> Dict[str, Any]:
+        try:
+            if not isinstance(df, pd.DataFrame):
+                return {
+                    "success": False,
+                    "message": "Invalid data format - expected pandas DataFrame"
+                }
+
+            with self.db_manager.engine.connect() as conn:
+                df.to_sql(table_name, conn, if_exists='replace', index=False)
+
+            self._store_dataset_info(table_name, url)
+
+            return {
+                "success": True,
+                "message": f"Google Sheet uploaded successfully as '{table_name}' with {len(df)} rows",
+                "table_name": table_name,
+                "row_count": len(df),
+                "columns": df.columns.tolist()
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Error uploading Google Sheet: {str(e)}"
+            }
+
+    def fetch_and_update_google_sheets(self) -> Dict[str, Any]:
+        datasets = self.session.query(DataSet).all()
+        print(f"Found {len(datasets)} datasets to update.")  # Debugging line
+        updated_tables = []
+
+        for dataset in datasets:
+            print(dataset.file_path)  # Debugging line
+            if "docs.google.com/spreadsheets" in dataset.file_path:
+                export_url = dataset.file_path.replace("/edit?usp=sharing", "/export?format=csv")
+                df = pd.read_csv(export_url)
+
+                with self.db_manager.engine.connect() as conn:
+                    df.to_sql(dataset.table_name, conn, if_exists='replace', index=False)
+
+                self.session.execute(text("UPDATE dataset SET updatedAt = :updatedAt WHERE file_path = :file_path"),
+                                        {"updatedAt": datetime.now(), "file_path": dataset.file_path})
+                self.session.commit()
+
+                updated_tables.append(dataset.table_name)
+
+        return {"success": True, "updated_tables": updated_tables}
+
 
     def get_tables(self) -> List[str]:
         return self.db_manager.get_table_names()

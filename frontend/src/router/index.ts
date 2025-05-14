@@ -4,6 +4,7 @@ import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 
 import HomeView from '@/views/HomeView.vue'
+import PlansView from '@/views/PlansView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ChatView from '@/views/ChatView.vue'
 import ReportView from '@/views/ReportView.vue'
@@ -42,6 +43,14 @@ const router = createRouter({
       component: HomeView,
       meta: {
         title: 'Home',
+      },
+    },
+    {
+      path: '/plans',
+      name: 'plans',
+      component: PlansView,
+      meta: {
+        title: 'Plans',
       },
     },
     {
