@@ -1,14 +1,14 @@
 <template>
   <div class="dashboard">
     <section class="file-schema">
-      <h1 class="text-center">Dashboard</h1>
-      <h2>📄 File Schema: {{ schema.file_name }}</h2>
+      <h1 class="text-center">{{ $t('dashboard.title') }}</h1>
+      <h2>{{ $t('dashboard.file_schema') }} {{ schema.file_name }}</h2>
       <div class="table-wrapper">
         <table class="styled-table">
           <thead>
             <tr>
-              <th>Column Name</th>
-              <th>Data Type</th>
+              <th>{{ $t('dashboard.column') }}</th>
+              <th>{{ $t('dashboard.data_type') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -22,7 +22,7 @@
     </section>
 
     <section>
-      <h2>Descriptive Statistics</h2>
+      <h2>{{ $t('dashboard.statistics') }}</h2>
       <div class="charts-grid">
         <div
           v-for="(stats, column) in analysis.descriptive_statistics"
@@ -30,8 +30,10 @@
           class="chart-wrapper"
         >
           <h3>{{ column }}</h3>
-          <p>There are {{ stats.count }} values in this column.</p>
-          <p><strong>Standard Deviation:</strong> {{ stats.std.toFixed(2) }}</p>
+          <p>{{ $t('dashboard.values_1') }} {{ stats.count }} {{ $t('dashboard.values_2') }}</p>
+          <p>
+            <strong>{{ $t('dashboard.stdev') }}</strong> {{ stats.std.toFixed(2) }}
+          </p>
           <BarChartDashboard :columnName="column" :stats="filterStats(stats)" />
         </div>
       </div>
@@ -41,6 +43,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import DashboardService from '../services/DashboardService'
 import BarChartDashboard from '../components/dashboard/BarChartDashboard.vue'
 
@@ -60,6 +63,7 @@ interface AnalysisResponse {
 
 const schema = ref<SchemaResponse>({ file_name: '', columns: [] })
 const analysis = ref<AnalysisResponse>({ descriptive_statistics: {} })
+const { t } = useI18n()
 
 const fetchDashboardData = async () => {
   try {
@@ -69,7 +73,7 @@ const fetchDashboardData = async () => {
     const analysisResponse = await DashboardService.getAnalysis()
     analysis.value = analysisResponse.data
   } catch (error) {
-    console.error('Error loading dashboard data:', error)
+    console.error(t('dashboard.error_data'), error)
   }
 }
 

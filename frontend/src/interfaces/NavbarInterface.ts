@@ -1,4 +1,8 @@
 export interface NavbarConfigInterface {
-  tabs: { name: string; routeName: string }[]
+  tabs: {
+    name_en: string
+    name_es: string
+    routeName: string
+  }[]
   primaryClass: string
 }

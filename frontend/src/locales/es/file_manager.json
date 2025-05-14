@@ -1,0 +1,11 @@
+{
+  "title": "Gestor de archivos",
+  "change_language": "Cambiar idioma",
+  "instructions": "Sube archivos CSV o Excel para cargar datos en la base de datos.",
+  "upload": "Subir archivo",
+  "select_file": "Por favor, selecciona un archivo.",
+  "table_name": "Nombre de la tabla",
+  "table_name_required": "Por favor, ingresa un nombre de tabla.",
+  "uploading": "Subiendo archivo con nombre de tabla:",
+  "error_uploading": "Error al subir el archivo"
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Generate Synthetic Data",
+  "change_language": "Change Language",
+  "select_table": "Select Table",
+  "loading_tables": "Loading tables...",
+  "records": "Number of Records",
+  "details": "Details",
+  "details_desc": "If you'd like, give us more details about the style the synthetic data should have.",
+  "request_limit": "Please write your request under 500 characters.",
+  "request_example": "e.g.: Generate people older than 35 years old.",
+  "generate": "Generate Data",
+  "generating": "Generating Data...",
+  "generated": "Generated Data for:",
+  "add_to": "Add data to ",
+  "error_tables": "Error fetching tables",
+  "select_table_desc": "Please select a table.",
+  "select_records": "Please select an amount of records to generate.",
+  "error_data": "Error generating data",
+  "error_data_desc": "Failed to generate synthetic data.",
+  "add_to_database": "Adding synthetic database to:"
+}

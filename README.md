@@ -22,7 +22,6 @@ Before proceeding, ensure you have the following installed on your system:
     node --version
     npm --version
     ```
-
 ---
 
 ## **Install Dependencies**
@@ -69,6 +68,7 @@ Before proceeding, ensure you have the following installed on your system:
 2. Start the development server:
    ```bash
    npm run dev
+
    ```
 3. The frontend will be available at:
    ```

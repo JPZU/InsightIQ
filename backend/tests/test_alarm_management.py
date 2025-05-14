@@ -1,12 +1,16 @@
 import pytest
 from fastapi.testclient import TestClient
+
 from main import app
+
 
 @pytest.fixture
 def client():
     return TestClient(app)
 
 # 1. Test create alarm using natural language
+
+
 def test_create_alarm(client, mocker):
     """Tests creating an alarm using natural language."""
     mock_response = {
@@ -32,6 +36,8 @@ def test_create_alarm(client, mocker):
     mock_create_alarm.assert_called_once()
 
 # 2. Test list alarms
+
+
 def test_list_alarms(client, mocker):
     """Tests retrieving all alarms."""
     mock_alarms = [
@@ -56,6 +62,8 @@ def test_list_alarms(client, mocker):
     mock_get_all.assert_called_once()
 
 # 3. Test update alarm partially
+
+
 def test_create_and_update_alarm():
     create_response = client.post(
         "/alarm_management/create",
@@ -87,6 +95,8 @@ def test_create_and_update_alarm():
     assert updated_alarm["description"] == "Updated threshold for age"
 
 # 4. Test delete alarm by ID
+
+
 def test_create_and_delete_alarm(client):
     """Creates an alarm and then deletes it, verifying both actions."""
     create_response = client.post(

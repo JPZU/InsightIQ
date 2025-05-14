@@ -1,0 +1,18 @@
+{
+  "title": "Dashboard",
+  "change_language": "Change Language",
+  "file_schema": "📄 File Schema",
+  "column": "Column Name",
+  "data_type": "Data Type",
+  "statistics": "Descriptive Statistics",
+  "values_1": "There are ",
+  "values_2": " values in this column.",
+  "stddev": "Standard Deviation:",
+  "error_data": "Error loading dashboard data.",
+  "previous": "Previous",
+  "next": "Next",
+  "page": "Page",
+  "of": "of",
+  "statistics_for": "Statistics for",
+  "stdev": "Standard Deviation"
+}

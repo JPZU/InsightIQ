@@ -1,0 +1,18 @@
+{
+  "title": "Panel de control",
+  "change_language": "Cambiar idioma",
+  "file_schema": "📄 Esquema del archivo",
+  "column": "Nombre de la columna",
+  "data_type": "Tipo de dato",
+  "statistics": "Estadísticas descriptivas",
+  "values_1": "Hay ",
+  "values_2": " valores en esta columna.",
+  "stddev": "Desviación estándar:",
+  "error_data": "Error al cargar los datos del panel de control.",
+  "previous": "Anterior",
+  "next": "Siguiente",
+  "page": "Página",
+  "of": "de",
+  "statistics_for": "Estadísticas para",
+  "stdev": "Desviación estándar"
+}

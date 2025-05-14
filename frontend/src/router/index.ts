@@ -1,26 +1,56 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
+
 import HomeView from '@/views/HomeView.vue'
+import PlansView from '@/views/PlansView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ChatView from '@/views/ChatView.vue'
-import DetailReportView from '@/views/DetailReportView.vue'
+import ReportView from '@/views/ReportView.vue'
 
 import AdminHomeView from '@/views/admin/AdminHomeView.vue'
-import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
-import FileManagerView from '@/views/admin/FileManagerView.vue'
 import AlarmCreateView from '@/views/admin/AlarmCreateView.vue'
-import AlarmListView from '@/views/admin/AlarmListView.vue'
 import AlarmEditView from '@/views/admin/AlarmEditView.vue'
+import AlarmListView from '@/views/admin/AlarmListView.vue'
+import AlarmView from '@/views/admin/AlarmView.vue'
+import FileManagerView from '@/views/admin/FileManagerView.vue'
+import SyntheticDataView from '@/views/admin/SyntheticDataView.vue'
+import UserManagerView from '@/views/admin/UserManagerView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      meta: {
+        title: 'Login',
+      },
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
+      meta: {
+        title: 'Register',
+      },
+    },
     {
       path: '/',
       name: 'home',
       component: HomeView,
       meta: {
         title: 'Home',
+      },
+    },
+    {
+      path: '/plans',
+      name: 'plans',
+      component: PlansView,
+      meta: {
+        title: 'Plans',
       },
     },
     {
@@ -37,6 +67,14 @@ const router = createRouter({
       component: DashboardView,
       meta: {
         title: 'Dashboard',
+      },
+    },
+    {
+      path: '/report',
+      name: 'report',
+      component: ReportView,
+      meta: {
+        title: ' Report',
       },
     },
     {
@@ -67,6 +105,14 @@ const router = createRouter({
           },
         },
         {
+          path: 'alarm',
+          name: 'alarm',
+          component: AlarmView,
+          meta: {
+            title: 'Alarms Manager',
+          },
+        },
+        {
           path: 'alarm-create',
           name: 'alarm-create',
           component: AlarmCreateView,
@@ -91,14 +137,22 @@ const router = createRouter({
           },
           props: true,
         },
+        {
+          path: 'user-manager',
+          name: 'user-manager',
+          component: UserManagerView,
+          meta: {
+            title: 'User Manager',
+          },
+        },
       ],
     },
     {
-      path: '/detail-report',
-      name: 'detail-report',
-      component: DetailReportView,
+      path: '/report',
+      name: 'report',
+      component: ReportView,
       meta: {
-        title: 'Detailed Report',
+        title: 'Report',
       },
     },
   ],

@@ -1,14 +1,12 @@
 <template>
   <div class="dashboard">
-    <h1 class="text-center">AI-Generated Inventory Report</h1>
+    <h1 class="text-center">AI-Generated Report</h1>
 
     <section class="file-schema">
       <h2>Generated on: {{ formatDate(report.date) }}</h2>
 
-      <!-- Download button -->
       <button @click="downloadPDF" class="download-btn">Download Report as PDF</button>
 
-      <!-- Rendered report content -->
       <div
         ref="reportRef"
         v-if="report.report_text"
@@ -91,7 +89,7 @@ onMounted(async () => {
 .download-btn {
   margin: 10px 0 20px;
   padding: 10px 18px;
-  background-color: #046e8f;
+  background-color: #0395ff;
   color: white;
   border: none;
   border-radius: 6px;
@@ -101,7 +99,7 @@ onMounted(async () => {
 }
 
 .download-btn:hover {
-  background-color: #035471;
+  background-color: #43a3e7;
 }
 
 .report-text {
@@ -112,7 +110,7 @@ onMounted(async () => {
 
 .report-text h2,
 .report-text h3 {
-  color: #046e8f;
+  color: #0395ff;
   margin-top: 20px;
 }
 
