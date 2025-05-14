@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Path, Query
+import traceback
 
 from apps.alarm_management.service import (create_alarm_from_natural_language,
                                            delete_alarm_by_id,
@@ -61,7 +62,14 @@ def update_alarm(
 @router.get("/check_alarm")
 def check_alarm():
     try:
+        # Log para verificar si la función se está llamando
+        print("Evaluando alarmas...")
         result = evaluate_alarms_for_all_tables()
+        print("Resultado de evaluación:", result)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Log para ver el error exacto con más detalles
+        error_message = f"Error al evaluar alarmas: {str(e)}"
+        print(error_message)
+        print("Detalles del error:", traceback.format_exc())  # Imprime el stack trace
+        raise HTTPException(status_code=500, detail=error_message)
