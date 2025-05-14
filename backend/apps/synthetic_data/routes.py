@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query
 
 from apps.synthetic_data.service import SyntheticDataService
 from utils.db_manager import DBManager
+from utils.i18n import _
 
 router = APIRouter()
 
@@ -9,13 +10,13 @@ router = APIRouter()
 @router.post("/generate/")
 async def generate_data(
     table_name: str = Query(
-        ..., description="The name of the table to generate synthetic data for"
+        ..., description=_("table_name_description")
     ),
     num_records: int = Query(
-        10, description="Number of synthetic records to generate"
+        10, description=_("num_records_description")
     ),
     details: str = Query(
-        None, description="Details of the synthetic data you wish to generate"
+        None, description=_("details_description")
     ),
 ):
     return SyntheticDataService.generate_synthetic_data(

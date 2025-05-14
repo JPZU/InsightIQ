@@ -5,6 +5,8 @@ from langchain_community.utilities import SQLDatabase
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
+from utils.i18n import _
+
 
 class DBManager:
     def __init__(self):
@@ -29,6 +31,30 @@ class DBManager:
             result = conn.execute(query).fetchall()
 
         return [dict(row._mapping) for row in result] if result else None
+
+    def get_sample_data_in_rows(self, table_name: str, limit: int):
+        query = text(f"SELECT * FROM {table_name} ORDER BY RANDOM() LIMIT {limit}")
+        with self.engine.connect() as conn:
+            result = conn.execute(query).fetchall()
+
+        if result:
+            columns = [col['column_name'] for col in self.get_table_schema(table_name)]
+
+            column_data = {column: [] for column in columns}
+
+            for row in result:
+                for i, column in enumerate(columns):
+                    column_data[column].append(row[i])
+
+            return column_data
+        else:
+            return None
+
+    def delete_table(self, table_name: str) -> bool:
+        with self.db_manager.engine.connect() as conn:
+            conn.execute(f"DROP TABLE IF EXISTS {table_name}")
+            conn.commit()
+        return True
 
     def get_table_schema(self, table_name: str):
         query = text(f"PRAGMA table_info({table_name})")
@@ -57,8 +83,7 @@ class DBManager:
             self.data_dir) if f.endswith(allowed_extensions)]
 
         if not files:
-            raise FileNotFoundError(
-                "No CSV o XLSX files found in 'data/' directory")
+            raise FileNotFoundError(_("error_no_csv_xlsx_found"))
 
         file_name = files[0]
         file_path = os.path.join(self.data_dir, file_name)
@@ -68,5 +93,11 @@ class DBManager:
         elif file_path.endswith(".xlsx"):
             df = pd.read_excel(file_path)
         else:
-            raise ValueError("unsupported file")
+            raise ValueError(_("error_unsupported_file_format"))
         return df, file_name
+
+    def get_all_data_from_table(self, table_name: str):
+        query = text(f"SELECT * FROM {table_name}")
+        with self.engine.connect() as conn:
+            result = conn.execute(query).fetchall()
+        return [dict(row._mapping) for row in result] if result else None

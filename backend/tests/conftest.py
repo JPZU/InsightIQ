@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from database.models.base import Base
+from database.models import base
 from main import app
 
 # URL de la base de datos en memoria para pruebas
@@ -25,7 +25,7 @@ def test_db():
     session = SessionLocal()
 
     # Crear las tablas en la base de datos en memoria
-    Base.metadata.create_all(bind=engine)
+    base.metadata.create_all(bind=engine)
 
     # Crear la tabla 'titanic' desde el CSV
     try:

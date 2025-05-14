@@ -1,7 +1,7 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import relationship
 
-from .base import Base
+from database.models.base import Base
 
 
 class Question(Base):
@@ -9,13 +9,9 @@ class Question(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     content = Column(String(length=255))
-    createdAt = Column(DateTime)
-    updatedAt = Column(DateTime)
+    createdAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now())
+    updatedAt = Column(DateTime, nullable=False, default=func.now(), server_default=func.now(), onupdate=func.now())
 
-    # Relationships
-    chat_id = Column(Integer, ForeignKey("chats.id"))
     chat = relationship("Chat", back_populates="questions")
-    response = relationship(
-        "Response",
-        back_populates="question",
-        uselist=False)
+    chat_id = Column(Integer, ForeignKey("chats.id"))
+    response = relationship("Response", back_populates="question", uselist=False)
