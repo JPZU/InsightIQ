@@ -1,13 +1,14 @@
-from typing import Optional, Any
 from enum import Enum
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from services.user_service import UserService
 from utils.auth_manager import AuthManager
-from utils.base_schema import BaseResponse
 
 router = APIRouter()
+
 
 class RoleEnum(str, Enum):
     USER = "user"
@@ -22,6 +23,7 @@ class AdminUserUpdate(BaseModel):
     is_active: Optional[bool] = None
     role: Optional[RoleEnum] = None
 
+
 def verify_admin(current_user_id: int):
     current_user = UserService.get_user_by_id(current_user_id)
     print(f"Current user: {current_user.role.value}")
@@ -32,11 +34,13 @@ def verify_admin(current_user_id: int):
             detail="Admin privileges required"
         )
 
+
 @router.get("")
 def list_all_users(current_user: int = Depends(AuthManager.get_current_user)):
     verify_admin(current_user)
     users = UserService.get_users_info()
     return {"response": users}
+
 
 @router.get("/{user_id}")
 def get_user_details(
@@ -50,7 +54,7 @@ def get_user_details(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    
+
     return {
         "id": user.id,
         "full_name": user.full_name,
@@ -60,6 +64,7 @@ def get_user_details(
         "created_at": user.createdAt.isoformat(),
         "updated_at": user.updatedAt.isoformat()
     }
+
 
 @router.put("/{user_id}")
 def admin_update_user(
@@ -89,6 +94,7 @@ def admin_update_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+
 
 @router.delete("/{user_id}")
 def admin_delete_user(
