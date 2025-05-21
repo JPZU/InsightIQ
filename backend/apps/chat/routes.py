@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, conint
 
 from services.chat_service import ChatService
 from services.question_service import QuestionService
@@ -10,7 +10,6 @@ from services.response_service import ResponseService
 from utils.agent_manager import AgentManager
 from utils.auth_manager import AuthManager
 from utils.base_schema import BaseResponse
-from pydantic import BaseModel, conint
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

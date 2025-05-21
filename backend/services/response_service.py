@@ -1,7 +1,9 @@
+from typing import Optional
+
+from fastapi import HTTPException
+
 from database.models.response import Response
 from database.session import SessionLocal
-from typing import Optional
-from fastapi import HTTPException
 
 
 class ResponseService:

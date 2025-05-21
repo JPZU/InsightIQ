@@ -1,11 +1,11 @@
+from email.message import EmailMessage
+import smtplib
 import logging
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-import smtplib
-from email.message import EmailMessage
 
 def send_alarm_email(table_name, alarms):
     msg = EmailMessage()

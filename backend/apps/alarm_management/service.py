@@ -5,6 +5,7 @@ from utils.alarm_manager import AlarmManager
 from utils.db_manager import DBManager
 from utils.email_sender import send_alarm_email
 
+
 def create_alarm_from_natural_language(user_input: str):
     alarm_manager = AlarmManager()
 
@@ -103,6 +104,5 @@ def evaluate_alarms_for_all_tables(only_new_alarms: bool = True):
         if triggered_alarms:
             alarms_by_table[table_name] = triggered_alarms
             send_alarm_email(table_name, triggered_alarms)
-
 
     return alarms_by_table

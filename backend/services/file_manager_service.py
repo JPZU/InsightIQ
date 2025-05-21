@@ -76,7 +76,7 @@ class FileManagerService:
         try:
             url = url.replace("/edit?usp=sharing", "/export?format=csv")
             df = pd.read_csv(url)
-            
+
             with self.db_manager.engine.connect() as conn:
                 df.to_sql(table_name, conn, if_exists='replace', index=False)
 
@@ -109,7 +109,7 @@ class FileManagerService:
                     df.to_sql(dataset.table_name, conn, if_exists='replace', index=False)
 
                 self.session.execute(text("UPDATE datasets SET updatedAt = :updatedAt WHERE file_path = :file_path"),
-                                        {"updatedAt": datetime.now(), "file_path": dataset.file_path})
+                                     {"updatedAt": datetime.now(), "file_path": dataset.file_path})
                 self.session.commit()
 
                 updated_tables.append(dataset.table_name)

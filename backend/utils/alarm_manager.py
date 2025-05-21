@@ -9,7 +9,6 @@ from utils.db_manager import DBManager
 from utils.env_manager import EnvManager
 
 
-
 class AlarmManager:
     _instance = None
     db_manager: DBManager
@@ -182,7 +181,6 @@ class AlarmManager:
             raise e  # Puedes volver a lanzar el error si quieres que se propague
 
         return results_triggered
-
 
     def clear_history(self, table_name: str = None, alarm_id: int = None):
         """Clear history for specific table/alarm or all history."""
