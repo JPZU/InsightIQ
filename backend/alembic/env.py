@@ -27,6 +27,13 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+from database.models.alert import Alert
+from database.models.chat import Chat
+from database.models.dataset import DataSet
+from database.models.question import Question
+from database.models.response import Response
+from database.models.user import User
+
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
