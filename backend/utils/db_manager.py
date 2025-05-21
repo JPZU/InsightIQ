@@ -85,7 +85,9 @@ class DBManager:
         if not files:
             raise FileNotFoundError(_("error_no_csv_xlsx_found"))
 
+        files.sort(key=lambda f: os.path.getmtime(os.path.join(self.data_dir, f)), reverse=True)
         file_name = files[0]
+
         file_path = os.path.join(self.data_dir, file_name)
 
         if file_path.endswith(".csv"):
