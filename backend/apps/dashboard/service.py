@@ -1,4 +1,5 @@
 from utils.db_manager import DBManager
+import numpy as np
 
 
 class DashboardService:
@@ -24,11 +25,18 @@ class DashboardService:
 
         numeric_df = df.select_dtypes(include=["number"])
 
-        descriptive_stats = numeric_df.describe().to_dict()
+        # Reemplazar inf, -inf por NaN
+        cleaned_df = numeric_df.replace([float('inf'), float('-inf')], np.nan)
 
+        # Reemplazar NaN por 0
+        cleaned_df = cleaned_df.fillna(0)
+
+        descriptive_stats = cleaned_df.describe().to_dict()
+
+        # Asegurar que todas las claves estén en string y sin NaN/infs
         for column, stats in descriptive_stats.items():
             descriptive_stats[column] = {
-                str(key): value for key, value in stats.items()
+                str(key): (value if value is not None else 0) for key, value in stats.items()
             }
 
         return {
