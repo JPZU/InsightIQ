@@ -3,6 +3,7 @@ from datetime import datetime
 
 from utils.alarm_manager import AlarmManager
 from utils.db_manager import DBManager
+from utils.email_sender import send_alarm_email
 
 
 def create_alarm_from_natural_language(user_input: str):
@@ -95,11 +96,13 @@ def evaluate_alarms_for_all_tables(only_new_alarms: bool = True):
 
     alarms_by_table = {}
     table_names = db_manager.get_table_names()
+    print(f"Evaluating alarms for tables: {table_names}")
 
     for table_name in table_names:
         triggered_alarms = alarm_manager.evaluate_alarm(table_name, only_new=only_new_alarms)
 
         if triggered_alarms:
             alarms_by_table[table_name] = triggered_alarms
+            send_alarm_email(table_name, triggered_alarms)
 
     return alarms_by_table

@@ -22,7 +22,7 @@ async def upload_csv(
     file_location = FileManager.save_upload_file(file, table_name)
     response = file_manager_service.upload_csv(file, file_location, table_name)
 
-    return {"info": response["info"]}
+    return response
 
 
 @router.post("/upload/excel/")
@@ -34,7 +34,18 @@ async def upload_excel(
     file_location = FileManager.save_upload_file(file, table_name)
     response = file_manager_service.upload_excel(file, file_location, table_name)
 
-    return {"info": response["info"]}
+    return response
+
+
+@router.post("/upload/google-sheet")
+async def upload_google_sheet(
+    table_name: str = Form(...),
+    url: str = Form(...),
+    file_manager_service: FileManagerService = Depends(get_file_manager_service)
+):
+    response = file_manager_service.upload_google_sheet(table_name, url)
+
+    return response
 
 
 @router.get("/tables/", response_model=List[str])
@@ -115,3 +126,14 @@ async def get_table_info(
         raise HTTPException(status_code=404, detail=f"Table {table_name} not found")
 
     return table_info
+
+
+@router.post("/update/google-sheets")
+async def update_google_sheets(
+    file_manager_service: FileManagerService = Depends(get_file_manager_service),
+):
+    try:
+        file_manager_service.fetch_and_update_google_sheets()
+        return {"message": "Google Sheets updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating Google Sheets: {str(e)}")

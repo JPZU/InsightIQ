@@ -29,9 +29,9 @@ const showAlarmsModal = ref(false)
 
 // Interval references
 const alarmCheckInterval = ref<number | null>(null)
-const checkInterval = ref(30000) // 30 seconds by default
+const checkInterval = ref(15000) // 15 seconds by default
 const googleSheetsUpdateInterval = ref<number | null>(null)
-const googleSheetsUpdateCheckInterval = ref(30000) // 30 seconds by default
+const googleSheetsUpdateCheckInterval = ref(15000) // 15 seconds by default
 
 // Tab configuration
 const navbarTabs = computed(() => {
@@ -259,7 +259,13 @@ watch(
         </router-link>
       </template>
       <template v-else>
-        <span class="navbar-brand ms-4 mb-0 h1" style="font-size: 1.5rem">InsightIQ</span>
+        <router-link
+          class="navbar-brand ms-4 mb-0 h1"
+          style="font-size: 1.5rem"
+          :to="{ name: 'home' }"
+        >
+          InsightIQ
+        </router-link>
       </template>
 
       <div class="d-flex align-items-center">
@@ -403,10 +409,6 @@ watch(
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="alarm-timestamp">
-              {{ new Date(alarm.timestamp).toLocaleString() }}
             </div>
           </div>
         </div>

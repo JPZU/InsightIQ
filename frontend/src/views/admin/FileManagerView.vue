@@ -425,7 +425,7 @@ fetchTables()
         <div class="table-header">
           <h2 class="text-2xl font-bold">{{ state.currentTable }}</h2>
           <div class="table-actions">
-            <button @click="goToSyntheticData" class="btn-create">+ Add Synthetic Data</button>
+            <button @click="goToSyntheticData" class="btn-create">+ Generate Synthetic Data</button>
             <button @click="startUpdateTable" class="btn-save">Update Data</button>
           </div>
         </div>
@@ -959,12 +959,12 @@ fetchTables()
 }
 
 .modal-actions button:first-child {
-  background: #007bff;
+  background: #28a745;
   color: white;
 }
 
 .modal-actions button:nth-child(2) {
-  background: #28a745;
+  background: #007bff;
   color: white;
 }
 

@@ -84,6 +84,17 @@ class ChatService extends BaseService {
       message: string
     }
   }
+
+  async rateResponse(
+    responseId: number,
+    rating: number,
+  ): Promise<{ success: boolean; message: string }> {
+    return (await this.makeRequest(
+      `${import.meta.env.VITE_API_URL}/chats/responses/${responseId}/rate`,
+      'post',
+      { rating },
+    )) as { success: boolean; message: string }
+  }
 }
 
 export default new ChatService()

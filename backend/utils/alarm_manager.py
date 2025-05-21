@@ -124,55 +124,61 @@ class AlarmManager:
     def evaluate_alarm(self, table_name: str, only_new: bool = True) -> List[dict]:
         """
         Evaluate alarms for a table and return triggered alarms.
-
-        Args:
-            table_name: Name of the table to evaluate
-            only_new: If True, only return alarms not in history
-
-        Returns:
-            List of triggered alarms with their details
         """
-        query = text("""
-            SELECT * FROM alerts where table_name = :table_name AND is_active = 1
-        """)
+        query = text("""SELECT * FROM alerts where table_name = :table_name AND is_active = 1""")
         results_triggered = []
 
-        with engine.connect() as conn:
-            result = conn.execute(query, {"table_name": table_name})
-            alarms = result.mappings().all()
+        try:
+            with engine.connect() as conn:
+                result = conn.execute(query, {"table_name": table_name})
+                alarms = result.mappings().all()
+                print("Alarmas recuperadas:", alarms)
 
-            for alarm in alarms:
-                field = alarm["field"]
-                condition = alarm["condition"]
-                threshold = alarm["threshold"]
-                alarm_id = alarm["id"]
+                for alarm in alarms:
+                    print(f"Alarma {alarm['id']} activada: {alarm['description']}")
+                    condition = alarm.get("condition")
+                    if condition is None:
+                        print(f"Alarma {alarm['id']} no tiene condición definida.")
+                        continue  # Salta si la condición no está definida
+                    else:
+                        print(f"Alarma {alarm['id']} con condición: {condition}")
 
-                if condition == "less than":
-                    cond_sql = f'"{field}" < {threshold}'
-                elif condition == "greater than":
-                    cond_sql = f'"{field}" > {threshold}'
-                elif condition == "equal to":
-                    cond_sql = f'"{field}" = {threshold}'
-                else:
-                    continue
+                    field = alarm["field"]
+                    threshold = alarm["threshold"]
+                    alarm_id = alarm["id"]
 
-                check_query = text(f"SELECT * FROM {table_name} WHERE {cond_sql}")
-                with self.db_manager.engine.connect() as conn:
-                    triggered = conn.execute(check_query).mappings().all()
+                    if condition == "less than":
+                        cond_sql = f'"{field}" < {threshold}'
+                    elif condition == "greater than":
+                        cond_sql = f'"{field}" > {threshold}'
+                    elif condition == "equal to":
+                        cond_sql = f'"{field}" = {threshold}'
+                    else:
+                        print(f"Condición no válida para la alarma {alarm['id']}")
+                        continue
 
-                    if triggered:
-                        triggered_rows = [{
-                            "alarm_id": alarm_id,
-                            "description": alarm["description"],
-                            "triggered_data": dict(row)
-                        } for row in triggered]
+                    check_query = text(f"SELECT * FROM {table_name} WHERE {cond_sql}")
+                    with self.db_manager.engine.connect() as conn:
+                        triggered = conn.execute(check_query).mappings().all()
 
-                        if only_new:
-                            triggered_rows = self._filter_new_alarms(table_name, alarm_id, triggered_rows)
+                        if triggered:
+                            triggered_rows = [{
+                                "alarm_id": alarm_id,
+                                "description": alarm["description"],
+                                "triggered_data": dict(row)
+                            } for row in triggered]
 
-                        if triggered_rows:
-                            results_triggered.extend(triggered_rows)
-                            self._update_history(table_name, alarm_id, triggered_rows)
+                            if only_new:
+                                triggered_rows = self._filter_new_alarms(table_name, alarm_id, triggered_rows)
+
+                            if triggered_rows:
+                                results_triggered.extend(triggered_rows)
+                                self._update_history(table_name, alarm_id, triggered_rows)
+
+        except Exception as e:
+            print(f"Error al evaluar alarma para la tabla {table_name}: {str(e)}")
+            print("Detalles del error:", traceback.format_exc())
+            raise e  # Puedes volver a lanzar el error si quieres que se propague
 
         return results_triggered
 

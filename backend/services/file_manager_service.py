@@ -50,9 +50,6 @@ class FileManagerService:
             if os.path.exists(file_location):
                 os.remove(file_location)
             raise HTTPException(status_code=500, detail=f"Error uploading CSV: {str(e)}")
-        finally:
-            if os.path.exists(file_location):
-                os.remove(file_location)
 
     def upload_excel(self, file: UploadFile, file_location: str, table_name: str) -> Dict[str, Any]:
         try:
@@ -74,17 +71,11 @@ class FileManagerService:
             if os.path.exists(file_location):
                 os.remove(file_location)
             raise HTTPException(status_code=500, detail=f"Error uploading Excel file: {str(e)}")
-        finally:
-            if os.path.exists(file_location):
-                os.remove(file_location)
 
-    def upload_google_sheet(self, df: pd.DataFrame, table_name: str, url: str) -> Dict[str, Any]:
+    def upload_google_sheet(self, table_name: str, url: str) -> Dict[str, Any]:
         try:
-            if not isinstance(df, pd.DataFrame):
-                return {
-                    "success": False,
-                    "message": "Invalid data format - expected pandas DataFrame"
-                }
+            url = url.replace("/edit?usp=sharing", "/export?format=csv")
+            df = pd.read_csv(url)
 
             with self.db_manager.engine.connect() as conn:
                 df.to_sql(table_name, conn, if_exists='replace', index=False)
@@ -106,7 +97,6 @@ class FileManagerService:
 
     def fetch_and_update_google_sheets(self) -> Dict[str, Any]:
         datasets = self.session.query(DataSet).all()
-        print(f"Found {len(datasets)} datasets to update.")  # Debugging line
         updated_tables = []
 
         for dataset in datasets:
@@ -118,7 +108,7 @@ class FileManagerService:
                 with self.db_manager.engine.connect() as conn:
                     df.to_sql(dataset.table_name, conn, if_exists='replace', index=False)
 
-                self.session.execute(text("UPDATE dataset SET updatedAt = :updatedAt WHERE file_path = :file_path"),
+                self.session.execute(text("UPDATE datasets SET updatedAt = :updatedAt WHERE file_path = :file_path"),
                                      {"updatedAt": datetime.now(), "file_path": dataset.file_path})
                 self.session.commit()
 
@@ -156,9 +146,18 @@ class FileManagerService:
             with self.db_manager.engine.begin() as connection:
                 connection.execute(text(f'DROP TABLE "{table_name}"'))
 
+            dataset = self.session.query(DataSet).filter_by(table_name=table_name).first()
+            if dataset:
+                file_location = dataset.file_path
+                self.session.delete(dataset)
+                self.session.commit()
+
+                if os.path.exists(file_location):
+                    os.remove(file_location)
+
             return True
         except SQLAlchemyError as e:
-            print(f"Error deleting table {table_name}: {str(e)}")  # For debugging
+            print(f"Error deleting table {table_name}: {str(e)}")
             return False
 
     def update_table_from_csv(self, table_name: str, file_location: str, replace: bool = False) -> Dict[str, Any]:

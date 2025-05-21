@@ -43,7 +43,7 @@ class FileManagerService extends BaseService {
   }
 
   static updateGoogleSheets() {
-    return ApiClient.post(`${this.BASE_URL}/update/google-sheets/`)
+    return ApiClient.post(`${this.BASE_URL}/update/google-sheets`)
   }
 
   static getTables() {

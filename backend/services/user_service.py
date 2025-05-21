@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 from sqlalchemy import func
 
 from database.models.chat import Chat
+from database.models.question import Question
 from database.models.user import User
 from database.session import SessionLocal
 
@@ -155,7 +156,7 @@ class UserService:
 
             total_users = db.query(User).count()
             total_admins = db.query(User).filter(User.role == "admin").count()
-            total_questions = db.query(func.count(Chat.id)).scalar() or 0
+            total_questions = db.query(Question).count()
 
             return {
                 "general_metrics": {
