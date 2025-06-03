@@ -3,7 +3,7 @@ from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from .base import Base
+from database.models.base import Base
 
 
 class Alert(Base):

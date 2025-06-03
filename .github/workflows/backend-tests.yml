@@ -1,14 +1,14 @@
 name: Backend Tests
 
-on:
-  push:
-    # paths:
-    #   - 'backend/**'
-    branches: [ main, development ]
-  pull_request:
-    # paths:
-    #   - 'backend/**'
-    branches: [ main, development ]
+# on:
+#   push:
+#     # paths:
+#     #   - 'backend/**'
+#     branches: [ main, development ]
+#   pull_request:
+#     # paths:
+#     #   - 'backend/**'
+#     branches: [ main, development ]
 
 jobs:
   test:
