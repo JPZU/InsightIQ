@@ -1,5 +1,6 @@
-from utils.db_manager import DBManager
 import numpy as np
+
+from utils.db_manager import DBManager
 
 
 class DashboardService:

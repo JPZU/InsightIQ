@@ -5,6 +5,7 @@ from sqlalchemy.sql import func
 
 from database.models.base import Base
 
+
 class Alert(Base):
     __tablename__ = "alerts"
 

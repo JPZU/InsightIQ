@@ -1,6 +1,6 @@
-from email.message import EmailMessage
-import smtplib
 import logging
+import smtplib
+from email.message import EmailMessage
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)
