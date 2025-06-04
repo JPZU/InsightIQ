@@ -232,7 +232,7 @@ const processQueryResult = (result) => {
         x_axis: [],
         y_axis: [],
         chartTitle: '',
-        error: 'No valid data received. Please try rephrasing your question.'
+        warning: 'This question does not seem to create a valid table or graph. Please try rephrasing your question.'
       }
     }
 
@@ -465,10 +465,13 @@ defineExpose({
               </div>
 
               <!-- Data details section -->
-              <div v-if="message.type === 'response' && message.result && (Object.keys(message.result).length > 0 || message.result.error) && state.expandedMessages[index]" 
+              <div v-if="message.type === 'response' && message.result && (Object.keys(message.result).length > 0 || message.result.error || message.result.warning) && state.expandedMessages[index]" 
                    class="message-details">
                 <div v-if="message.result.error" class="alert alert-error">
                   {{ message.result.error }}
+                </div>
+                <div v-else-if="message.result.warning" class="alert alert-warning">
+                  {{ message.result.warning }}
                 </div>
                 <template v-else-if="!hasErrorColumns(message.result.query_result)">
                   <div class="view-toggle">
@@ -928,6 +931,14 @@ defineExpose({
   font-size: 0.9em;
   margin-top: 0.5rem;
   color: #4a5568;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .alert-error {

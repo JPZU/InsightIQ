@@ -74,9 +74,17 @@ class AgentManager:
         format_instruction = """IMPORTANT INSTRUCTIONS:
 
 1. For Data Visualization:
-   - Return data as a simple list format for tables/graphs
+   - For tables, format the response as follows:
+     [Brief description of what the table shows and its significance]
+     [List of data as a resume of the table]
+
+    DONT CREATE A TABLE, JUST RETURN THE DATA AS A LIST OF DATA
+
+     **Key Insights:**
+     • [Most important observation from the data]
+     • [Second most important observation if relevant]
+    
    - Frontend will handle visualization
-   - Use double quotes for column names with spaces
 
 2. For SQL Queries:
    - Ensure proper syntax with correct parentheses and semicolons

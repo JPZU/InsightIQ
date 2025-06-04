@@ -3,7 +3,7 @@
     <h1 class="text-center">AI-Generated Report</h1>
 
     <section class="file-schema">
-      <h2>Generated on: {{ formatDate(report.date) }}</h2>
+      <h2>Generated on: {{ formatDate(new Date()) }}</h2>
 
       <button @click="downloadPDF" class="download-btn">Download Report as PDF</button>
 
@@ -84,6 +84,12 @@ onMounted(async () => {
   font-size: 1.3rem;
   margin-bottom: 10px;
   color: #2c3e50;
+}
+
+.file-schema h3 {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #888;
 }
 
 .download-btn {
