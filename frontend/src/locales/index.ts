@@ -14,6 +14,12 @@ import esFileManager from './es/file_manager.json'
 import esSyntheticData from './es/synthetic_data.json'
 import esPlans from './es/plans.json'
 import enPlans from './en/plans.json'
+import enAdminHome from './en/admin_home.json'
+import esAdminHome from './es/admin_home.json'
+import enAdminFileManager from './en/admin_file_manager.json'
+import esAdminFileManager from './es/admin_file_manager.json'
+import enAdminUserManager from './en/admin_user_manager.json'
+import esAdminUserManager from './es/admin_user_manager.json'
 // Merge translations by language
 const messages = {
   en: {
@@ -23,6 +29,9 @@ const messages = {
     file_manager: enFileManager,
     synthetic_data: enSyntheticData,
     plans: enPlans,
+    admin_home: enAdminHome,
+    admin_file_manager: enAdminFileManager,
+    admin_user_manager: enAdminUserManager,
   },
   es: {
     app: esApp,
@@ -31,6 +40,9 @@ const messages = {
     file_manager: esFileManager,
     synthetic_data: esSyntheticData,
     plans: esPlans,
+    admin_home: esAdminHome,
+    admin_file_manager: esAdminFileManager,
+    admin_user_manager: esAdminUserManager,
   },
 }
 

@@ -1,0 +1,31 @@
+{
+  "metrics": {
+    "total_users": "Total Users",
+    "total_admins": "Admin Users",
+    "total_questions": "Total Questions Asked",
+    "users_limit": "{count}/15",
+    "questions_limit": "{count}/1000"
+  },
+  "user_list": "User List",
+  "search_users": "Search users...",
+  "table": {
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "questions": "Questions",
+    "actions": "Actions"
+  },
+  "roles": {
+    "admin": "Admin",
+    "user": "User"
+  },
+  "actions": {
+    "promote_to_admin": "Promote to Admin",
+    "delete_user": "Delete User"
+  },
+  "errors": {
+    "load_failed": "Failed to load user data. Please try again later.",
+    "delete_failed": "Failed to delete user. Please try again.",
+    "promote_failed": "Failed to promote user. Please try again."
+  }
+}

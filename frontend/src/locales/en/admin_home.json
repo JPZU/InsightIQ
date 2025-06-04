@@ -1,0 +1,17 @@
+{
+  "files": "Files",
+  "files_manage": "Manage all system files and datasets",
+  "files_upload": "Upload and organize data sources",
+  "files_synthetic": "Generate synthetic test data",
+  "files_monitor": "Monitor data quality and integrity",
+  "alarms": "Alarms",
+  "alarms_create": "Create alerts with natural language",
+  "alarms_view": "View and manage active alerts",
+  "alarms_review": "Review alert history and patterns",
+  "alarms_configure": "Configure notification settings",
+  "users": "Users",
+  "users_manage": "Manage user accounts and access",
+  "users_configure": "Configure roles and permissions",
+  "users_monitor": "Monitor user activity and usage",
+  "users_audit": "View audit logs and changes"
+}

@@ -15,12 +15,12 @@
                 class="img-fluid mb-3"
                 style="max-height: 120px"
               />
-              <h4 class="mb-3">Files</h4>
+              <h4 class="mb-3">{{ $t('admin_home.files') }}</h4>
               <ul class="text-start ps-4">
-                <li class="mb-2">Manage all system files and datasets</li>
-                <li class="mb-2">Upload and organize data sources</li>
-                <li class="mb-2">Generate synthetic test data</li>
-                <li class="mb-2">Monitor data quality and integrity</li>
+                <li class="mb-2">{{ $t('admin_home.files_manage') }}</li>
+                <li class="mb-2">{{ $t('admin_home.files_upload') }}</li>
+                <li class="mb-2">{{ $t('admin_home.files_synthetic') }}</li>
+                <li class="mb-2">{{ $t('admin_home.files_monitor') }}</li>
               </ul>
             </div>
           </div>
@@ -36,12 +36,12 @@
                 class="img-fluid mb-3"
                 style="max-height: 120px"
               />
-              <h4 class="mb-3">Alarms</h4>
+              <h4 class="mb-3">{{ $t('admin_home.alarms') }}</h4>
               <ul class="text-start ps-4">
-                <li class="mb-2">Create alerts with natural language</li>
-                <li class="mb-2">View and manage active alerts</li>
-                <li class="mb-2">Review alert history and patterns</li>
-                <li class="mb-2">Configure notification settings</li>
+                <li class="mb-2">{{ $t('admin_home.alarms_create') }}</li>
+                <li class="mb-2">{{ $t('admin_home.alarms_view') }}</li>
+                <li class="mb-2">{{ $t('admin_home.alarms_review') }}</li>
+                <li class="mb-2">{{ $t('admin_home.alarms_configure') }}</li>
               </ul>
             </div>
           </div>
@@ -52,12 +52,12 @@
           <div class="card shadow-sm h-100 feature-card">
             <div class="card-body text-center p-4">
               <img src="/users.png" alt="Users" class="img-fluid mb-3" style="max-height: 120px" />
-              <h4 class="mb-3">Users</h4>
+              <h4 class="mb-3">{{ $t('admin_home.users') }}</h4>
               <ul class="text-start ps-4">
-                <li class="mb-2">Manage user accounts and access</li>
-                <li class="mb-2">Configure roles and permissions</li>
-                <li class="mb-2">Monitor user activity and usage</li>
-                <li class="mb-2">View audit logs and changes</li>
+                <li class="mb-2">{{ $t('admin_home.users_manage') }}</li>
+                <li class="mb-2">{{ $t('admin_home.users_configure') }}</li>
+                <li class="mb-2">{{ $t('admin_home.users_monitor') }}</li>
+                <li class="mb-2">{{ $t('admin_home.users_audit') }}</li>
               </ul>
             </div>
           </div>
