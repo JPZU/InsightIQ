@@ -109,6 +109,8 @@ def ask_chat(
         query_result=query_result
     )
 
+    print(query_result)
+
     return BaseResponse(
         success=True,
         response={

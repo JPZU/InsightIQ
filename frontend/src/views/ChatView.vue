@@ -152,49 +152,139 @@ const createChatWithName = async () => {
   }
 }
 
+const hasErrorColumns = (data) => {
+  if (!data || typeof data !== 'object') return false
+  const keys = Object.keys(data)
+  
+  // Check if both error and details exist and are strings
+  const hasErrorAndDetails = keys.includes('error') && 
+                           keys.includes('details') && 
+                           typeof data.error === 'string' && 
+                           typeof data.details === 'string' &&
+                           !Array.isArray(data.error) &&
+                           !Array.isArray(data.details)
+
+  return hasErrorAndDetails
+}
+
+// Add back the formatColumnName function
+const formatColumnName = (name) => {
+  return name
+    .replace(/_/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
+}
+
 const processQueryResult = (result) => {
-  const parsed = typeof result === 'string' ? JSON.parse(result) : result
-  if (!parsed || Object.keys(parsed).length === 0) return null
+  try {
+    const parsed = typeof result === 'string' ? JSON.parse(result) : result
+    
+    if (hasErrorColumns(parsed)) {
+      console.error('Data contains error columns:', parsed)
+      return {
+        query_result: null,
+        x_axis: [],
+        y_axis: [],
+        chartTitle: '',
+        error: 'The response contains error information. Please try rephrasing your question.'
+      }
+    }
 
-  const keys = Object.keys(parsed)
-  
-  // Format the column names for display
-  const formatColumnName = (name) => {
-    return name
-      .replace(/_/g, ' ')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ')
-  }
+    // Check if the data is malformed (appears to be text split into columns)
+    const isMalformedData = (data) => {
+      if (!data || typeof data !== 'object') return false
+      const keys = Object.keys(data)
+      if (keys.length === 0) return false
+      
+      // Check if the data looks like text split into columns
+      const firstKey = keys[0]
+      const values = data[firstKey]
+      if (!Array.isArray(values)) return false
+      
+      // If we have very short strings in each column, it might be malformed
+      const hasShortStrings = values.some(val => 
+        typeof val === 'string' && val.length <= 2
+      )
+      
+      // If we have many columns with single characters, it's likely malformed
+      const hasManySingleCharColumns = keys.length > 5 && 
+        keys.every(key => Array.isArray(data[key]) && 
+          data[key].every(val => typeof val === 'string' && val.length <= 2))
+      
+      return hasShortStrings && hasManySingleCharColumns
+    }
 
-  // Find first string column and first numeric column
-  const stringColumn = keys.find(key => {
-    const firstValue = parsed[key][0]
-    return typeof firstValue === 'string' || isNaN(Number(firstValue))
-  })
-  const numericColumn = keys.find(key => {
-    const firstValue = parsed[key][0]
-    return !isNaN(Number(firstValue))
-  })
-  
-  // Use the found columns for the graph
-  const xColumn = stringColumn
-  const yColumn = numericColumn
+    if (isMalformedData(parsed)) {
+      console.error('Received malformed data structure:', parsed)
+      return {
+        query_result: null,
+        x_axis: [],
+        y_axis: [],
+        chartTitle: '',
+        error: 'The data received appears to be malformed. Please try rephrasing your question.'
+      }
+    }
 
-  // Use the selected columns for the graph data
-  const x_axis = xColumn ? parsed[xColumn].map(val => String(val)) : []
-  const y_axis = yColumn ? parsed[yColumn].map(val => Number(val)) : []
-  
-  // Create chart title using the selected columns
-  const chartTitle = xColumn && yColumn
-    ? `${formatColumnName(yColumn)} vs ${formatColumnName(xColumn)}`
-    : ''
+    if (!parsed || typeof parsed !== 'object' || Object.keys(parsed).length === 0) {
+      return {
+        query_result: null,
+        x_axis: [],
+        y_axis: [],
+        chartTitle: '',
+        error: 'No valid data received. Please try rephrasing your question.'
+      }
+    }
 
-  return { 
-    query_result: parsed,  // Keep the full data for the table
-    x_axis,               // Selected x-axis data for the graph
-    y_axis,               // Selected y-axis data for the graph
-    chartTitle
+    const keys = Object.keys(parsed)
+    
+    // Helper function to check if a value is an array
+    const isArray = (val) => Array.isArray(val)
+    
+    // Find first string column and first numeric column that are arrays
+    const stringColumn = keys.find(key => {
+      const values = parsed[key]
+      if (!isArray(values) || values.length === 0) return false
+      const firstValue = values[0]
+      return typeof firstValue === 'string' || isNaN(Number(firstValue))
+    })
+    
+    const numericColumn = keys.find(key => {
+      const values = parsed[key]
+      if (!isArray(values) || values.length === 0) return false
+      const firstValue = values[0]
+      return !isNaN(Number(firstValue))
+    })
+    
+    // Use the found columns for the graph
+    const xColumn = stringColumn
+    const yColumn = numericColumn
+
+    // Ensure we have valid arrays before mapping
+    const x_axis = xColumn && isArray(parsed[xColumn]) ? parsed[xColumn].map(val => String(val)) : []
+    const y_axis = yColumn && isArray(parsed[yColumn]) ? parsed[yColumn].map(val => Number(val)) : []
+    
+    // Create chart title using the selected columns
+    const chartTitle = xColumn && yColumn
+      ? `${formatColumnName(yColumn)} vs ${formatColumnName(xColumn)}`
+      : ''
+
+    return { 
+      query_result: parsed,
+      x_axis,
+      y_axis,
+      chartTitle,
+      error: null
+    }
+  } catch (error) {
+    console.error('Error processing query result:', error)
+    return {
+      query_result: null,
+      x_axis: [],
+      y_axis: [],
+      chartTitle: '',
+      error: 'Error processing the response. Please try rephrasing your question.'
+    }
   }
 }
 
@@ -217,6 +307,11 @@ const submitQuestion = async () => {
       ? await ChatService.askChat(state.value.selectedChat, userQuestion)
       : await ChatService.askQuestion(userQuestion)
 
+    // Check if we have a valid response
+    if (!res || !res.response) {
+      throw new Error('Invalid response from server')
+    }
+
     const msg = res.response
     const processedResult = msg?.query_result ? processQueryResult(msg.query_result) : null
 
@@ -227,7 +322,7 @@ const submitQuestion = async () => {
       content: msg?.content || 'No response content',
       created_at: new Date().toISOString(),
       result: processedResult,
-      response_id: msg.response_id,
+      response_id: msg?.response_id || null,  // Make response_id optional
       rating: null,
     })
 
@@ -249,9 +344,11 @@ const submitQuestion = async () => {
     console.error('Error al enviar pregunta:', error)
     state.value.messages.push({
       type: 'response',
-      content: 'Ocurrió un error al procesar tu pregunta',
+      content: 'Ocurrió un error al procesar tu pregunta. Por favor, intenta reformularla.',
       created_at: new Date().toISOString(),
       result: null,
+      response_id: null,  // Explicitly set response_id to null for error messages
+      rating: null,
     })
   } finally {
     state.value.loading = false
@@ -290,6 +387,11 @@ const formatMessage = (content) => {
 }
 
 onMounted(fetchChats)
+
+// In the script setup section, expose the function to the template
+defineExpose({
+  hasErrorColumns
+})
 </script>
 
 <template>
@@ -363,61 +465,69 @@ onMounted(fetchChats)
               </div>
 
               <!-- Data details section -->
-              <div v-if="message.type === 'response' && message.result && Object.keys(message.result).length > 0 && state.expandedMessages[index]" 
+              <div v-if="message.type === 'response' && message.result && (Object.keys(message.result).length > 0 || message.result.error) && state.expandedMessages[index]" 
                    class="message-details">
-                <div class="view-toggle">
-                  <button
-                    :class="['btn', state.viewMode === 'table' ? 'btn-primary' : 'btn-outline']"
-                    @click="state.viewMode = 'table'"
-                  >
-                    {{ $t('chat.table') }}
-                  </button>
-                  <button
-                    :class="['btn', state.viewMode === 'graphs' ? 'btn-primary' : 'btn-outline']"
-                    @click="state.viewMode = 'graphs'"
-                  >
-                    {{ $t('chat.graphs') }}
-                  </button>
+                <div v-if="message.result.error" class="alert alert-error">
+                  {{ message.result.error }}
                 </div>
-
-                <div v-if="state.viewMode === 'table'" class="table-container">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th v-for="(_, key) in message.result.query_result" :key="key">
-                          {{ key }}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(_, i) in message.result.query_result[Object.keys(message.result.query_result)[0]]" :key="i">
-                        <td v-for="(values, key) in message.result.query_result" :key="key">
-                          {{ values[i] }}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div v-else class="graph-section">
-                  <select v-model="state.chartType" class="form-control">
-                    <option value="bar">{{ $t('chat.bar_chart') }}</option>
-                    <option value="pie">{{ $t('chat.pie_chart') }}</option>
-                    <option value="line">{{ $t('chat.line_chart') }}</option>
-                  </select>
-
-                  <div v-if="message.result.x_axis?.length && message.result.y_axis?.length" class="chart-container">
-                    <component
-                      :is="state.chartType === 'bar' ? BarChart : state.chartType === 'pie' ? PieChart : LineChart"
-                      :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis"
-                      :chartTitle="message.result.chartTitle"
-                      :key="state.chartType"
-                    />
+                <template v-else-if="!hasErrorColumns(message.result.query_result)">
+                  <div class="view-toggle">
+                    <button
+                      :class="['btn', state.viewMode === 'table' ? 'btn-primary' : 'btn-outline']"
+                      @click="state.viewMode = 'table'"
+                    >
+                      {{ $t('chat.table') }}
+                    </button>
+                    <button
+                      :class="['btn', state.viewMode === 'graphs' ? 'btn-primary' : 'btn-outline']"
+                      @click="state.viewMode = 'graphs'"
+                    >
+                      {{ $t('chat.graphs') }}
+                    </button>
                   </div>
-                  <div v-else class="alert">
-                    {{ $t('chat.no_chart') }}
+
+                  <div v-if="state.viewMode === 'table'" class="table-container">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th v-for="(_, key) in message.result.query_result" :key="key">
+                            {{ key }}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(_, i) in message.result.query_result[Object.keys(message.result.query_result)[0]]" :key="i">
+                          <td v-for="(values, key) in message.result.query_result" :key="key">
+                            {{ values[i] }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
+
+                  <div v-else class="graph-section">
+                    <select v-model="state.chartType" class="form-control">
+                      <option value="bar">{{ $t('chat.bar_chart') }}</option>
+                      <option value="pie">{{ $t('chat.pie_chart') }}</option>
+                      <option value="line">{{ $t('chat.line_chart') }}</option>
+                    </select>
+
+                    <div v-if="message.result.x_axis?.length && message.result.y_axis?.length" class="chart-container">
+                      <component
+                        :is="state.chartType === 'bar' ? BarChart : state.chartType === 'pie' ? PieChart : LineChart"
+                        :xAxis="message.result.x_axis"
+                        :yAxis="message.result.y_axis"
+                        :chartTitle="message.result.chartTitle"
+                        :key="state.chartType"
+                      />
+                    </div>
+                    <div v-else class="alert">
+                      {{ $t('chat.no_chart') }}
+                    </div>
+                  </div>
+                </template>
+                <div v-else class="alert alert-error">
+                  The response contains error information. Please try rephrasing your question.
                 </div>
               </div>
             </div>
@@ -818,5 +928,13 @@ onMounted(fetchChats)
   font-size: 0.9em;
   margin-top: 0.5rem;
   color: #4a5568;
+}
+
+.alert-error {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
 }
 </style>

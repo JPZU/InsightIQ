@@ -132,10 +132,8 @@ class AlarmManager:
             with engine.connect() as conn:
                 result = conn.execute(query, {"table_name": table_name})
                 alarms = result.mappings().all()
-                print("Alarmas recuperadas:", alarms)
 
                 for alarm in alarms:
-                    print(f"Alarma {alarm['id']} activada: {alarm['description']}")
                     condition = alarm.get("condition")
                     if condition is None:
                         print(f"Alarma {alarm['id']} no tiene condición definida.")
@@ -176,8 +174,6 @@ class AlarmManager:
                                 self._update_history(table_name, alarm_id, triggered_rows)
 
         except Exception as e:
-            print(f"Error al evaluar alarma para la tabla {table_name}: {str(e)}")
-            print("Detalles del error:", traceback.format_exc())
             raise e  # Puedes volver a lanzar el error si quieres que se propague
 
         return results_triggered

@@ -18,8 +18,8 @@ class AgentManager:
             llm = ChatOpenAI(
                 model="gpt-4o-mini",
                 openai_api_key=EnvManager.get_openai_api_key(),
-                temperature=0.5,  # Lower temperature for more consistent results
-                max_tokens=500,  # Limit token usage
+                temperature=0.6,  # Lower temperature for more consistent results
+                max_tokens=400,  # Limit token usage
                 request_timeout=30  # Add timeout
             )
             cls._instance._initialize(db_manager.get_connection(), llm)
@@ -34,9 +34,35 @@ class AgentManager:
             agent_type="openai-functions",
             agent_executor_kwargs={
                 "return_intermediate_steps": True,
+                "handle_parsing_errors": True,  # Add this to handle parsing errors
             },
             top_k=500,  # Reduced from 1000 to improve performance
         )
+
+    def _validate_sql_query(self, query: str) -> str:
+        """Validate and fix common SQL query issues."""
+        if not query:
+            return query
+            
+        # Remove any trailing commas
+        query = query.rstrip(',')
+        
+        # Ensure the query ends with a semicolon
+        if not query.rstrip().endswith(';'):
+            query = query.rstrip() + ';'
+            
+        # Fix common syntax errors
+        query = query.replace('SELECT SELECT', 'SELECT')  # Fix double SELECT
+        query = query.replace('FROM FROM', 'FROM')        # Fix double FROM
+        query = query.replace('WHERE WHERE', 'WHERE')     # Fix double WHERE
+        
+        # Ensure proper quoting for column names with spaces
+        for col in ["Stock actual", "Precio unitario", "Fecha de entrada", "Fecha de salida", 
+                   "nombre", "ventas", "faltas"]:
+            if col in query and f'"{col}"' not in query:
+                query = query.replace(col, f'"{col}"')
+        
+        return query
 
     async def _process_single_query(self, query: str, chat_id: str = None) -> Dict[str, Any]:
         context = ""
@@ -44,18 +70,65 @@ class AgentManager:
             messages = ChatService.get_chat_messages(chat_id, limit=5)
             context = "\n".join([f"{m['type']}: {m['content']}" for m in messages])
 
-        # Add instruction for data format
-        format_instruction = "IMPORTANT: When the user asks for data that could be displayed as a table or graph, return the data as a simple list format. Do not attempt to create tables or graphs as the frontend developers will handle the visualization."
-        prompt = f"{format_instruction}\n\n{context}\nUser: {query}" if context else f"{format_instruction}\n\n{query}"
-        response = self.agent_executor.invoke({"input": prompt})
+        # Add comprehensive instructions for different types of queries
+        format_instruction = """IMPORTANT INSTRUCTIONS:
+
+1. For Data Visualization:
+   - Return data as a simple list format for tables/graphs
+   - Frontend will handle visualization
+   - Use double quotes for column names with spaces
+
+2. For SQL Queries:
+   - Ensure proper syntax with correct parentheses and semicolons
+   - Use double quotes for column names with spaces
+   - Include ORDER BY clauses for meaningful sorting
+
+3. For Analytical/Decision Making Queries (like performance analysis, layoffs, etc.):
+   Format the response using markdown-style formatting:
+   
+   **Analysis:**
+   • [Most important metric with specific numbers]
+   • [Second most important metric if relevant]
+   
+   **Context:**
+   [Brief explanation of why these metrics matter]
+   
+   **Alternative Considerations:**
+   • [One key alternative to consider]
+   • MAX 3 alternatives
+   
+4. General Guidelines:
+   - Use markdown formatting for better readability
+   - Be precise and data-driven
+   - Provide context for recommendations
+   - Consider both short-term and long-term implications
+   - Acknowledge limitations in the data or analysis
+   - Use bullet points (•) for lists
+   - Use bold (**) for section headers
+   - Use italics (*) for subsections
+   - Dont use # for section headers
+   - When showing multiple items, focus on the top 1-2 and mention others only if critical
+   """
+
+        prompt = f"{format_instruction}\n\nContext from previous messages:\n{context}\n\nUser Query: {query}" if context else f"{format_instruction}\n\nUser Query: {query}"
+        
+        try:
+            response = self.agent_executor.invoke({"input": prompt})
+        except Exception as e:
+            error_msg = str(e)
+            return {
+                "content": "I apologize, but I encountered an error while processing your request. Please try rephrasing your question.",
+                "query_result": {"error": "Agent execution error", "details": error_msg},
+                "x_axis": [],
+                "y_axis": [],
+                "chartTitle": "Error in Query"
+            }
         
         sql_query = None
         for step in response.get('intermediate_steps', []):
             tool_input = step[0].tool_input if hasattr(step[0], "tool_input") else {}
             if isinstance(tool_input, dict) and "query" in tool_input:
-                sql_query = tool_input["query"]
-                for col in ["Stock actual", "Precio unitario", "Fecha de entrada", "Fecha de salida"]:
-                    sql_query = sql_query.replace(col, f'"{col}"')
+                sql_query = self._validate_sql_query(tool_input["query"])
                 break
 
         if not sql_query:

@@ -1,4 +1,5 @@
 import traceback
+from typing import Dict, Any
 
 from fastapi import APIRouter, HTTPException, Path, Query
 
@@ -7,6 +8,7 @@ from apps.alarm_management.service import (create_alarm_from_natural_language,
                                            evaluate_alarms_for_all_tables,
                                            get_all_alarms, update_alarm_by_id)
 from schemas.alarm import AlarmUpdateRequest
+from utils.email_sender import send_alarm_email
 
 router = APIRouter()
 
@@ -61,16 +63,34 @@ def update_alarm(
 
 
 @router.get("/check_alarm")
-def check_alarm():
+def check_alarm() -> Dict[str, Any]:
+    """
+    Check all alarms and send email notifications for triggered alarms.
+    Returns a dictionary with the evaluation results and email status.
+    """
     try:
-        # Log para verificar si la función se está llamando
         print("Evaluando alarmas...")
         result = evaluate_alarms_for_all_tables()
         print("Resultado de evaluación:", result)
+        
+        # Process triggered alarms and send emails
+        if result.get("triggered_alarms"):
+            email_status = {}
+            for table_name, table_alarms in result["triggered_alarms"].items():
+                if table_alarms:  # If there are triggered alarms for this table
+                    triggered_data = result.get("triggered_data", {}).get(table_name, {})
+                    email_sent = send_alarm_email(
+                        table_name=table_name,
+                        alarms=table_alarms,
+                        triggered_data=triggered_data
+                    )
+                    email_status[table_name] = "sent" if email_sent else "failed"
+            
+            result["email_notifications"] = email_status
+        
         return result
     except Exception as e:
-        # Log para ver el error exacto con más detalles
         error_message = f"Error al evaluar alarmas: {str(e)}"
         print(error_message)
-        print("Detalles del error:", traceback.format_exc())  # Imprime el stack trace
+        print("Detalles del error:", traceback.format_exc())
         raise HTTPException(status_code=500, detail=error_message)
