@@ -19,6 +19,10 @@ const loginForm = ref({
   error: '',
 })
 
+// Add ref for dropdown menu
+const userDropdownRef = ref<HTMLElement | null>(null)
+const showUserDropdown = ref(false)
+
 // Use reactive reference to ensure up-to-date authentication status
 const authStatus = ref(AuthService.isAuthenticated())
 const isLoggedIn = computed(() => authStatus.value)
@@ -147,6 +151,13 @@ const handleAuthStateChange = (event: CustomEvent) => {
   }
 }
 
+// Add click outside handler
+const handleClickOutside = (event: MouseEvent) => {
+  if (userDropdownRef.value && !userDropdownRef.value.contains(event.target as Node)) {
+    showUserDropdown.value = false
+  }
+}
+
 // Lifecycle hooks
 onMounted(() => {
   checkAuthStatus()
@@ -162,12 +173,16 @@ onMounted(() => {
     startAlarmCheckInterval()
     startGoogleSheetsUpdateInterval()
   }
+
+  // Add click outside handler
+  window.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
   stopAlarmCheckInterval()
   stopGoogleSheetsUpdateInterval()
   window.removeEventListener('auth-state-changed', handleAuthStateChange as EventListener)
+  window.removeEventListener('click', handleClickOutside)
 })
 
 // Utility functions
@@ -292,18 +307,22 @@ watch(
           </ul>
         </div>
 
-        <div class="dropdown">
+        <div class="dropdown" ref="userDropdownRef">
           <button
             class="btn btn-outline-primary dropdown-toggle"
             :class="navbarClass"
             type="button"
             id="userDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
+            @click="showUserDropdown = !showUserDropdown"
+            :aria-expanded="showUserDropdown"
           >
             {{ $t('app.my_account') }}
           </button>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <ul 
+            class="dropdown-menu dropdown-menu-end" 
+            :class="{ 'show': showUserDropdown }"
+            aria-labelledby="userDropdown"
+          >
             <template v-if="isLoggedIn">
               <li>
                 <a class="dropdown-item" href="#" @click.prevent="router.push('/')">
@@ -649,5 +668,16 @@ watch(
 
 .btn-outline-primary.bg-danger:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  z-index: 1000;
+}
+
+.dropdown-menu.show {
+  display: block;
 }
 </style>
