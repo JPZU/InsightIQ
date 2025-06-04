@@ -217,7 +217,7 @@ onMounted(fetchUserData)
                   <td>{{ user.questions_asked }}</td>
                   <td class="actions-cell">
                     <button
-                      v-if="user.role !== 'admin'"
+                      v-if="user.role !== 'ADMIN'"
                       class="action-btn promote-btn"
                       :title="$t('admin_user_manager.actions.promote_to_admin')"
                       @click="promoteToAdmin(user.id)"

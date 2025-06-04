@@ -178,4 +178,4 @@ class UserService:
 
     @staticmethod
     def promote_to_admin(user_id: int) -> bool:
-        return UserService.admin_update_user(user_id, role="admin")
+        return UserService.admin_update_user(user_id, role="ADMIN")

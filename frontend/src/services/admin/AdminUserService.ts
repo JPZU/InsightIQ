@@ -9,7 +9,7 @@ interface UserInfo {
   users_info: Array<{
     name: string
     email: string
-    role: 'user' | 'admin'
+    role: 'USER' | 'ADMIN'
     questions_asked: number
   }>
 }
@@ -19,7 +19,7 @@ interface UserDetails {
   full_name: string
   username: string
   email: string
-  role: 'user' | 'admin'
+  role: 'USER' | 'ADMIN'
   created_at: string
   updated_at: string
 }
@@ -29,7 +29,7 @@ interface AdminUserUpdate {
   username?: string
   email?: string
   password?: string
-  role?: 'user' | 'admin'
+  role?: 'USER' | 'ADMIN'
 }
 
 interface BaseResponse<T = any> {
@@ -68,7 +68,7 @@ class AdminUserService extends BaseService {
   }
 
   async promoteToAdmin(userId: number): Promise<BaseResponse> {
-    return this.updateUser(userId, { role: 'admin' })
+    return this.updateUser(userId, { role: 'ADMIN' })
   }
 }
 
