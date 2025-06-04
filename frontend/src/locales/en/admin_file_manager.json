@@ -69,5 +69,10 @@
     "select_records": "Please select number of records",
     "error_data": "Error generating data",
     "error_data_desc": "Failed to generate synthetic data"
+  },
+  "messages": {
+    "success": {
+      "data_added": "✅ Data added successfully"
+    }
   }
 }

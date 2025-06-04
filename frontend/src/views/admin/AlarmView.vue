@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed, reactive, onMounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AlarmService from '@/services/AlarmService'
+
+const { t } = useI18n()
 
 const state = reactive({
   alarms: [],
@@ -83,10 +86,10 @@ const updateAlarm = async () => {
       state.alarms[index] = { ...state.selectedAlarm }
     }
 
-    state.successMessage = 'Alarma actualizada correctamente'
+    state.successMessage = t('admin_alarms.view.messages.success.updated')
   } catch (error) {
-    console.error('Error updating alarm:', error)
-    state.errorMessage = 'Error al actualizar la alarma'
+    console.error(t('admin_alarms.view.messages.error.update'), error)
+    state.errorMessage = t('admin_alarms.view.messages.error.update')
   } finally {
     state.loading = false
   }
@@ -94,7 +97,7 @@ const updateAlarm = async () => {
 
 const createAlarm = async () => {
   if (!state.newAlarmInput.trim()) {
-    state.errorMessage = 'Por favor ingresa una descripción para la alarma'
+    state.errorMessage = t('admin_alarms.view.messages.error.description_required')
     return
   }
 
@@ -104,15 +107,15 @@ const createAlarm = async () => {
 
   try {
     await AlarmService.createAlarm(state.newAlarmInput)
-    state.successMessage = 'Alarma creada correctamente'
+    state.successMessage = t('admin_alarms.view.messages.success.created')
     state.newAlarmInput = ''
 
     // Recargar la lista de alarmas
     await fetchAlarms()
     state.creatingNewAlarm = false
   } catch (error) {
-    console.error('Error creating alarm:', error)
-    state.errorMessage = 'Error al crear la alarma'
+    console.error(t('admin_alarms.view.messages.error.create'), error)
+    state.errorMessage = t('admin_alarms.view.messages.error.create')
   } finally {
     state.loading = false
   }
@@ -121,7 +124,7 @@ const createAlarm = async () => {
 const deleteSelectedAlarm = async () => {
   if (!state.selectedAlarm) return
 
-  if (!confirm('¿Estás seguro de eliminar esta alarma?')) return
+  if (!confirm(t('admin_alarms.view.messages.confirm_delete'))) return
 
   state.loading = true
 
@@ -131,10 +134,10 @@ const deleteSelectedAlarm = async () => {
     // Eliminar de la lista local
     state.alarms = state.alarms.filter((a) => a.id !== state.selectedAlarm.id)
     state.selectedAlarm = null
-    state.successMessage = 'Alarma eliminada correctamente'
+    state.successMessage = t('admin_alarms.view.messages.success.deleted')
   } catch (error) {
-    console.error('Error deleting alarm:', error)
-    state.errorMessage = 'Error al eliminar la alarma'
+    console.error(t('admin_alarms.view.messages.error.delete'), error)
+    state.errorMessage = t('admin_alarms.view.messages.error.delete')
   } finally {
     state.loading = false
   }
@@ -182,15 +185,15 @@ onMounted(() => {
     <!-- Sidebar to list alarms -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <input v-model="state.searchQuery" placeholder="Search alarms..." class="search-input" />
-        <button @click="state.showNewAlarmModal = true" class="new-alarm-btn">+ New Alarm</button>
+        <input v-model="state.searchQuery" :placeholder="$t('admin_alarms.view.sidebar.search_placeholder')" class="search-input" />
+        <button @click="state.showNewAlarmModal = true" class="new-alarm-btn">{{ $t('admin_alarms.view.sidebar.new_alarm') }}</button>
       </div>
 
       <div class="alarm-list">
         <div v-if="state.loadingAlarms" class="loading-spinner">
           <div class="spinner"></div>
         </div>
-        <div v-else-if="state.alarms.length === 0" class="empty-list">No alarms registered</div>
+        <div v-else-if="state.alarms.length === 0" class="empty-list">{{ $t('admin_alarms.view.sidebar.empty_list') }}</div>
         <div
           v-for="alarm in filteredAlarms"
           :key="alarm.id"
@@ -209,42 +212,42 @@ onMounted(() => {
       <div v-if="!state.selectedAlarm && !state.creatingNewAlarm" class="empty-state">
         <div class="empty-content">
           <i class="bi bi-bell"></i>
-          <h3>Select an alarm or create a new one</h3>
+          <h3>{{ $t('admin_alarms.view.sidebar.select_or_create') }}</h3>
         </div>
       </div>
 
       <!-- Form to edit existing alarm -->
       <div v-else-if="state.selectedAlarm && !state.creatingNewAlarm" class="alarm-form">
         <div class="form-header">
-          <h2 class="text-2xl font-bold mb-4">Edit Alarm</h2>
+          <h2 class="text-2xl font-bold mb-4">{{ $t('admin_alarms.edit.title') }}</h2>
           <div class="form-actions">
-            <button @click="deleteSelectedAlarm" class="btn-delete">Delete</button>
+            <button @click="deleteSelectedAlarm" class="btn-delete">{{ $t('admin_alarms.view.buttons.delete') }}</button>
           </div>
         </div>
 
         <form @submit.prevent="updateAlarm" class="space-y-4">
           <div>
-            <label class="label">Table Name</label>
+            <label class="label">{{ $t('admin_alarms.view.form.table_name') }}</label>
             <input v-model="state.selectedAlarm.table_name" class="input" />
           </div>
 
           <div>
-            <label class="label">Field</label>
+            <label class="label">{{ $t('admin_alarms.view.form.field') }}</label>
             <input v-model="state.selectedAlarm.field" class="input" />
           </div>
 
           <div>
-            <label class="label">Condition</label>
+            <label class="label">{{ $t('admin_alarms.view.form.condition') }}</label>
             <input v-model="state.selectedAlarm.condition" class="input" />
           </div>
 
           <div>
-            <label class="label">Threshold</label>
+            <label class="label">{{ $t('admin_alarms.view.form.threshold') }}</label>
             <input v-model="state.selectedAlarm.threshold" class="input" />
           </div>
 
           <div>
-            <label class="label">Description</label>
+            <label class="label">{{ $t('admin_alarms.view.form.description') }}</label>
             <textarea
               v-model="state.selectedAlarm.description"
               rows="3"
@@ -253,9 +256,9 @@ onMounted(() => {
           </div>
 
           <div class="form-buttons">
-            <button type="button" class="btn-cancel" @click="cancelEdit">Cancel</button>
+            <button type="button" class="btn-cancel" @click="cancelEdit">{{ $t('admin_alarms.view.buttons.cancel') }}</button>
             <button type="submit" class="btn-save" :disabled="state.loading">
-              {{ state.loading ? 'Saving...' : 'Save Changes' }}
+              {{ state.loading ? $t('admin_alarms.view.buttons.saving') : $t('admin_alarms.view.buttons.save') }}
             </button>
           </div>
         </form>
@@ -264,22 +267,22 @@ onMounted(() => {
       <!-- Form to create new alarm -->
       <div v-else-if="state.creatingNewAlarm" class="alarm-form">
         <div class="form-header">
-          <h2 class="text-2xl font-bold mb-4">Create Alarm</h2>
+          <h2 class="text-2xl font-bold mb-4">{{ $t('admin_alarms.create.title') }}</h2>
         </div>
 
         <form @submit.prevent="createAlarm" class="space-y-4">
-          <label class="label">Natural Language Description</label>
+          <label class="label">{{ $t('admin_alarms.create.description_label') }}</label>
           <textarea
             v-model="state.newAlarmInput"
-            placeholder="Describe the alarm in natural language..."
+            :placeholder="$t('admin_alarms.create.description_placeholder')"
             rows="4"
             class="input textarea"
           ></textarea>
 
           <div class="form-buttons">
-            <button type="button" class="btn-cancel" @click="cancelCreate">Cancel</button>
+            <button type="button" class="btn-cancel" @click="cancelCreate">{{ $t('admin_alarms.view.buttons.cancel') }}</button>
             <button type="submit" class="btn-create" :disabled="state.loading">
-              {{ state.loading ? 'Creating...' : 'Create Alarm' }}
+              {{ state.loading ? $t('admin_alarms.view.buttons.creating') : $t('admin_alarms.view.buttons.create') }}
             </button>
           </div>
 
@@ -292,12 +295,12 @@ onMounted(() => {
     <!-- Modal to confirm new alarm creation -->
     <div v-if="state.showNewAlarmModal" class="modal" @click.self="state.showNewAlarmModal = false">
       <div class="modal-content">
-        <h3>New Alarm</h3>
-        <p>How would you like to create the new alarm?</p>
+        <h3>{{ $t('admin_alarms.view.modal.title') }}</h3>
+        <p>{{ $t('admin_alarms.view.modal.description') }}</p>
         <div class="modal-actions">
-          <button @click="startNaturalLanguageCreate">Natural Language Description</button>
-          <button @click="startManualCreate">Create Manually</button>
-          <button @click="state.showNewAlarmModal = false" class="btn-cancel-modal">Cancel</button>
+          <button @click="startNaturalLanguageCreate">{{ $t('admin_alarms.view.modal.natural_language') }}</button>
+          <button @click="startManualCreate">{{ $t('admin_alarms.view.modal.manual') }}</button>
+          <button @click="state.showNewAlarmModal = false" class="btn-cancel-modal">{{ $t('admin_alarms.view.modal.cancel') }}</button>
         </div>
       </div>
     </div>

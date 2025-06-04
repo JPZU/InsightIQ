@@ -1,0 +1,97 @@
+{
+  "create": {
+    "title": "Create Alarm",
+    "description_label": "Natural Language Description",
+    "description_placeholder": "Describe the alarm in natural language...",
+    "button": {
+      "create": "Create Alarm",
+      "creating": "Creating..."
+    },
+    "messages": {
+      "success": "Alarm created successfully.",
+      "error": "An error occurred while creating the alarm."
+    }
+  },
+  "edit": {
+    "title": "Edit Alarm",
+    "loading": "Loading alarm...",
+    "form": {
+      "table_name": "Table Name",
+      "field": "Field",
+      "condition": "Condition",
+      "threshold": "Threshold",
+      "description": "Description",
+      "is_active": "Active"
+    },
+    "button": {
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "errors": {
+      "not_found": "Alarm not found",
+      "update_failed": "Error updating alarm"
+    }
+  },
+  "list": {
+    "title": "Registered Alarms",
+    "empty": "No alarms registered.",
+    "alarm": {
+      "table": "Table",
+      "field": "Field",
+      "condition": "Condition",
+      "description": "Description"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "errors": {
+      "fetch_failed": "Error fetching alarms",
+      "delete_failed": "Error deleting alarm"
+    }
+  },
+  "view": {
+    "sidebar": {
+      "search_placeholder": "Search alarms...",
+      "new_alarm": "+ New Alarm",
+      "empty_list": "No alarms registered",
+      "select_or_create": "Select an alarm or create a new one"
+    },
+    "form": {
+      "table_name": "Table Name",
+      "field": "Field",
+      "condition": "Condition",
+      "threshold": "Threshold",
+      "description": "Description"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "create": "Create Alarm",
+      "creating": "Creating...",
+      "delete": "Delete"
+    },
+    "modal": {
+      "title": "New Alarm",
+      "description": "How would you like to create the new alarm?",
+      "natural_language": "Natural Language Description",
+      "manual": "Create Manually",
+      "cancel": "Cancel"
+    },
+    "messages": {
+      "success": {
+        "created": "Alarm created successfully",
+        "updated": "Alarm updated successfully",
+        "deleted": "Alarm deleted successfully"
+      },
+      "error": {
+        "create": "Error creating alarm",
+        "update": "Error updating alarm",
+        "delete": "Error deleting alarm",
+        "description_required": "Please enter a description for the alarm"
+      },
+      "confirm_delete": "Are you sure you want to delete this alarm?"
+    }
+  }
+}

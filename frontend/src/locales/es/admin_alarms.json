@@ -1,0 +1,98 @@
+{
+    "create": {
+      "title": "Crear Alarma",
+      "description_label": "Descripción en Lenguaje Natural",
+      "description_placeholder": "Describe la alarma en lenguaje natural...",
+      "button": {
+        "create": "Crear Alarma",
+        "creating": "Creando..."
+      },
+      "messages": {
+        "success": "Alarma creada exitosamente.",
+        "error": "Ocurrió un error al crear la alarma."
+      }
+    },
+    "edit": {
+      "title": "Editar Alarma",
+      "loading": "Cargando alarma...",
+      "form": {
+        "table_name": "Nombre de la Tabla",
+        "field": "Campo",
+        "condition": "Condición",
+        "threshold": "Umbral",
+        "description": "Descripción",
+        "is_active": "Activa"
+      },
+      "button": {
+        "save": "Guardar Cambios",
+        "saving": "Guardando..."
+      },
+      "errors": {
+        "not_found": "Alarma no encontrada",
+        "update_failed": "Error al actualizar la alarma"
+      }
+    },
+    "list": {
+      "title": "Alarmas Registradas",
+      "empty": "No hay alarmas registradas.",
+      "alarm": {
+        "table": "Tabla",
+        "field": "Campo",
+        "condition": "Condición",
+        "description": "Descripción"
+      },
+      "actions": {
+        "edit": "Editar",
+        "delete": "Eliminar"
+      },
+      "errors": {
+        "fetch_failed": "Error al obtener las alarmas",
+        "delete_failed": "Error al eliminar la alarma"
+      }
+    },
+    "view": {
+      "sidebar": {
+        "search_placeholder": "Buscar alarmas...",
+        "new_alarm": "+ Nueva Alarma",
+        "empty_list": "No hay alarmas registradas",
+        "select_or_create": "Selecciona una alarma o crea una nueva"
+      },
+      "form": {
+        "table_name": "Nombre de la Tabla",
+        "field": "Campo",
+        "condition": "Condición",
+        "threshold": "Umbral",
+        "description": "Descripción"
+      },
+      "buttons": {
+        "cancel": "Cancelar",
+        "save": "Guardar Cambios",
+        "saving": "Guardando...",
+        "create": "Crear Alarma",
+        "creating": "Creando...",
+        "delete": "Eliminar"
+      },
+      "modal": {
+        "title": "Nueva Alarma",
+        "description": "¿Cómo deseas crear la nueva alarma?",
+        "natural_language": "Descripción en Lenguaje Natural",
+        "manual": "Crear Manualmente",
+        "cancel": "Cancelar"
+      },
+      "messages": {
+        "success": {
+          "created": "Alarma creada exitosamente",
+          "updated": "Alarma actualizada exitosamente",
+          "deleted": "Alarma eliminada exitosamente"
+        },
+        "error": {
+          "create": "Error al crear la alarma",
+          "update": "Error al actualizar la alarma",
+          "delete": "Error al eliminar la alarma",
+          "description_required": "Por favor ingresa una descripción para la alarma"
+        },
+        "confirm_delete": "¿Estás seguro de que deseas eliminar esta alarma?"
+      }
+    }
+  }
+  

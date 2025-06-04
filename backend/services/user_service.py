@@ -155,7 +155,7 @@ class UserService:
             )
 
             total_users = db.query(User).count()
-            total_admins = db.query(User).filter(User.role == "admin").count()
+            total_admins = db.query(User).filter(User.role == "ADMIN").count()
             total_questions = db.query(Question).count()
 
             return {

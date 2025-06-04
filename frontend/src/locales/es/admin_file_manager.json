@@ -69,6 +69,11 @@
       "select_records": "Selecciona el número de registros",
       "error_data": "Error al generar datos",
       "error_data_desc": "Error al generar datos sintéticos"
+    },
+    "messages": {
+      "success": {
+        "data_added": "✅ Datos agregados exitosamente"
+      }
     }
   }
   
