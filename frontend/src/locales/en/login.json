@@ -1,0 +1,15 @@
+{
+  "title": "Login",
+  "form": {
+    "username": "Username",
+    "password": "Password"
+  },
+  "buttons": {
+    "login": "Login",
+    "logging_in": "Logging in..."
+  },
+  "errors": {
+    "login_failed": "Login failed. Please check your credentials.",
+    "unexpected": "An unexpected error occurred."
+  }
+}

@@ -22,6 +22,10 @@ import enAdminUserManager from './en/admin_user_manager.json'
 import esAdminUserManager from './es/admin_user_manager.json'
 import enAdminAlarmManager from './en/admin_alarms.json'
 import esAdminAlarmManager from './es/admin_alarms.json'
+import enLogin from './en/login.json'
+import esLogin from './es/login.json'
+import enRegister from './en/register.json'
+import esRegister from './es/register.json'
 // Merge translations by language
 const messages = {
   en: {
@@ -35,6 +39,8 @@ const messages = {
     admin_file_manager: enAdminFileManager,
     admin_user_manager: enAdminUserManager,
     admin_alarms: enAdminAlarmManager,
+    login: enLogin,
+    register: enRegister,
   },
   es: {
     app: esApp,
@@ -47,6 +53,8 @@ const messages = {
     admin_file_manager: esAdminFileManager,
     admin_user_manager: esAdminUserManager,
     admin_alarms: esAdminAlarmManager,
+    login: esLogin,
+    register: esRegister,
   },
 }
 

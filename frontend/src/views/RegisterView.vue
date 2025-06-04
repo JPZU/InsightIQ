@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import UserService from '@/services/UserService'
 import AuthService from '@/services/AuthService'
 
+const { t } = useI18n()
 const fullName = ref('')
 const username = ref('')
 const email = ref('')
@@ -17,7 +19,7 @@ async function handleRegister() {
   if (isLoading.value) return
 
   if (password.value !== confirmPassword.value) {
-    errorMessage.value = 'Passwords do not match'
+    errorMessage.value = t('register.errors.passwords_mismatch')
     return
   }
 
@@ -56,8 +58,7 @@ async function handleRegister() {
         } else {
           // If login fails for some reason, still show registration success but redirect to login
           console.warn('Registration successful but automatic login failed')
-          errorMessage.value =
-            'Account created successfully, but login failed. Please try logging in manually.'
+          errorMessage.value = t('register.errors.auto_login_failed')
           setTimeout(() => {
             router.push('/login')
           }, 3000) // Give user time to read the message before redirecting
@@ -65,18 +66,17 @@ async function handleRegister() {
       } catch (loginError) {
         // Handle login error
         console.error('Auto-login error after registration:', loginError)
-        errorMessage.value =
-          'Account created successfully, but automatic login failed. Please try logging in manually.'
+        errorMessage.value = t('register.errors.auto_login_failed')
         setTimeout(() => {
           router.push('/login')
         }, 3000) // Give user time to read the message before redirecting
       }
     } else {
       // Registration failed
-      errorMessage.value = registerResponse.message || 'Registration failed. Please try again.'
+      errorMessage.value = registerResponse.message || t('register.errors.registration_failed')
     }
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'An unexpected error occurred.'
+    errorMessage.value = error instanceof Error ? error.message : t('register.errors.unexpected')
   } finally {
     isLoading.value = false
   }
@@ -86,25 +86,25 @@ async function handleRegister() {
 <template>
   <div class="register-container">
     <form @submit.prevent="handleRegister" class="register-form">
-      <h2>Create an Account</h2>
+      <h2>{{ $t('register.title') }}</h2>
 
       <div class="form-group">
-        <label for="fullName">Full Name</label>
+        <label for="fullName">{{ $t('register.form.full_name') }}</label>
         <input type="text" id="fullName" v-model="fullName" required autocomplete="name" />
       </div>
 
       <div class="form-group">
-        <label for="username">Username</label>
+        <label for="username">{{ $t('register.form.username') }}</label>
         <input type="text" id="username" v-model="username" required autocomplete="username" />
       </div>
 
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">{{ $t('register.form.email') }}</label>
         <input type="email" id="email" v-model="email" required autocomplete="email" />
       </div>
 
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">{{ $t('register.form.password') }}</label>
         <input
           type="password"
           id="password"
@@ -115,7 +115,7 @@ async function handleRegister() {
       </div>
 
       <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
+        <label for="confirmPassword">{{ $t('register.form.confirm_password') }}</label>
         <input
           type="password"
           id="confirmPassword"
@@ -130,11 +130,11 @@ async function handleRegister() {
       </div>
 
       <button type="submit" :disabled="isLoading">
-        {{ isLoading ? 'Creating account...' : 'Register' }}
+        {{ isLoading ? $t('register.buttons.creating') : $t('register.buttons.register') }}
       </button>
 
       <div class="login-link">
-        Already have an account? <router-link to="/login">Login here</router-link>
+        {{ $t('register.login_link.text') }} <router-link to="/login">{{ $t('register.login_link.link') }}</router-link>
       </div>
     </form>
   </div>

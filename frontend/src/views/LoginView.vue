@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/AuthService'
 
+const { t } = useI18n()
 const username = ref('')
 const password = ref('')
 const errorMessage = ref('')
@@ -21,10 +23,10 @@ async function handleLogin() {
     if (success) {
       router.push('/')
     } else {
-      errorMessage.value = 'Login failed. Please check your credentials.'
+      errorMessage.value = t('login.errors.login_failed')
     }
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'An unexpected error occurred.'
+    errorMessage.value = error instanceof Error ? error.message : t('login.errors.unexpected')
   } finally {
     isLoading.value = false
   }
@@ -34,15 +36,15 @@ async function handleLogin() {
 <template>
   <div class="login-container">
     <form @submit.prevent="handleLogin" class="login-form">
-      <h2>Login</h2>
+      <h2>{{ $t('login.title') }}</h2>
 
       <div class="form-group">
-        <label for="username">Username</label>
+        <label for="username">{{ $t('login.form.username') }}</label>
         <input type="text" id="username" v-model="username" required autocomplete="username" />
       </div>
 
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">{{ $t('login.form.password') }}</label>
         <input
           type="password"
           id="password"
@@ -57,7 +59,7 @@ async function handleLogin() {
       </div>
 
       <button type="submit" :disabled="isLoading">
-        {{ isLoading ? 'Logging in...' : 'Login' }}
+        {{ isLoading ? $t('login.buttons.logging_in') : $t('login.buttons.login') }}
       </button>
     </form>
   </div>
