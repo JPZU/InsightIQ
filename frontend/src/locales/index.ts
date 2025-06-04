@@ -12,7 +12,8 @@ import esDashboard from './es/dashboard.json'
 import esChat from './es/chat.json'
 import esFileManager from './es/file_manager.json'
 import esSyntheticData from './es/synthetic_data.json'
-
+import esPlans from './es/plans.json'
+import enPlans from './en/plans.json'
 // Merge translations by language
 const messages = {
   en: {
@@ -21,6 +22,7 @@ const messages = {
     chat: enChat,
     file_manager: enFileManager,
     synthetic_data: enSyntheticData,
+    plans: enPlans,
   },
   es: {
     app: esApp,
@@ -28,6 +30,7 @@ const messages = {
     chat: esChat,
     file_manager: esFileManager,
     synthetic_data: esSyntheticData,
+    plans: esPlans,
   },
 }
 
