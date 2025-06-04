@@ -11,8 +11,8 @@ router = APIRouter()
 
 
 class RoleEnum(str, Enum):
-    USER = "user"
-    ADMIN = "admin"
+    USER = "USER"
+    ADMIN = "ADMIN"
 
 
 class AdminUserUpdate(BaseModel):

@@ -23,7 +23,7 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
 
 
-@router.post("", response_model=BaseResponse)
+@router.post("/", response_model=BaseResponse)
 def register_user(user_data: UserCreate):
     try:
         user = UserService.create_user(

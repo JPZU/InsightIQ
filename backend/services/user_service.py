@@ -14,7 +14,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class UserService:
     @staticmethod
-    def create_user(full_name: str, username: str, email: str, password: str, role: str = "user") -> User:
+    def create_user(full_name: str, username: str, email: str, password: str, role: str = "USER") -> User:
         with SessionLocal() as db:
             if UserService.get_user_by_username(username):
                 raise ValueError("Username already registered")
