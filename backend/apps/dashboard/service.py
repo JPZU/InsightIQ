@@ -24,17 +24,25 @@ class DashboardService:
         db_manager = DBManager()
         df, file_name = db_manager.get_dataframe()
 
+        # Select only numeric columns
         numeric_df = df.select_dtypes(include=["number"])
 
-        # Reemplazar inf, -inf por NaN
-        cleaned_df = numeric_df.replace([float('inf'), float('-inf')], np.nan)
+        # Exclude columns that look like IDs
+        columns_to_analyze = [col for col in numeric_df.columns if 'id' not in col.lower()]
+        
+        # Keep only desired columns
+        cleaned_df = numeric_df[columns_to_analyze]
 
-        # Reemplazar NaN por 0
+        # Replace inf and -inf with NaN
+        cleaned_df = cleaned_df.replace([float('inf'), float('-inf')], np.nan)
+
+        # Replace NaN with 0
         cleaned_df = cleaned_df.fillna(0)
 
+        # Get descriptive statistics
         descriptive_stats = cleaned_df.describe().to_dict()
 
-        # Asegurar que todas las claves estén en string y sin NaN/infs
+        # Ensure all keys are strings and no values are None
         for column, stats in descriptive_stats.items():
             descriptive_stats[column] = {
                 str(key): (value if value is not None else 0) for key, value in stats.items()
