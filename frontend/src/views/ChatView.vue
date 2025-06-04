@@ -1,19 +1,47 @@
-<script setup>
-import { ref, onMounted, computed, nextTick } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import ChatService from '@/services/ChatService'
 import BarChart from '@/components/BarChart.vue'
 import PieChart from '@/components/PieChart.vue'
 import LineChart from '@/components/LineChart.vue'
-import Table from '@/components/Table.vue'
+import SidebarComponent from '@/components/layouts/SidebarComponent.vue'
 import '@/assets/main.css'
 
-const state = ref({
+type Message = {
+  type: 'question' | 'response'
+  content: string
+  created_at: string
+  response_id?: number
+  rating?: number | null
+  query_result?: any | null
+  result?: any | null
+}
+
+type State = {
+  question: string
+  answer: any | null
+  loading: boolean
+  chartType: 'bar' | 'pie' | 'line'
+  viewMode: 'graphs' | 'table'
+  chats: Array<{ id: number; name: string }>
+  messages: Message[]
+  selectedChat: number | null
+  searchQuery: string
+  loadingChats: boolean
+  loadingMessages: boolean
+  showNewChatModal: boolean
+  newChatName: string
+  expandedMessages: Record<number, boolean>
+  selectedMessageIndex: number | null
+  selectedColumns: { x: string; y: string } | null
+}
+
+const state = ref<State>({
   question: '',
   answer: null,
   loading: false,
   chartType: 'bar',
-  viewMode: 'graphs',
-  chartTitle: '',
+  viewMode: 'table',
   chats: [],
   messages: [],
   selectedChat: null,
@@ -22,7 +50,9 @@ const state = ref({
   loadingMessages: false,
   showNewChatModal: false,
   newChatName: '',
-  expandedMessages: {}, // Nuevo estado para controlar qué mensajes tienen gráficas expandidas
+  expandedMessages: {} as Record<number, boolean>,
+  selectedMessageIndex: null,
+  selectedColumns: null,
 })
 
 const filteredChats = computed(() =>
@@ -35,131 +65,202 @@ const filteredChats = computed(() =>
 
 const fetchChats = async () => {
   state.value.loadingChats = true
-  const res = await ChatService.getChats()
-  state.value.chats = res.response || []
-  state.value.loadingChats = false
+  try {
+    const res = await ChatService.getChats()
+    state.value.chats = res.response || []
+  } catch (error) {
+    console.error('Error fetching chats:', error)
+  } finally {
+    state.value.loadingChats = false
+  }
 }
 
-const fetchMessages = async (chatId) => {
+const scrollToBottom = async () => {
+  await nextTick()
+  const messagesContainer = document.querySelector('.chat-messages')
+  if (messagesContainer) {
+    messagesContainer.scrollTo({
+      top: messagesContainer.scrollHeight,
+      behavior: 'smooth'
+    })
+  }
+}
+
+const scrollToMessage = async (index: number) => {
+  await nextTick()
+  const messagesContainer = document.querySelector('.chat-messages')
+  const messageElement = document.querySelector(`.message:nth-child(${index + 1})`)
+  if (messagesContainer && messageElement) {
+    // Scroll to show the top of the message
+    messagesContainer.scrollTo({
+      top: messageElement.getBoundingClientRect().top + messagesContainer.scrollTop - messagesContainer.getBoundingClientRect().top,
+      behavior: 'smooth'
+    })
+  }
+}
+
+const fetchMessages = async (chatId: number) => {
   if (!chatId) return
   state.value.loadingMessages = true
-
-  const res = await ChatService.getChatMessages(chatId)
-  state.value.messages = res.response?.messages || []
-  state.value.selectedChat = chatId
-  state.value.answer = null
-
-  // Reset expanded messages cuando cambiamos de chat
-  state.value.expandedMessages = {}
-
-  nextTick(() => {
-    scrollToBottom()
-  })
-
-  state.value.loadingMessages = false
+  try {
+    const res = await ChatService.getChatMessages(chatId)
+    state.value.messages = (res.response?.messages || []).map(msg => ({
+      ...msg,
+      result: msg.type === 'response' && msg.query_result ? processQueryResult(msg.query_result) : null
+    }))
+    state.value.selectedChat = chatId
+    state.value.answer = null
+    state.value.expandedMessages = state.value.messages.reduce((acc, msg, index) => {
+      if (msg.type === 'response' && msg.result && Object.keys(msg.result).length > 0) {
+        acc[index] = true
+      }
+      return acc
+    }, {} as Record<number, boolean>)
+    
+    // Wait for the DOM to update with the new messages
+    await nextTick()
+    // Use smooth scrolling after a small delay to ensure all content is rendered
+    setTimeout(() => {
+      const messagesContainer = document.querySelector('.chat-messages')
+      if (messagesContainer) {
+        messagesContainer.scrollTo({
+          top: messagesContainer.scrollHeight,
+          behavior: 'smooth'
+        })
+      }
+    }, 100)
+  } catch (error) {
+    console.error('Error fetching messages:', error)
+  } finally {
+    state.value.loadingMessages = false
+  }
 }
 
 const createChatWithName = async () => {
-  if (!state.value.newChatName.trim()) return alert('Por favor ingresa un nombre para el chat')
-
-  const res = await ChatService.createChat(state.value.newChatName)
-  const newChat = res.response
-  state.value.chats = [newChat, ...state.value.chats]
-  state.value.showNewChatModal = false
-  state.value.newChatName = ''
-  await fetchMessages(newChat.id)
+  if (!state.value.newChatName.trim()) {
+    alert('Por favor ingresa un nombre para el chat')
+    return
+  }
+  try {
+    const res = await ChatService.createChat(state.value.newChatName)
+    state.value.chats = [res.response, ...state.value.chats]
+    state.value.showNewChatModal = false
+    state.value.newChatName = ''
+    await fetchMessages(res.response.id)
+  } catch (error) {
+    console.error('Error creating chat:', error)
+  }
 }
 
-const processQueryResult = (result, content) => {
+const processQueryResult = (result) => {
   const parsed = typeof result === 'string' ? JSON.parse(result) : result
+  if (!parsed || Object.keys(parsed).length === 0) return null
 
-  if (parsed && Object.keys(parsed).length > 0) {
-    const keys = Object.keys(parsed)
-    let x_axis = []
-    let y_axis = []
-    let chartTitle = ''
-
-    if (keys.length === 1) {
-      x_axis = parsed[keys[0]] || []
-      chartTitle = `Distribución de ${keys[0]}`
-    } else if (keys.length >= 2) {
-      x_axis = parsed[keys[0]] || []
-      y_axis = parsed[keys[1]] || []
-      chartTitle = `${keys[1]} vs ${keys[0]}`
-    }
-
-    return {
-      content,
-      query_result: parsed,
-      x_axis,
-      y_axis,
-      chartTitle,
-    }
+  const keys = Object.keys(parsed)
+  
+  // Format the column names for display
+  const formatColumnName = (name) => {
+    return name
+      .replace(/_/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ')
   }
-  return null
+
+  // Find first string column and first numeric column
+  const stringColumn = keys.find(key => {
+    const firstValue = parsed[key][0]
+    return typeof firstValue === 'string' || isNaN(Number(firstValue))
+  })
+  const numericColumn = keys.find(key => {
+    const firstValue = parsed[key][0]
+    return !isNaN(Number(firstValue))
+  })
+  
+  // Use the found columns for the graph
+  const xColumn = stringColumn
+  const yColumn = numericColumn
+
+  // Use the selected columns for the graph data
+  const x_axis = xColumn ? parsed[xColumn].map(val => String(val)) : []
+  const y_axis = yColumn ? parsed[yColumn].map(val => Number(val)) : []
+  
+  // Create chart title using the selected columns
+  const chartTitle = xColumn && yColumn
+    ? `${formatColumnName(yColumn)} vs ${formatColumnName(xColumn)}`
+    : ''
+
+  return { 
+    query_result: parsed,  // Keep the full data for the table
+    x_axis,               // Selected x-axis data for the graph
+    y_axis,               // Selected y-axis data for the graph
+    chartTitle
+  }
 }
 
 const submitQuestion = async () => {
   if (!state.value.question.trim()) return
-
   const userQuestion = state.value.question
   state.value.loading = true
   state.value.question = ''
 
-  // Agregar pregunta del usuario
   state.value.messages.push({
     type: 'question',
     content: userQuestion,
     created_at: new Date().toISOString(),
   })
 
-  // Desplazar hacia abajo después de agregar pregunta
-  await nextTick()
-  scrollToBottom()
+  await nextTick(scrollToBottom)
 
-  let res
   try {
-    if (state.value.selectedChat) {
-      res = await ChatService.askChat(state.value.selectedChat, userQuestion)
-    } else {
-      res = await ChatService.askQuestion(userQuestion)
-    }
+    const res = state.value.selectedChat
+      ? await ChatService.askChat(state.value.selectedChat, userQuestion)
+      : await ChatService.askQuestion(userQuestion)
 
     const msg = res.response
-    const processedResult = msg?.query_result
-      ? processQueryResult(msg.query_result, msg.content)
-      : null
+    const processedResult = msg?.query_result ? processQueryResult(msg.query_result) : null
 
-    const message = {
+    // Add the new message and immediately expand it if it has data
+    const newMessageIndex = state.value.messages.length
+    state.value.messages.push({
       type: 'response',
       content: msg?.content || 'No response content',
       created_at: new Date().toISOString(),
-      result: processedResult || {},
+      result: processedResult,
       response_id: msg.response_id,
       rating: null,
+    })
+
+    // First scroll to show the top of the new message
+    await scrollToMessage(newMessageIndex)
+
+    // If the message has data, expand it after a short delay
+    if (processedResult && Object.keys(processedResult).length > 0) {
+      // Wait a bit before expanding to ensure the scroll to message is complete
+      setTimeout(() => {
+        state.value.expandedMessages[newMessageIndex] = true
+        // Then scroll to bottom to show the full content
+        setTimeout(() => {
+          scrollToBottom()
+        }, 100)
+      }, 300)
     }
-
-    state.value.messages.push(message)
-
-    // Desplazar hacia abajo después de recibir respuesta
-    await nextTick()
-    scrollToBottom()
   } catch (error) {
     console.error('Error al enviar pregunta:', error)
     state.value.messages.push({
       type: 'response',
       content: 'Ocurrió un error al procesar tu pregunta',
       created_at: new Date().toISOString(),
-      result: {},
+      result: null,
     })
   } finally {
     state.value.loading = false
   }
 }
 
-const rateResponse = async (index, rating) => {
+const rateResponse = async (index: number, rating: number) => {
   const message = state.value.messages[index]
-  if (message.rating !== null) return // ya fue calificado
+  if (message.rating !== null || !message.response_id) return
 
   try {
     await ChatService.rateResponse(message.response_id, rating)
@@ -170,59 +271,38 @@ const rateResponse = async (index, rating) => {
   }
 }
 
-const getButtonClass = (mode) =>
-  state.value.viewMode === mode ? 'btn-primary text-white' : 'btn-outline-primary'
-
-// Función para desplazar al final del chat
-const scrollToBottom = () => {
-  const messagesContainer = document.querySelector('.chat-messages')
-  if (messagesContainer) {
-    messagesContainer.scrollTop = messagesContainer.scrollHeight
-  }
+const toggleMessageDetails = (index: number) => {
+  state.value.expandedMessages[index] = !state.value.expandedMessages[index]
 }
 
-// Función para alternar la visualización de gráficas en un mensaje
-const toggleMessageDetails = async (index) => {
-  state.value.expandedMessages = {
-    ...state.value.expandedMessages,
-    [index]: !state.value.expandedMessages[index],
-  }
-
-  // Desplazar hacia abajo después de expandir/contraer
-  await nextTick()
-  scrollToBottom()
+const formatMessage = (content) => {
+  if (!content) return ''
+  
+  let formatted = content.replace(/`([^`]+)`/g, '<code>$1</code>')
+  
+  formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  
+  formatted = formatted.replace(/(\d+\.\s+[^\n]+)/g, '<div class="list-item">$1</div>')
+  
+  formatted = formatted.replace(/\n/g, '<br>')
+  
+  return formatted
 }
 
-onMounted(() => {
-  fetchChats()
-})
+onMounted(fetchChats)
 </script>
 
 <template>
   <div class="app-container">
-    <div class="sidebar">
-      <div class="sidebar-header">
-        <input
-          v-model="state.searchQuery"
-          :placeholder="$t('chat.search_placeholder')"
-          class="search-input"
-        />
-        <button @click="state.showNewChatModal = true" class="new-chat-btn">
-          {{ $t('chat.new_chat') }}
-        </button>
-      </div>
-
-      <div class="chat-list">
-        <div
-          v-for="chat in filteredChats"
-          :key="chat.id"
-          @click="fetchMessages(chat.id)"
-          :class="['chat-item', { active: chat.id === state.selectedChat }]"
-        >
-          {{ chat.name }}
-        </div>
-      </div>
-    </div>
+    <SidebarComponent
+      :items="filteredChats"
+      :selectedItemId="state.selectedChat"
+      v-model:searchQuery="state.searchQuery"
+      :searchPlaceholder="$t('chat.search_placeholder')"
+      :newItemButtonText="$t('chat.new_chat')"
+      @itemSelected="(chat) => fetchMessages(chat.id)"
+      @newItemClick="state.showNewChatModal = true"
+    />
 
     <div class="chat-area">
       <div v-if="!state.selectedChat" class="empty-state">
@@ -238,150 +318,116 @@ onMounted(() => {
             <div class="spinner"></div>
           </div>
 
-          <div v-else>
+          <template v-else>
             <div
               v-for="(message, index) in state.messages"
               :key="index"
               :class="['message', message.type === 'question' ? 'user-message' : 'ai-message']"
+              :id="`message-${index}`"
             >
-              <div class="message-content">{{ message.content }}</div>
+              <div class="message-content-wrapper">
+                <div class="message-content" v-if="message.type === 'question'">{{ message.content }}</div>
+                <div class="message-content formatted-content" v-else v-html="formatMessage(message.content)"></div>
+              </div>
 
-              <div
-                v-if="
-                  message.type === 'response' && state.expandedMessages[index] && message.result
-                "
-                class="message-graphs"
-              >
-                <div class="btn-group mt-2 mb-2" role="group">
-                  <input
-                    type="radio"
-                    class="btn-check"
-                    name="viewToggle"
-                    :id="'viewGraphs' + index"
-                    autocomplete="off"
-                    v-model="state.viewMode"
-                    value="graphs"
-                  />
-                  <label
-                    :class="`btn btn-sm ${getButtonClass('graphs')}`"
-                    :for="'viewGraphs' + index"
-                    >{{ $t('chat.graphs') }}</label
+              <div class="message-footer">
+                <div class="message-actions">
+                  <span
+                    v-if="message.type === 'response' && message.result && Object.keys(message.result).length > 0"
+                    @click="toggleMessageDetails(index)"
+                    class="details-toggle"
                   >
+                    <i :class="['bi', state.expandedMessages[index] ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+                    {{ state.expandedMessages[index] ? $t('chat.hide_details') : $t('chat.show_details') }}
+                  </span>
 
-                  <input
-                    type="radio"
-                    class="btn-check"
-                    name="viewToggle"
-                    :id="'viewTable' + index"
-                    autocomplete="off"
-                    v-model="state.viewMode"
-                    value="table"
-                  />
-                  <label
-                    :class="`btn btn-sm ${getButtonClass('table')}`"
-                    :for="'viewTable' + index"
-                    >{{ $t('chat.table') }}</label
+                  <div v-if="message.type === 'response' && message.response_id" class="rating-buttons">
+                    <button 
+                      @click="rateResponse(index, 1)" 
+                      :disabled="message.rating !== null" 
+                      :class="{ active: message.rating === 1 }"
+                      :title="message.rating === 1 ? 'You liked this response' : 'Like this response'"
+                    >
+                      👍
+                    </button>
+                    <button 
+                      @click="rateResponse(index, 0)" 
+                      :disabled="message.rating !== null" 
+                      :class="{ active: message.rating === 0 }"
+                      :title="message.rating === 0 ? 'You disliked this response' : 'Dislike this response'"
+                    >
+                      👎
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Data details section -->
+              <div v-if="message.type === 'response' && message.result && Object.keys(message.result).length > 0 && state.expandedMessages[index]" 
+                   class="message-details">
+                <div class="view-toggle">
+                  <button
+                    :class="['btn', state.viewMode === 'table' ? 'btn-primary' : 'btn-outline']"
+                    @click="state.viewMode = 'table'"
                   >
+                    {{ $t('chat.table') }}
+                  </button>
+                  <button
+                    :class="['btn', state.viewMode === 'graphs' ? 'btn-primary' : 'btn-outline']"
+                    @click="state.viewMode = 'graphs'"
+                  >
+                    {{ $t('chat.graphs') }}
+                  </button>
                 </div>
 
-                <div v-if="state.viewMode === 'graphs'">
-                  <select v-model="state.chartType" class="form-control form-control-sm mb-2">
+                <div v-if="state.viewMode === 'table'" class="table-container">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th v-for="(_, key) in message.result.query_result" :key="key">
+                          {{ key }}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(_, i) in message.result.query_result[Object.keys(message.result.query_result)[0]]" :key="i">
+                        <td v-for="(values, key) in message.result.query_result" :key="key">
+                          {{ values[i] }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div v-else class="graph-section">
+                  <select v-model="state.chartType" class="form-control">
                     <option value="bar">{{ $t('chat.bar_chart') }}</option>
                     <option value="pie">{{ $t('chat.pie_chart') }}</option>
                     <option value="line">{{ $t('chat.line_chart') }}</option>
                   </select>
 
-                  <div v-if="message.result.x_axis?.length && message.result.y_axis?.length">
-                    <BarChart
-                      v-if="state.chartType === 'bar'"
+                  <div v-if="message.result.x_axis?.length && message.result.y_axis?.length" class="chart-container">
+                    <component
+                      :is="state.chartType === 'bar' ? BarChart : state.chartType === 'pie' ? PieChart : LineChart"
                       :xAxis="message.result.x_axis"
                       :yAxis="message.result.y_axis"
-                      :chartTitle="message.result.chartTitle || $t('chat.bar_chart')"
-                    />
-                    <PieChart
-                      v-else-if="state.chartType === 'pie'"
-                      :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis"
-                      :chartTitle="message.result.chartTitle || $t('chat.pie_chart')"
-                    />
-                    <LineChart
-                      v-else-if="state.chartType === 'line'"
-                      :xAxis="message.result.x_axis"
-                      :yAxis="message.result.y_axis"
-                      :chartTitle="message.result.chartTitle || $t('chat.line_chart')"
+                      :chartTitle="message.result.chartTitle"
+                      :key="state.chartType"
                     />
                   </div>
-                  <div v-else class="alert alert-info p-2">
+                  <div v-else class="alert">
                     {{ $t('chat.no_chart') }}
                   </div>
                 </div>
-
-                <div v-else-if="state.viewMode === 'table'">
-                  <div class="table-responsive">
-                    <table class="table table-sm table-bordered">
-                      <thead>
-                        <tr>
-                          <th v-for="(value, key) in message.result.query_result" :key="key">
-                            {{ key }}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr
-                          v-for="(_, i) in message.result.query_result[
-                            Object.keys(message.result.query_result)[0]
-                          ]"
-                          :key="i"
-                        >
-                          <td v-for="(values, key) in message.result.query_result" :key="key">
-                            {{ values[i] }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
               </div>
+            </div>
 
-              <div class="message-footer">
-                <button
-                  v-if="
-                    message.type === 'response' &&
-                    message.result &&
-                    Object.keys(message.result).length > 0
-                  "
-                  @click="toggleMessageDetails(index)"
-                  class="details-btn"
-                >
-                  {{
-                    state.expandedMessages[index]
-                      ? $t('chat.hide_details')
-                      : $t('chat.show_details')
-                  }}
-                </button>
-
-                <div class="message-time">
-                  {{ new Date(message.created_at).toLocaleTimeString() }}
-                </div>
-                <!-- Botones de rating -->
-                <div
-                  v-if="message.type === 'response' && message.response_id"
-                  class="rating-buttons"
-                >
-                  <button
-                    @click="rateResponse(index, 1)"
-                    :disabled="message.rating !== null"
-                    :class="{ active: message.rating === 1 }"
-                  >
-                    👍
-                  </button>
-                  <button
-                    @click="rateResponse(index, 0)"
-                    :disabled="message.rating !== null"
-                    :class="{ active: message.rating === 0 }"
-                  >
-                    👎
-                  </button>
+            <div v-if="state.loading" class="message ai-message">
+              <div class="message-content-wrapper">
+                <div class="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
               </div>
             </div>
@@ -389,18 +435,25 @@ onMounted(() => {
             <div v-if="state.messages.length === 0" class="no-messages">
               {{ $t('chat.no_messages') }}
             </div>
-          </div>
+          </template>
         </div>
 
         <div class="message-input">
-          <input
-            v-model="state.question"
-            :placeholder="$t('chat.ask')"
+          <input 
+            v-model="state.question" 
+            :placeholder="$t('chat.ask')" 
             @keyup.enter="submitQuestion"
+            :disabled="state.loading"
           />
-          <button @click="submitQuestion" :disabled="state.loading">
-            <span v-if="state.loading">{{ $t('chat.sending') }}</span>
-            <span v-else>{{ $t('chat.send') }}</span>
+          <button @click="submitQuestion" :disabled="state.loading || !state.question.trim()">
+            <span v-if="state.loading" class="sending-indicator">
+              <i class="bi bi-arrow-repeat"></i>
+              {{ $t('chat.thinking') }}
+            </span>
+            <span v-else>
+              <i class="bi bi-send"></i>
+              {{ $t('chat.send') }}
+            </span>
           </button>
         </div>
       </div>
@@ -409,16 +462,10 @@ onMounted(() => {
     <div v-if="state.showNewChatModal" class="modal" @click.self="state.showNewChatModal = false">
       <div class="modal-content">
         <h3>{{ $t('chat.new_chat') }}</h3>
-        <input
-          v-model="state.newChatName"
-          :placeholder="$t('chat.chat_name')"
-          @keyup.enter="createChatWithName"
-        />
+        <input v-model="state.newChatName" :placeholder="$t('chat.chat_name')" @keyup.enter="createChatWithName" />
         <div class="modal-actions">
           <button @click="state.showNewChatModal = false">{{ $t('chat.cancel') }}</button>
-          <button @click="createChatWithName" :disabled="!state.newChatName.trim()">
-            {{ $t('chat.create') }}
-          </button>
+          <button @click="createChatWithName" :disabled="!state.newChatName.trim()">{{ $t('chat.create') }}</button>
         </div>
       </div>
     </div>
@@ -426,141 +473,128 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.app-container {
-  display: flex;
-  height: 83vh;
-}
-
-.sidebar {
-  width: 280px;
-  border-right: 1px solid #e0e0e0;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-header {
-  padding: 1rem;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.new-chat-btn {
-  width: 100%;
-  padding: 0.5rem;
-  background: #0395ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.chat-list {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.chat-item {
-  padding: 1rem;
-  cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.chat-item:hover {
-  background: #f5f5f5;
-}
-
-.chat-item.active {
-  background: #e3f2fd;
-}
-
-.chat-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-.active-chat {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
+.app-container { display: flex; height: 83vh; }
+.chat-area { flex: 1; display: flex; flex-direction: column; }
+.empty-state { display: flex; justify-content: center; align-items: center; height: 100%; }
+.active-chat { display: flex; flex-direction: column; height: 100%; }
 .messages-container {
   flex: 1;
   padding: 1rem;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  scroll-behavior: smooth;
 }
 
 .message {
   max-width: 80%;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   padding: 0.75rem;
   border-radius: 8px;
-  position: relative;
-}
-
-.user-message {
-  background: #e3f2fd;
-  margin-left: auto;
-}
-
-.ai-message {
   background: #f0f0f0;
-  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  min-width: 100px;
+  align-self: flex-start;
+  scroll-margin-top: 1rem; /* Add scroll margin to ensure proper positioning */
+}
+
+.user-message { 
+  background: #e3f2fd; 
+  align-self: flex-end;
+}
+
+.message-content-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
 }
 
 .message-content {
   margin-bottom: 0.5rem;
-}
-
-.message-graphs {
-  background: white;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-height: 450px;
-  overflow: auto;
+  word-break: break-word;
+  width: 100%;
 }
 
 .message-footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end;
   margin-top: 0.5rem;
+  font-size: 0.8rem;
+  width: 100%;
 }
 
-.message-time {
-  font-size: 0.75rem;
-  color: #666;
+.message-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  justify-content: flex-end;
 }
 
-.details-btn {
+.rating-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rating-buttons button {
   background: none;
   border: none;
-  color: #4a6baf;
   cursor: pointer;
-  font-size: 0.8rem;
-  padding: 2px 5px;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+  opacity: 0.6;
+  font-size: 1.2rem;
 }
 
-.details-btn:hover {
-  text-decoration: underline;
+.rating-buttons button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.rating-buttons button.active {
+  opacity: 1;
+}
+
+.rating-buttons button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.rating-buttons button:disabled.active {
+  opacity: 1;
+}
+
+.details-toggle {
+  color: #4a6baf;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+  transition: color 0.2s;
+}
+
+.details-toggle:hover {
+  color: #2c4a8f;
+}
+
+.details-toggle i {
+  font-size: 1.1em;
+  transition: transform 0.2s;
+}
+
+.message-details {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  width: 100%;
 }
 
 .message-input {
@@ -568,6 +602,7 @@ onMounted(() => {
   padding: 1rem;
   border-top: 1px solid #e0e0e0;
   background: white;
+  gap: 0.5rem;
 }
 
 .message-input input {
@@ -575,7 +610,6 @@ onMounted(() => {
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin-right: 0.5rem;
 }
 
 .message-input button {
@@ -585,21 +619,28 @@ onMounted(() => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+  justify-content: center;
 }
 
 .message-input button:disabled {
-  background: #cccccc;
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.message-input input:disabled {
+  background: #f5f5f5;
   cursor: not-allowed;
 }
 
-/* Modal */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -625,8 +666,8 @@ onMounted(() => {
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
   gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 .modal-actions button {
@@ -636,21 +677,12 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.modal-actions button:first-child {
-  background: #f0f0f0;
-}
-
 .modal-actions button:last-child {
   background: #0395ff;
   color: white;
 }
 
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-}
-
+.loading-spinner { display: flex; justify-content: center; padding: 2rem; }
 .spinner {
   width: 2rem;
   height: 2rem;
@@ -660,47 +692,90 @@ onMounted(() => {
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  100% {
-    transform: rotate(360deg);
-  }
+.view-toggle { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+.btn { padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; }
+.btn-primary { background: #0d6efd; color: white; }
+.btn-outline { border: 1px solid #0d6efd; color: #0d6efd; }
+
+.table-container { overflow-x: auto; max-width: 100%; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 0.5rem; border: 1px solid #ddd; text-align: left; }
+.table th { background: #f8f9fa; }
+
+.alert { padding: 0.5rem; border-radius: 4px; background: #e7f5ff; color: #1864ab; }
+.form-control { padding: 0.375rem 0.75rem; border: 1px solid #ced4da; border-radius: 0.25rem; }
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #f0f0f0;
+  border-radius: 16px;
+  width: fit-content;
 }
 
-/* Estilos para los botones de gráficas/tabla */
-.btn-group {
-  display: flex;
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background: #666;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+.sending-indicator {
+  display: inline-flex;
+  align-items: center;
   gap: 0.5rem;
 }
 
-.btn {
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
+.graph-section {
+  margin-top: 1rem;
+}
+
+.chart-container {
+  margin-top: 1rem;
+  min-height: 300px;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.details-toggle {
+  color: #4a6baf;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+  transition: color 0.2s;
 }
 
-.btn-primary {
-  background-color: #0d6efd;
-  color: white;
+.details-toggle:hover {
+  color: #2c4a8f;
 }
 
-.btn-outline-primary {
-  background-color: white;
-  color: #0d6efd;
-  border: 1px solid #0d6efd;
+.details-toggle i {
+  font-size: 1.1em;
+  transition: transform 0.2s;
 }
 
-.btn-outline-primary:hover {
-  background-color: #0d6efd;
-  color: white;
-}
-
-/* Estilos para tablas */
-.table-responsive {
+.table-container {
+  margin-top: 1rem;
   overflow-x: auto;
   max-width: 100%;
 }
@@ -708,71 +783,40 @@ onMounted(() => {
 .table {
   width: 100%;
   border-collapse: collapse;
-  max-height: 400px;
-  overflow: auto;
-  display: block;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .table th,
 .table td {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
+  padding: 0.75rem;
   text-align: left;
+  border: 1px solid #e2e8f0;
 }
 
 .table th {
-  background-color: #f8f9fa;
+  background: #f8fafc;
+  font-weight: 600;
+  color: #1e293b;
 }
 
-.table-sm th,
-.table-sm td {
-  padding: 0.3rem;
+.table tr:nth-child(even) {
+  background: #f8fafc;
 }
 
-/* Estilos para alertas */
-.alert {
-  padding: 0.5rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
+.table tr:hover {
+  background: #f1f5f9;
 }
 
-.alert-info {
-  background-color: #e7f5ff;
-  color: #1864ab;
-  border: 1px solid #d0ebff;
+.column-selectors,
+.selector-group {
+  display: none;
 }
 
-/* Estilos para select e inputs */
-.form-control {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-}
-
-.form-control-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-
-.rating-buttons {
-  display: flex;
-  gap: 0.5rem;
-  margin-left: auto;
-}
-
-.rating-buttons button {
-  background: transparent;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-.rating-buttons button.active {
-  color: green;
-}
-
-.rating-buttons button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.alert-detail {
+  font-size: 0.9em;
+  margin-top: 0.5rem;
+  color: #4a5568;
 }
 </style>

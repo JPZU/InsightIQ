@@ -16,7 +16,7 @@ router.include_router(admin_user_router, prefix="/admin/users", tags=["admin-use
 
 router.include_router(auth_router, prefix="/auth", tags=["auth"])
 router.include_router(alarm_management_router, prefix="/alarm_management", tags=["alarm_management"])
-router.include_router(chat_router, prefix="/chats", tags=["chat"])
+router.include_router(chat_router, prefix="/chats", tags=["chats"])
 router.include_router(dashboard_router, prefix="/dashboard", tags=["dashboard"])
 router.include_router(detail_report_router, prefix="/detail_report", tags=["detail_report"])
 router.include_router(file_manager_router, prefix="/file_manager", tags=["file_manager"])

@@ -7,6 +7,7 @@
   "ask": "Ask a question",
   "type_here": "Type here...",
   "sending": "Sending...",
+  "thinking": "Thinking...",
   "send": "Send",
   "response": "Response",
   "na": "N/A",
@@ -27,8 +28,14 @@
   "line_chart": "Line Chart",
   "hide_details": "Hide details",
   "show_details": "Show details",
+  "details": "Data Details",
   "no_messages": "No messages in this chat",
   "chat_name": "Chat name",
   "cancel": "Cancel",
-  "create": "Create"
+  "create": "Create",
+  "rating_error": "Error rating response",
+  "rating_success": "Response rated successfully",
+  "please_name_chat": "Please enter a name for the chat",
+  "x_axis": "X Axis",
+  "y_axis": "Y Axis"
 }

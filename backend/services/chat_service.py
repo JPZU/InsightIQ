@@ -26,7 +26,7 @@ class ChatService:
             return new_chat
 
     @staticmethod
-    def get_chat_messages(chat_id: int, limit: int = 10):
+    def get_chat_messages(chat_id: int, limit: int = 10, include_details: bool = False):
         with SessionLocal() as db:
             chat = db.query(Chat).filter(Chat.id == chat_id).first()
             if not chat:
@@ -38,7 +38,14 @@ class ChatService:
             messages = [
                 {"type": "question", "content": q.content, "created_at": q.createdAt} for q in questions
             ] + [
-                {"type": "response", "content": r.content, "created_at": r.createdAt} for r in responses
+                {
+                    "type": "response",
+                    "content": r.content,
+                    "created_at": r.createdAt,
+                    "response_id": r.id,
+                    "rating": r.rating,
+                    "query_result": r.query_result if include_details else None
+                } for r in responses
             ]
 
             messages.sort(key=lambda x: x["created_at"])

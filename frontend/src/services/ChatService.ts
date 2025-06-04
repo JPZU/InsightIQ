@@ -8,10 +8,12 @@ interface Chat {
 }
 
 interface Message {
-  id: number
-  question: string
-  response: string
+  type: 'question' | 'response'
+  content: string
   created_at: string
+  response_id?: number
+  rating?: number | null
+  query_result?: any | null
 }
 
 interface ChatListResponse {
@@ -25,8 +27,9 @@ interface ChatMessagesResponse {
 }
 
 interface AskChatResponse {
-  answer: string
-  result: any
+  content: string
+  query_result: any
+  response_id: number
 }
 
 class ChatService extends BaseService {
@@ -43,22 +46,22 @@ class ChatService extends BaseService {
   }
 
   async createChat(name: string = 'New Chat'): Promise<{ id: number; name: string }> {
-    return (await this.makeRequest(ChatService.BASE_URL, 'post', { name: name })) as {
+    return (await this.makeRequest(ChatService.BASE_URL, 'post', { name })) as {
       id: number
       name: string
     }
   }
 
-  async getChatMessages(chatId: number): Promise<ChatMessagesResponse> {
+  async getChatMessages(chatId: number, includeDetails: boolean = true): Promise<ChatMessagesResponse> {
     return (await this.makeRequest(
-      `${ChatService.BASE_URL}/${chatId}`,
+      `${ChatService.BASE_URL}/${chatId}?include_details=${includeDetails}`,
       'get',
     )) as ChatMessagesResponse
   }
 
   async askChat(chatId: number, question: string): Promise<AskChatResponse> {
     return (await this.makeRequest(`${ChatService.BASE_URL}/${chatId}`, 'post', {
-      question: question,
+      question,
     })) as AskChatResponse
   }
 
@@ -90,7 +93,7 @@ class ChatService extends BaseService {
     rating: number,
   ): Promise<{ success: boolean; message: string }> {
     return (await this.makeRequest(
-      `${import.meta.env.VITE_API_URL}/chats/responses/${responseId}/rate`,
+      `${ChatService.BASE_URL}/responses/${responseId}/rate`,
       'post',
       { rating },
     )) as { success: boolean; message: string }

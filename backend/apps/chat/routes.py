@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, conint
 
 from services.chat_service import ChatService
@@ -61,10 +61,14 @@ def create_chat(
 
 
 @router.get("/{chat_id}")
-def get_chat_messages(chat_id: int, current_user: int = Depends(AuthManager.get_current_user)):
+def get_chat_messages(
+    chat_id: int,
+    include_details: bool = Query(False, description="Include query results and ratings in the response"),
+    current_user: int = Depends(AuthManager.get_current_user)
+):
     try:
         get_authorized_chat(chat_id, current_user)
-        messages = ChatService.get_chat_messages(chat_id)
+        messages = ChatService.get_chat_messages(chat_id, include_details=include_details)
         return BaseResponse(success=True, response={"chat_id": chat_id, "messages": messages})
     except HTTPException as he:
         raise he

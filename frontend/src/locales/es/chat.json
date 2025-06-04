@@ -7,6 +7,7 @@
   "ask": "Haz una pregunta",
   "type_here": "Escribe aquí...",
   "sending": "Enviando...",
+  "thinking": "Pensando...",
   "send": "Enviar",
   "response": "Respuesta",
   "na": "N/A",
@@ -27,8 +28,14 @@
   "line_chart": "Gráfico de líneas",
   "hide_details": "Ocultar detalles",
   "show_details": "Mostrar detalles",
+  "details": "Detalles de Datos",
   "no_messages": "No hay mensajes en este chat",
   "chat_name": "Nombre del chat",
   "cancel": "Cancelar",
-  "create": "Crear"
+  "create": "Crear",
+  "rating_error": "Error al calificar la respuesta",
+  "rating_success": "Respuesta calificada exitosamente",
+  "please_name_chat": "Por favor ingresa un nombre para el chat",
+  "x_axis": "Eje X",
+  "y_axis": "Eje Y"
 }
