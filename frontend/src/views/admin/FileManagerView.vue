@@ -306,9 +306,8 @@ const addSyntheticDatabase = async () => {
     state.message = `${data.length} synthetic records were added to ${state.currentTable}`
 
     // Show notification with success message
-    showSuccessNotification(
-      `${data.length} synthetic records were successfully added to ${state.currentTable}`,
-    )
+    alert('✅ Data added successfully')
+
   } catch (error) {
     console.error('Error adding synthetic data:', error)
     state.message = `Error adding synthetic data to table: ${error.message || 'Unknown error'}`
