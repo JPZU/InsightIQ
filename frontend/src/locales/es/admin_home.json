@@ -1,0 +1,18 @@
+{
+    "files": "Archivos",
+    "files_manage": "Administrar todos los archivos y conjuntos de datos del sistema",
+    "files_upload": "Cargar y organizar fuentes de datos",
+    "files_synthetic": "Generar datos de prueba sintéticos",
+    "files_monitor": "Monitorear la calidad y la integridad de los datos",
+    "alarms": "Alarmas",
+    "alarms_create": "Crear alertas con lenguaje natural",
+    "alarms_view": "Ver y administrar alertas activas",
+    "alarms_review": "Revisar el historial y patrones de alertas",
+    "alarms_configure": "Configurar ajustes de notificación",
+    "users": "Usuarios",
+    "users_manage": "Administrar cuentas de usuario y acceso",
+    "users_configure": "Configurar roles y permisos",
+    "users_monitor": "Monitorear la actividad y el uso de los usuarios",
+    "users_audit": "Ver los registros de auditoría y los cambios"
+  }
+  

@@ -1,0 +1,32 @@
+{
+    "metrics": {
+      "total_users": "Usuarios Totales",
+      "total_admins": "Usuarios Administradores",
+      "total_questions": "Preguntas Totales",
+      "users_limit": "{count}/15",
+      "questions_limit": "{count}/1000"
+    },
+    "user_list": "Lista de Usuarios",
+    "search_users": "Buscar usuarios...",
+    "table": {
+      "name": "Nombre",
+      "email": "Correo",
+      "role": "Rol",
+      "questions": "Preguntas",
+      "actions": "Acciones"
+    },
+    "roles": {
+      "admin": "Administrador",
+      "user": "Usuario"
+    },
+    "actions": {
+      "promote_to_admin": "Promover a Administrador",
+      "delete_user": "Eliminar Usuario"
+    },
+    "errors": {
+      "load_failed": "Error al cargar los datos de usuarios. Por favor, inténtelo de nuevo más tarde.",
+      "delete_failed": "Error al eliminar el usuario. Por favor, inténtelo de nuevo.",
+      "promote_failed": "Error al promover al usuario. Por favor, inténtelo de nuevo."
+    }
+  }
+  

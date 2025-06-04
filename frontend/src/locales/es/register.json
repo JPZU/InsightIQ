@@ -1,0 +1,25 @@
+{
+    "title": "Crear una cuenta",
+    "form": {
+      "full_name": "Nombre completo",
+      "username": "Nombre de usuario",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirm_password": "Confirmar contraseña"
+    },
+    "buttons": {
+      "register": "Crear cuenta",
+      "creating": "Creando cuenta..."
+    },
+    "errors": {
+      "passwords_mismatch": "Las contraseñas no coinciden",
+      "registration_failed": "Error al crear la cuenta. Por favor, inténtelo de nuevo.",
+      "unexpected": "Ocurrió un error inesperado.",
+      "auto_login_failed": "Cuenta creada exitosamente, pero el inicio de sesión automático falló. Por favor, inicie sesión manualmente."
+    },
+    "login_link": {
+      "text": "¿Ya tienes una cuenta?",
+      "link": "Iniciar sesión aquí"
+    }
+  }
+  

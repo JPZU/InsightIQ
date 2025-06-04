@@ -53,11 +53,11 @@ const onFileSelected = (event) => {
 
 const uploadFile = async () => {
   if (!state.selectedFile) {
-    state.message = t('file_manager.select_file')
+    state.message = t('admin_file_manager.errors.select_file')
     return
   }
   if (!state.tableName) {
-    state.message = t('file_manager.table_name_required')
+    state.message = t('admin_file_manager.errors.table_name_required')
     return
   }
 
@@ -72,14 +72,14 @@ const uploadFile = async () => {
       response = await FileManagerService.uploadCSV(state.selectedFile, state.tableName)
     }
 
-    state.message = t('file_manager.upload_success')
+    state.message = t('admin_file_manager.errors.upload_success')
     await fetchTables()
     state.showFileUpload = false
     state.selectedFile = null
     state.tableName = ''
   } catch (error) {
-    console.error(t('file_manager.error_uploading'), error)
-    state.message = t('file_manager.error_uploading')
+    console.error(t('admin_file_manager.errors.error_uploading'), error)
+    state.message = t('admin_file_manager.errors.error_uploading')
   } finally {
     state.loading = false
   }
@@ -97,7 +97,7 @@ const closeGoogleSheetsModal = () => {
 
 const uploadGoogleSheet = async () => {
   if (!state.googleSheetsUrl || !state.googleSheetsTableName) {
-    state.message = t('file_manager.url_and_name_required')
+    state.message = t('admin_file_manager.errors.url_and_name_required')
     return
   }
 
@@ -107,12 +107,12 @@ const uploadGoogleSheet = async () => {
   try {
     await FileManagerService.uploadGoogleSheets(state.googleSheetsUrl, state.googleSheetsTableName)
 
-    state.message = t('file_manager.google_sheet_upload_success')
+    state.message = t('admin_file_manager.errors.google_sheet_upload_success')
     await fetchTables()
     state.showGoogleSheetsModal = false
   } catch (error) {
-    console.error(t('file_manager.error_uploading_google_sheet'), error)
-    state.message = t('file_manager.error_uploading_google_sheet')
+    console.error(t('admin_file_manager.errors.error_uploading_google_sheet'), error)
+    state.message = t('admin_file_manager.errors.error_uploading_google_sheet')
   } finally {
     state.loading = false
   }
@@ -120,7 +120,7 @@ const uploadGoogleSheet = async () => {
 
 const updateTable = async () => {
   if (!state.selectedFile) {
-    state.message = t('file_manager.select_file')
+    state.message = t('admin_file_manager.errors.select_file')
     return
   }
 
@@ -134,14 +134,14 @@ const updateTable = async () => {
       state.replaceData,
     )
 
-    state.message = t('file_manager.update_success')
+    state.message = t('admin_file_manager.errors.update_success')
     await fetchTableData(state.currentTable)
     state.showUpdateModal = false
     state.selectedFile = null
     state.replaceData = false
   } catch (error) {
-    console.error(t('file_manager.error_updating'), error)
-    state.message = t('file_manager.error_updating')
+    console.error(t('admin_file_manager.errors.error_updating'), error)
+    state.message = t('admin_file_manager.errors.error_updating')
   } finally {
     state.loading = false
   }
@@ -154,7 +154,7 @@ const fetchTables = async () => {
     state.tables = response.data || []
   } catch (error) {
     console.error('Error fetching tables:', error)
-    state.message = t('file_manager.error_fetching_tables')
+    state.message = t('admin_file_manager.errors.error_fetching_tables')
   } finally {
     state.loadingTables = false
   }
@@ -167,7 +167,7 @@ const fetchTableData = async (tableName) => {
     state.tableInfo = response.data
   } catch (error) {
     console.error('Error fetching table data:', error)
-    state.message = t('file_manager.error_fetching_data')
+    state.message = t('admin_file_manager.errors.error_fetching_data')
   }
 }
 
@@ -176,7 +176,7 @@ const deleteTable = async () => {
 
   try {
     await FileManagerService.deleteTable(state.tableToDelete)
-    state.message = t('file_manager.table_deleted', { table: state.tableToDelete })
+    state.message = t('admin_file_manager.errors.table_deleted', { table: state.tableToDelete })
     state.tableToDelete = ''
     state.showDeleteConfirmation = false
     if (state.currentTable === state.tableToDelete) {
@@ -186,7 +186,7 @@ const deleteTable = async () => {
     await fetchTables()
   } catch (error) {
     console.error('Error deleting table:', error)
-    state.message = t('file_manager.error_deleting_table')
+    state.message = t('admin_file_manager.errors.error_deleting_table')
   }
 }
 
@@ -222,7 +222,7 @@ function goToSyntheticData() {
 // New synthetic data methods
 const generateSyntheticData = async () => {
   if (!syntheticData.numRecords) {
-    state.message = t('synthetic_data.select_records')
+    state.message = t('admin_file_manager.errors.select_records')
     return
   }
   syntheticData.loading = true
@@ -238,8 +238,8 @@ const generateSyntheticData = async () => {
     syntheticData.response = data
     syntheticData.tableSchema = syntheticData.response.schema
   } catch (error) {
-    console.error(t('synthetic_data.error_data'), error)
-    syntheticData.response = { error: t('synthetic_data.error_data_desc') }
+    console.error(t('admin_file_manager.errors.error_data'), error)
+    syntheticData.response = { error: t('admin_file_manager.errors.error_data_desc') }
   } finally {
     syntheticData.loading = false
   }
@@ -306,7 +306,7 @@ const addSyntheticDatabase = async () => {
     state.message = `${data.length} synthetic records were added to ${state.currentTable}`
 
     // Show notification with success message
-    alert('✅ Data added successfully')
+    alert(t('admin_file_manager.messages.success.data_added'))
 
   } catch (error) {
     console.error('Error adding synthetic data:', error)
@@ -348,15 +348,15 @@ fetchTables()
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <input v-model="state.searchQuery" placeholder="Search tables..." class="search-input" />
-        <button @click="state.showNewTableModal = true" class="new-alarm-btn">+ New Table</button>
+        <input v-model="state.searchQuery" :placeholder="$t('admin_file_manager.search_tables')" class="search-input" />
+        <button @click="state.showNewTableModal = true" class="new-alarm-btn">{{ $t('admin_file_manager.new_table') }}</button>
       </div>
 
       <div class="alarm-list">
         <div v-if="state.loadingTables" class="loading-spinner">
           <div class="spinner"></div>
         </div>
-        <div v-else-if="state.tables.length === 0" class="empty-list">No tables found</div>
+        <div v-else-if="state.tables.length === 0" class="empty-list">{{ $t('admin_file_manager.no_tables') }}</div>
         <div
           v-for="table in filteredTables"
           :key="table"
@@ -380,7 +380,7 @@ fetchTables()
       <div v-if="!state.currentTable && !state.showFileUpload" class="empty-state">
         <div class="empty-content">
           <i class="bi bi-table"></i>
-          <h3>Select a table or create a new one</h3>
+          <h3>{{ $t('admin_file_manager.select_or_create') }}</h3>
         </div>
       </div>
 
@@ -388,18 +388,18 @@ fetchTables()
       <div v-if="state.showFileUpload" class="alarm-form">
         <div class="form-header">
           <h2 class="text-2xl font-bold mb-4">
-            Upload {{ state.uploadType === 'excel' ? 'Excel' : 'CSV' }} File
+            {{ state.uploadType === 'excel' ? $t('admin_file_manager.upload_excel') : $t('admin_file_manager.upload_csv') }}
           </h2>
         </div>
 
         <form @submit.prevent="uploadFile" class="space-y-4">
           <div>
-            <label class="label">Table Name</label>
-            <input v-model="state.tableName" class="input" placeholder="Enter table name" />
+            <label class="label">{{ $t('admin_file_manager.table_name') }}</label>
+            <input v-model="state.tableName" class="input" :placeholder="$t('admin_file_manager.enter_table_name')" />
           </div>
 
           <div>
-            <label class="label">Select File</label>
+            <label class="label">{{ $t('admin_file_manager.select_file') }}</label>
             <input
               type="file"
               @change="onFileSelected"
@@ -409,9 +409,9 @@ fetchTables()
           </div>
 
           <div class="form-buttons">
-            <button type="button" class="btn-cancel" @click="cancelFileUpload">Cancel</button>
+            <button type="button" class="btn-cancel" @click="cancelFileUpload">{{ $t('admin_file_manager.cancel') }}</button>
             <button type="submit" class="btn-save" :disabled="state.loading">
-              {{ state.loading ? 'Uploading...' : 'Upload' }}
+              {{ state.loading ? $t('admin_file_manager.uploading') : $t('admin_file_manager.upload') }}
             </button>
           </div>
 
@@ -424,32 +424,32 @@ fetchTables()
         <div class="table-header">
           <h2 class="text-2xl font-bold">{{ state.currentTable }}</h2>
           <div class="table-actions">
-            <button @click="goToSyntheticData" class="btn-create">+ Generate Synthetic Data</button>
-            <button @click="startUpdateTable" class="btn-save">Update Data</button>
+            <button @click="goToSyntheticData" class="btn-create">{{ $t('admin_file_manager.generate_synthetic') }}</button>
+            <button @click="startUpdateTable" class="btn-save">{{ $t('admin_file_manager.update_data') }}</button>
           </div>
         </div>
 
         <!-- Table schema info -->
         <div v-if="state.tableInfo?.schema" class="schema-info">
-          <h3 class="schema-title">Table Schema</h3>
+          <h3 class="schema-title">{{ $t('admin_file_manager.table_schema') }}</h3>
           <div class="schema-grid">
-            <div class="schema-header">Column Name</div>
-            <div class="schema-header">Data Type</div>
-            <div class="schema-header">Nullable</div>
-            <div class="schema-header">Primary Key</div>
+            <div class="schema-header">{{ $t('admin_file_manager.column_name') }}</div>
+            <div class="schema-header">{{ $t('admin_file_manager.data_type') }}</div>
+            <div class="schema-header">{{ $t('admin_file_manager.nullable') }}</div>
+            <div class="schema-header">{{ $t('admin_file_manager.primary_key') }}</div>
 
             <template v-for="column in state.tableInfo.schema" :key="column.column_name">
               <div class="schema-cell">{{ column.column_name }}</div>
               <div class="schema-cell">{{ column.data_type }}</div>
-              <div class="schema-cell">{{ column.nullable ? 'Yes' : 'No' }}</div>
-              <div class="schema-cell">{{ column.primary_key ? 'Yes' : 'No' }}</div>
+              <div class="schema-cell">{{ column.nullable ? $t('admin_file_manager.yes') : $t('admin_file_manager.no') }}</div>
+              <div class="schema-cell">{{ column.primary_key ? $t('admin_file_manager.yes') : $t('admin_file_manager.no') }}</div>
             </template>
           </div>
         </div>
 
         <!-- Sample data display -->
         <div v-if="state.tableInfo?.sample_data" class="sample-data">
-          <h3 class="sample-title">Sample Data (First 5 Rows)</h3>
+          <h3 class="sample-title">{{ $t('admin_file_manager.sample_data') }}</h3>
           <div class="table-container">
             <table>
               <thead>
@@ -462,7 +462,7 @@ fetchTables()
               <tbody>
                 <tr v-for="(_, rowIndex) in Array(5)" :key="rowIndex">
                   <td v-for="column in state.tableInfo.schema" :key="column.column_name">
-                    {{ state.tableInfo.sample_data[column.column_name]?.[rowIndex] || '-' }}
+                    {{ state.tableInfo.sample_data[column.column_name]?.[rowIndex] ?? '-' }}
                   </td>
                 </tr>
               </tbody>
@@ -475,48 +475,48 @@ fetchTables()
     <!-- Modal for new table options -->
     <div v-if="state.showNewTableModal" class="modal" @click.self="state.showNewTableModal = false">
       <div class="modal-content">
-        <h3>New Table</h3>
-        <p>How would you like to create the table?</p>
+        <h3>{{ $t('admin_file_manager.new_table_title') }}</h3>
+        <p>{{ $t('admin_file_manager.how_create') }}</p>
         <div class="modal-actions">
-          <button @click="startFileUpload('excel')">From Excel</button>
-          <button @click="startFileUpload('csv')">From CSV</button>
-          <button @click="openGoogleSheetsModal">From Google Sheet</button>
-          <button @click="state.showNewTableModal = false" class="btn-cancel-modal">Cancel</button>
+          <button @click="startFileUpload('excel')">{{ $t('admin_file_manager.from_excel') }}</button>
+          <button @click="startFileUpload('csv')">{{ $t('admin_file_manager.from_csv') }}</button>
+          <button @click="openGoogleSheetsModal">{{ $t('admin_file_manager.from_google_sheet') }}</button>
+          <button @click="state.showNewTableModal = false" class="btn-cancel-modal">{{ $t('admin_file_manager.cancel') }}</button>
         </div>
       </div>
     </div>
 
     <div v-if="state.showGoogleSheetsModal" class="modal" @click.self="closeGoogleSheetsModal">
       <div class="modal-content">
-        <h3>Import from Google Sheets</h3>
+        <h3>{{ $t('admin_file_manager.import_google_sheets') }}</h3>
         <form @submit.prevent="uploadGoogleSheet" class="space-y-4">
           <div>
-            <label class="label">Table Name</label>
+            <label class="label">{{ $t('admin_file_manager.table_name') }}</label>
             <input
               v-model="state.googleSheetsTableName"
               class="input"
-              placeholder="Enter table name"
+              :placeholder="$t('admin_file_manager.enter_table_name')"
               required
             />
           </div>
 
           <div>
-            <label class="label">Google Sheet URL</label>
+            <label class="label">{{ $t('admin_file_manager.google_sheet_url') }}</label>
             <input
               v-model="state.googleSheetsUrl"
               class="input"
-              placeholder="https://docs.google.com/spreadsheets/d/..."
+              :placeholder="$t('admin_file_manager.google_sheet_url_placeholder')"
               required
             />
             <p class="helper-text">
-              Make sure the sheet is publicly accessible or shared with your service account
+              {{ $t('admin_file_manager.google_sheet_help') }}
             </p>
           </div>
 
           <div class="form-buttons">
-            <button type="button" class="btn-cancel" @click="closeGoogleSheetsModal">Cancel</button>
+            <button type="button" class="btn-cancel" @click="closeGoogleSheetsModal">{{ $t('admin_file_manager.cancel') }}</button>
             <button type="submit" class="btn-save" :disabled="state.loading">
-              {{ state.loading ? 'Importing...' : 'Import Sheet' }}
+              {{ state.loading ? $t('admin_file_manager.importing') : $t('admin_file_manager.import_sheet') }}
             </button>
           </div>
 
@@ -528,22 +528,22 @@ fetchTables()
     <!-- Modal for updating table -->
     <div v-if="state.showUpdateModal" class="modal" @click.self="state.showUpdateModal = false">
       <div class="modal-content">
-        <h3>Update Table: {{ state.currentTable }}</h3>
+        <h3>{{ $t('admin_file_manager.update_table', { table: state.currentTable }) }}</h3>
         <form @submit.prevent="updateTable" class="space-y-4">
           <div>
-            <label class="label">Select File</label>
+            <label class="label">{{ $t('admin_file_manager.select_file') }}</label>
             <input type="file" @change="onFileSelected" accept=".csv,.xls,.xlsx" class="input" />
           </div>
           <div class="checkbox-group">
             <input type="checkbox" id="replaceData" v-model="state.replaceData" />
-            <label for="replaceData">Replace existing data</label>
+            <label for="replaceData">{{ $t('admin_file_manager.replace_data') }}</label>
           </div>
           <div class="form-buttons">
             <button type="button" class="btn-cancel" @click="state.showUpdateModal = false">
-              Cancel
+              {{ $t('admin_file_manager.cancel') }}
             </button>
             <button type="submit" class="btn-save" :disabled="state.loading || !state.selectedFile">
-              {{ state.loading ? 'Updating...' : 'Update' }}
+              {{ state.loading ? $t('admin_file_manager.updating') : $t('admin_file_manager.update') }}
             </button>
           </div>
           <p v-if="state.message" class="text-error">{{ state.message }}</p>
@@ -559,13 +559,13 @@ fetchTables()
     >
       <div class="modal-content">
         <span class="close" @click="state.showDeleteConfirmation = false">&times;</span>
-        <h3>Confirm Deletion</h3>
-        <p>Are you sure you want to delete "{{ state.tableToDelete }}"?</p>
+        <h3>{{ $t('admin_file_manager.confirm_deletion') }}</h3>
+        <p>{{ $t('admin_file_manager.delete_confirm', { table: state.tableToDelete }) }}</p>
         <div class="modal-actions">
           <button @click="state.showDeleteConfirmation = false" class="btn-cancel-modal">
-            Cancel
+            {{ $t('admin_file_manager.cancel') }}
           </button>
-          <button @click="deleteTable" class="btn-delete">Delete</button>
+          <button @click="deleteTable" class="btn-delete">{{ $t('admin_file_manager.delete') }}</button>
         </div>
       </div>
     </div>
@@ -574,15 +574,15 @@ fetchTables()
     <div v-if="state.showSyntheticDataModal" class="modal">
       <div class="modal-content synthetic-modal">
         <span class="close" @click="closeSyntheticDataModal">&times;</span>
-        <h3 class="synthetic-title">{{ $t('synthetic_data.title', 'Generate Synthetic Data') }}</h3>
+        <h3 class="synthetic-title">{{ $t('admin_file_manager.synthetic_data.title') }}</h3>
 
         <div class="form-group">
-          <label class="label">{{ $t('synthetic_data.table_name', 'Table') }}</label>
+          <label class="label">{{ $t('admin_file_manager.synthetic_data.table') }}</label>
           <div class="selected-table">{{ state.currentTable }}</div>
         </div>
 
         <div class="form-group">
-          <label class="label">{{ $t('synthetic_data.records', 'Number of Records') }}</label>
+          <label class="label">{{ $t('admin_file_manager.synthetic_data.records') }}</label>
           <input
             v-model.number="syntheticData.numRecords"
             type="number"
@@ -592,30 +592,25 @@ fetchTables()
         </div>
 
         <div class="form-group">
-          <label class="label">{{ $t('synthetic_data.details', 'Details') }}</label>
+          <label class="label">{{ $t('admin_file_manager.synthetic_data.details') }}</label>
           <p class="helper-text">
-            {{ $t('synthetic_data.details_desc', 'Specify requirements for the synthetic data') }}
+            {{ $t('admin_file_manager.synthetic_data.details_desc') }}
           </p>
-          <p class="helper-text">{{ $t('synthetic_data.request_limit', 'Limit: 500 chars') }}</p>
+          <p class="helper-text">{{ $t('admin_file_manager.synthetic_data.request_limit') }}</p>
           <textarea
             v-model="syntheticData.details"
             class="input textarea"
             rows="4"
             maxlength="500"
-            :placeholder="
-              $t(
-                'synthetic_data.request_example',
-                'Example: Generate realistic customer data with names, ages between 18-65, and purchases reflecting seasonal trends.',
-              )
-            "
+            :placeholder="$t('admin_file_manager.synthetic_data.request_example')"
           ></textarea>
         </div>
 
         <button @click="generateSyntheticData" class="btn" :disabled="syntheticData.loading">
           {{
             syntheticData.loading
-              ? $t('synthetic_data.generating', 'Generating...')
-              : $t('synthetic_data.generate', 'Generate Data')
+              ? $t('admin_file_manager.synthetic_data.generating')
+              : $t('admin_file_manager.synthetic_data.generate')
           }}
         </button>
 
@@ -629,7 +624,7 @@ fetchTables()
           class="response-box"
         >
           <h2 class="response-title">
-            {{ $t('synthetic_data.generated', 'Generated Data for') }} {{ state.currentTable }}
+            {{ $t('admin_file_manager.synthetic_data.generated') }} {{ state.currentTable }}
           </h2>
 
           <div class="table-container">
@@ -655,7 +650,7 @@ fetchTables()
           </div>
 
           <button class="btn add-btn" @click="addSyntheticDatabase">
-            {{ $t('synthetic_data.add_to', 'Add to') }} "{{ state.currentTable }}"
+            {{ $t('admin_file_manager.synthetic_data.add_to') }} "{{ state.currentTable }}"
           </button>
         </div>
       </div>

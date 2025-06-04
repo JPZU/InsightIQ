@@ -3,8 +3,8 @@
     <div class="container">
       <!-- Header -->
       <div class="text-center mb-5">
-        <h2 class="display-4 fw-bold mb-3" style="color: #0395ff">Choose Your Plan</h2>
-        <p class="lead">Flexible pricing options to suit your business needs</p>
+        <h2 class="display-4 fw-bold mb-3" style="color: #0395ff">{{ $t('plans.choose_plan') }}</h2>
+        <p class="lead">{{ $t('plans.pricing_subtitle') }}</p>
       </div>
 
       <!-- Pricing Cards -->
@@ -13,40 +13,40 @@
         <div class="col-md-5 col-lg-4">
           <div class="card shadow h-100">
             <div class="card-header bg-light py-3">
-              <h3 class="text-center mb-0">Base Plan</h3>
+              <h3 class="text-center mb-0">{{ $t('plans.base_plan') }}</h3>
             </div>
             <div class="card-body p-4">
               <div class="text-center mb-4">
                 <span class="display-5 fw-bold">180,000 COP</span>
-                <span class="text-muted">/month</span>
+                <span class="text-muted">{{ $t('plans.per_month') }}</span>
               </div>
               <ul class="list-unstyled mb-4">
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  <strong>500 queries</strong> per month
+                  <strong>500</strong> {{ $t('plans.queries_per_month') }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  Up to <strong>5 users</strong>
+                  {{ $t('plans.up_to_users', { count: 5 }) }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  CSV/Excel file support
+                  {{ $t('plans.csv_excel_support') }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  AI-generated reports
+                  {{ $t('plans.ai_reports') }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  Up to <strong>50 alarms</strong>
+                  {{ $t('plans.up_to_alarms', { count: 50 }) }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  Email support
+                  {{ $t('plans.email_support') }}
                 </li>
               </ul>
-              <button class="btn btn-primary w-100 py-2">Get Started</button>
+              <button class="btn btn-primary w-100 py-2">{{ $t('plans.get_started') }}</button>
             </div>
           </div>
         </div>
@@ -55,44 +55,44 @@
         <div class="col-md-5 col-lg-4">
           <div class="card border-primary shadow h-100">
             <div class="card-header bg-primary text-white py-3">
-              <h3 class="text-center mb-0">Premium Plan</h3>
+              <h3 class="text-center mb-0">{{ $t('plans.premium_plan') }}</h3>
             </div>
             <div class="card-body p-4">
               <div class="text-center mb-4">
                 <span class="display-5 fw-bold">300,000 COP</span>
-                <span class="text-muted">/month</span>
+                <span class="text-muted">{{ $t('plans.per_month') }}</span>
               </div>
               <ul class="list-unstyled mb-4">
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  <strong>1000 queries</strong> per month
+                  <strong>1000</strong> {{ $t('plans.queries_per_month') }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  Up to <strong>15 users</strong>
+                  {{ $t('plans.up_to_users', { count: 15 }) }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  CSV/Excel/Google Sheets support
+                  {{ $t('plans.csv_excel_sheets_support') }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  Advanced AI reports
+                  {{ $t('plans.advanced_ai_reports') }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  <strong>Unlimited alarms</strong>
+                  {{ $t('plans.unlimited_alarms') }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  Priority email & chat support
+                  {{ $t('plans.priority_support') }}
                 </li>
                 <li class="mb-2">
                   <i class="fas fa-check text-success me-2"></i>
-                  Early access to new features
+                  {{ $t('plans.early_access') }}
                 </li>
               </ul>
-              <button class="btn btn-primary w-100 py-2">Start Free Trial</button>
+              <button class="btn btn-primary w-100 py-2">{{ $t('plans.start_trial') }}</button>
             </div>
           </div>
         </div>
@@ -103,17 +103,14 @@
         <div class="col-lg-8">
           <div class="card shadow-sm">
             <div class="card-body">
-              <h3 class="mb-4" style="color: #0395ff">How we calculate our pricing</h3>
+              <h3 class="mb-4" style="color: #0395ff">{{ $t('plans.pricing_calculation_title') }}</h3>
 
               <p>
-                Our pricing is based on the computational resources required to process your queries
-                and maintain your data. The Base Plan covers essential business needs, while the
-                Premium Plan offers enhanced capabilities for growing teams.
+                {{ $t('plans.pricing_calculation_text') }}
               </p>
 
               <p>
-                All plans include secure data storage, regular backups, and our standard service
-                level agreement.
+                {{ $t('plans.pricing_includes') }}
               </p>
             </div>
           </div>
@@ -123,7 +120,7 @@
       <!-- FAQ Section -->
       <div class="row justify-content-center mt-5">
         <div class="col-lg-8">
-          <h3 class="text-center mb-4" style="color: #0395ff">Frequently Asked Questions</h3>
+          <h3 class="text-center mb-4" style="color: #0395ff">{{ $t('plans.faq_title') }}</h3>
 
           <div class="accordion" id="faqAccordion">
             <div class="accordion-item">
@@ -134,7 +131,7 @@
                   data-bs-toggle="collapse"
                   data-bs-target="#faq1"
                 >
-                  What counts as a query?
+                  {{ $t('plans.faq_query_title') }}
                 </button>
               </h2>
               <div
@@ -143,9 +140,7 @@
                 data-bs-parent="#faqAccordion"
               >
                 <div class="accordion-body">
-                  A query is counted each time you interact with our AI assistant, whether you're
-                  asking a question about your data, requesting a visualization, or generating a
-                  report. Each conversation turn counts as one query.
+                  {{ $t('plans.faq_query_answer') }}
                 </div>
               </div>
             </div>
@@ -158,13 +153,12 @@
                   data-bs-toggle="collapse"
                   data-bs-target="#faq2"
                 >
-                  Can I add more users to my plan?
+                  {{ $t('plans.faq_users_title') }}
                 </button>
               </h2>
               <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                 <div class="accordion-body">
-                  Yes! You can add additional users to any plan for a small monthly fee per user.
-                  Contact our sales team for enterprise pricing if you need more than 15 users.
+                  {{ $t('plans.faq_users_answer') }}
                 </div>
               </div>
             </div>
@@ -177,14 +171,12 @@
                   data-bs-toggle="collapse"
                   data-bs-target="#faq3"
                 >
-                  What happens if I exceed my query limit?
+                  {{ $t('plans.faq_limit_title') }}
                 </button>
               </h2>
               <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                 <div class="accordion-body">
-                  If you exceed your monthly query limit, you'll have the option to purchase
-                  additional query packs or upgrade your plan. We'll notify you when you're
-                  approaching your limit so you can make adjustments.
+                  {{ $t('plans.faq_limit_answer') }}
                 </div>
               </div>
             </div>

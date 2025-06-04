@@ -1,47 +1,47 @@
 <template>
   <div class="container">
     <div class="form">
-      <h2 class="text-2xl font-bold mb-4 text-center">Edit Alarm</h2>
+      <h2 class="text-2xl font-bold mb-4 text-center">{{ $t('admin_alarms.edit.title') }}</h2>
 
       <!-- Formulario solo si alarm está lista -->
       <form v-if="alarm" @submit.prevent="updateAlarm" class="space-y-4">
         <div>
-          <label class="label">Table Name</label>
+          <label class="label">{{ $t('admin_alarms.edit.form.table_name') }}</label>
           <input v-model="alarm.table_name" class="input" />
         </div>
 
         <div>
-          <label class="label">Field</label>
+          <label class="label">{{ $t('admin_alarms.edit.form.field') }}</label>
           <input v-model="alarm.field" class="input" />
         </div>
 
         <div>
-          <label class="label">Condition</label>
+          <label class="label">{{ $t('admin_alarms.edit.form.condition') }}</label>
           <input v-model="alarm.condition" class="input" />
         </div>
 
         <div>
-          <label class="label">Threshold</label>
+          <label class="label">{{ $t('admin_alarms.edit.form.threshold') }}</label>
           <input v-model="alarm.threshold" class="input" />
         </div>
 
         <div>
-          <label class="label">Description</label>
+          <label class="label">{{ $t('admin_alarms.edit.form.description') }}</label>
           <textarea v-model="alarm.description" rows="3" class="input textarea"></textarea>
         </div>
 
         <div class="checkbox-container">
           <input type="checkbox" id="is_active" v-model="alarm.is_active" class="checkbox" />
-          <label for="is_active" class="label ml-2">Active</label>
+          <label for="is_active" class="label ml-2">{{ $t('admin_alarms.edit.form.is_active') }}</label>
         </div>
 
         <button type="submit" class="btn" :disabled="loading">
-          {{ loading ? 'Saving...' : 'Save Changes' }}
+          {{ loading ? $t('admin_alarms.edit.button.saving') : $t('admin_alarms.edit.button.save') }}
         </button>
       </form>
 
       <!-- Mensaje de carga si alarm no está lista -->
-      <p v-else class="text-center text-gray-500">Loading alarm...</p>
+      <p v-else class="text-center text-gray-500">{{ $t('admin_alarms.edit.loading') }}</p>
     </div>
   </div>
 </template>
@@ -49,10 +49,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AlarmService from '@/services/AlarmService'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const loading = ref(false)
 
 // Inicializa alarm como null
@@ -68,10 +70,10 @@ const fetchAlarm = async () => {
         is_active: found.is_active === 1, // Convierte 1 a true y 0 a false
       }
     } else {
-      console.error('Alarm not found')
+      console.error(t('admin_alarms.edit.errors.not_found'))
     }
   } catch (error) {
-    console.error('Error fetching alarm:', error)
+    console.error(t('admin_alarms.edit.errors.update_failed'), error)
   }
 }
 
@@ -83,7 +85,7 @@ const updateAlarm = async () => {
     await AlarmService.updateAlarm(id, data)
     router.push({ name: 'AlarmList' })
   } catch (error) {
-    console.error('Error updating alarm:', error)
+    console.error(t('admin_alarms.edit.errors.update_failed'), error)
   } finally {
     loading.value = false
   }

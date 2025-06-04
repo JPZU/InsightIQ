@@ -1,6 +1,9 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import AdminUserService from '@/services/admin/AdminUserService'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const state = reactive({
   loading: true,
@@ -30,11 +33,11 @@ const fetchUserData = async () => {
         total_questions_asked: response.response.general_metrics?.total_questions_asked || 0,
       }
     } else {
-      state.error = 'Failed to load user data. Please try again later.'
+      state.error = t('admin_user_manager.errors.load_failed')
     }
   } catch (error) {
     console.error('Error fetching user data:', error)
-    state.error = 'Failed to load user data. Please try again later.'
+    state.error = t('admin_user_manager.errors.load_failed')
     state.users = []
     state.metrics = {
       total_users: 0,
@@ -52,7 +55,7 @@ const deleteUser = async (userId) => {
     await fetchUserData() // Refresh the user list
   } catch (error) {
     console.error('Error deleting user:', error)
-    state.error = 'Failed to delete user. Please try again.'
+    state.error = t('admin_user_manager.errors.delete_failed')
   }
 }
 
@@ -62,7 +65,7 @@ const promoteToAdmin = async (userId) => {
     await fetchUserData() // Refresh the user list
   } catch (error) {
     console.error('Error promoting user:', error)
-    state.error = 'Failed to promote user. Please try again.'
+    state.error = t('admin_user_manager.errors.promote_failed')
   }
 }
 
@@ -123,29 +126,29 @@ onMounted(fetchUserData)
         <!-- Metrics Cards -->
         <div class="metrics-grid">
           <div class="metric-card">
-            <div class="metric-value">{{ state.metrics.total_users }}/15</div>
-            <div class="metric-label">Total Users</div>
+            <div class="metric-value">{{ $t('admin_user_manager.metrics.users_limit', { count: state.metrics.total_users }) }}</div>
+            <div class="metric-label">{{ $t('admin_user_manager.metrics.total_users') }}</div>
           </div>
 
           <div class="metric-card">
             <div class="metric-value">{{ state.metrics.total_admins }}</div>
-            <div class="metric-label">Admin Users</div>
+            <div class="metric-label">{{ $t('admin_user_manager.metrics.total_admins') }}</div>
           </div>
 
           <div class="metric-card">
-            <div class="metric-value">{{ state.metrics.total_questions_asked }}/1000</div>
-            <div class="metric-label">Total Questions Asked</div>
+            <div class="metric-value">{{ $t('admin_user_manager.metrics.questions_limit', { count: state.metrics.total_questions_asked }) }}</div>
+            <div class="metric-label">{{ $t('admin_user_manager.metrics.total_questions') }}</div>
           </div>
         </div>
 
         <!-- Users Table -->
         <div class="table-section">
           <div class="table-header">
-            <h2>User List</h2>
+            <h2>{{ $t('admin_user_manager.user_list') }}</h2>
             <div class="table-actions">
               <input
                 v-model="state.searchQuery"
-                placeholder="Search users..."
+                :placeholder="$t('admin_user_manager.search_users')"
                 class="search-input"
               />
             </div>
@@ -156,7 +159,7 @@ onMounted(fetchUserData)
               <thead>
                 <tr>
                   <th @click="sortUsers('name')">
-                    Name
+                    {{ $t('admin_user_manager.table.name') }}
                     <i
                       class="sort-icon"
                       :class="{
@@ -167,7 +170,7 @@ onMounted(fetchUserData)
                     ></i>
                   </th>
                   <th @click="sortUsers('email')">
-                    Email
+                    {{ $t('admin_user_manager.table.email') }}
                     <i
                       class="sort-icon"
                       :class="{
@@ -178,7 +181,7 @@ onMounted(fetchUserData)
                     ></i>
                   </th>
                   <th @click="sortUsers('role')">
-                    Role
+                    {{ $t('admin_user_manager.table.role') }}
                     <i
                       class="sort-icon"
                       :class="{
@@ -189,7 +192,7 @@ onMounted(fetchUserData)
                     ></i>
                   </th>
                   <th @click="sortUsers('questions_asked')">
-                    Questions
+                    {{ $t('admin_user_manager.table.questions') }}
                     <i
                       class="sort-icon"
                       :class="{
@@ -199,7 +202,7 @@ onMounted(fetchUserData)
                       }"
                     ></i>
                   </th>
-                  <th>Actions</th>
+                  <th>{{ $t('admin_user_manager.table.actions') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -208,22 +211,22 @@ onMounted(fetchUserData)
                   <td>{{ user.email }}</td>
                   <td>
                     <span class="role-badge" :class="user.role">
-                      {{ user.role === 'admin' ? 'Admin' : 'User' }}
+                      {{ user.role === 'ADMIN' ? $t('admin_user_manager.roles.admin') : $t('admin_user_manager.roles.user') }}
                     </span>
                   </td>
                   <td>{{ user.questions_asked }}</td>
                   <td class="actions-cell">
                     <button
-                      v-if="user.role !== 'admin'"
+                      v-if="user.role !== 'ADMIN'"
                       class="action-btn promote-btn"
-                      title="Promote to Admin"
+                      :title="$t('admin_user_manager.actions.promote_to_admin')"
                       @click="promoteToAdmin(user.id)"
                     >
                       <i class="fa-solid fa-user-shield"></i>
                     </button>
                     <button
                       class="action-btn delete-btn"
-                      title="Delete User"
+                      :title="$t('admin_user_manager.actions.delete_user')"
                       @click="deleteUser(user.id)"
                     >
                       <i class="fa-solid fa-trash"></i>

@@ -12,7 +12,20 @@ import esDashboard from './es/dashboard.json'
 import esChat from './es/chat.json'
 import esFileManager from './es/file_manager.json'
 import esSyntheticData from './es/synthetic_data.json'
-
+import esPlans from './es/plans.json'
+import enPlans from './en/plans.json'
+import enAdminHome from './en/admin_home.json'
+import esAdminHome from './es/admin_home.json'
+import enAdminFileManager from './en/admin_file_manager.json'
+import esAdminFileManager from './es/admin_file_manager.json'
+import enAdminUserManager from './en/admin_user_manager.json'
+import esAdminUserManager from './es/admin_user_manager.json'
+import enAdminAlarmManager from './en/admin_alarms.json'
+import esAdminAlarmManager from './es/admin_alarms.json'
+import enLogin from './en/login.json'
+import esLogin from './es/login.json'
+import enRegister from './en/register.json'
+import esRegister from './es/register.json'
 // Merge translations by language
 const messages = {
   en: {
@@ -21,6 +34,13 @@ const messages = {
     chat: enChat,
     file_manager: enFileManager,
     synthetic_data: enSyntheticData,
+    plans: enPlans,
+    admin_home: enAdminHome,
+    admin_file_manager: enAdminFileManager,
+    admin_user_manager: enAdminUserManager,
+    admin_alarms: enAdminAlarmManager,
+    login: enLogin,
+    register: enRegister,
   },
   es: {
     app: esApp,
@@ -28,6 +48,13 @@ const messages = {
     chat: esChat,
     file_manager: esFileManager,
     synthetic_data: esSyntheticData,
+    plans: esPlans,
+    admin_home: esAdminHome,
+    admin_file_manager: esAdminFileManager,
+    admin_user_manager: esAdminUserManager,
+    admin_alarms: esAdminAlarmManager,
+    login: esLogin,
+    register: esRegister,
   },
 }
 

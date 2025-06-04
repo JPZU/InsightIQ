@@ -1,7 +1,7 @@
 import type { NavbarConfigInterface } from '@/interfaces/NavbarInterface'
 
 export const getNavbarConfig = (role: string): NavbarConfigInterface => {
-  if (role === 'admin') {
+  if (role === 'ADMIN') {
     return {
       tabs: [
         { name: 'Admin Home', routeName: 'admin-home' },
@@ -12,7 +12,7 @@ export const getNavbarConfig = (role: string): NavbarConfigInterface => {
       ],
       primaryClass: 'primary-admin',
     }
-  } else if (role === 'user') {
+  } else if (role === 'USER') {
     return {
       tabs: [
         { name: 'Home', routeName: 'home' },

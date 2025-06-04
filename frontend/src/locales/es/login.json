@@ -1,0 +1,16 @@
+{
+    "title": "Iniciar sesión",
+    "form": {
+      "username": "Nombre de usuario",
+      "password": "Contraseña"
+    },
+    "buttons": {
+      "login": "Iniciar sesión",
+      "logging_in": "Iniciando sesión..."
+    },
+    "errors": {
+      "login_failed": "Error al iniciar sesión. Por favor, verifique sus credenciales.",
+      "unexpected": "Ocurrió un error inesperado."
+    }
+  }
+  

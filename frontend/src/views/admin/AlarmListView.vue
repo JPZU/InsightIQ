@@ -1,8 +1,8 @@
 <template>
   <div class="p-6 max-w-4xl mx-auto">
-    <h2 class="text-2xl font-bold mb-4">Registered Alarms</h2>
+    <h2 class="text-2xl font-bold mb-4">{{ $t('admin_alarms.list.title') }}</h2>
 
-    <div v-if="alarms.length === 0" class="text-gray-600">No alarms registered.</div>
+    <div v-if="alarms.length === 0" class="text-gray-600">{{ $t('admin_alarms.list.empty') }}</div>
 
     <div v-else class="space-y-4">
       <div
@@ -11,13 +11,13 @@
         class="border border-gray-300 p-4 rounded shadow-sm flex justify-between items-start"
       >
         <div>
-          <p><strong>Table:</strong> {{ alarm.table_name }}</p>
-          <p><strong>Field:</strong> {{ alarm.field }}</p>
-          <p><strong>Condition:</strong> {{ alarm.condition }} {{ alarm.threshold }}</p>
-          <p><strong>Description:</strong> {{ alarm.description }}</p>
+          <p><strong>{{ $t('admin_alarms.list.alarm.table') }}:</strong> {{ alarm.table_name }}</p>
+          <p><strong>{{ $t('admin_alarms.list.alarm.field') }}:</strong> {{ alarm.field }}</p>
+          <p><strong>{{ $t('admin_alarms.list.alarm.condition') }}:</strong> {{ alarm.condition }} {{ alarm.threshold }}</p>
+          <p><strong>{{ $t('admin_alarms.list.alarm.description') }}:</strong> {{ alarm.description }}</p>
         </div>
-        <button @click="goToEditAlarm(alarm.id)" class="btn-edit">Edit</button>
-        <button @click="deleteAlarm(alarm.id)" class="btn-delete">Delete</button>
+        <button @click="goToEditAlarm(alarm.id)" class="btn-edit">{{ $t('admin_alarms.list.actions.edit') }}</button>
+        <button @click="deleteAlarm(alarm.id)" class="btn-delete">{{ $t('admin_alarms.list.actions.delete') }}</button>
       </div>
     </div>
   </div>
@@ -26,9 +26,11 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AlarmService from '@/services/AlarmService'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const goToEditAlarm = (id: number) => {
   router.push({ name: 'alarm-edit', params: { id } })
@@ -49,7 +51,7 @@ const fetchAlarms = async () => {
   try {
     alarms.value = await AlarmService.listAlarms()
   } catch (error) {
-    console.error('Error fetching alarms:', error)
+    console.error(t('admin_alarms.list.errors.fetch_failed'), error)
   }
 }
 
@@ -58,7 +60,7 @@ const deleteAlarm = async (id: number) => {
     await AlarmService.deleteAlarm(id)
     alarms.value = alarms.value.filter((alarm) => alarm.id !== id)
   } catch (error) {
-    console.error('Error deleting alarm:', error)
+    console.error(t('admin_alarms.list.errors.delete_failed'), error)
   }
 }
 
