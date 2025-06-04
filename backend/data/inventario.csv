@@ -1,0 +1,11 @@
+ID,Producto,Categoría,Stock actual,Precio unitario,Proveedor,Fecha de entrada,Fecha de salida
+6,Tablet Lenovo,Tecnología,20,300,Lenovo,2025-04-06,None
+7,Escritorio IKEA,Muebles,10,200,IKEA,2025-03-29,None
+8,Audífonos Sony,Accesorios,25,75,Sony,2025-04-01,None
+9,Impresora Canon,Tecnología,5,150,Canon,2025-04-04,None
+10,Silla Oficina,muebles,12,120,Oficina,2025-04-07,None
+11,Webcam Logitech,Accesorios,15,60,Logitech,2025-04-08,None
+12,Proyector Epson,Tecnología,8,400,Epson,2025-04-09,None
+13,Mouse Razer,Accesorios,40,60,Razer,2025-04-10,None
+14,Monitor LG,Tecnología,6,250,LG,2025-04-11,None
+15,Teclado Razer,Accesorios,35,70,Razer,2025-04-12,None
